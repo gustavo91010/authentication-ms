@@ -57,18 +57,16 @@ public class WebSecurityConfig {
 
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
-//		 return (web) -> web.ignoring().antMatchers("/js/**", "/images/**"); 
-		return (web) -> web.ignoring().requestMatchers("/js/**", "/images/**");
+		return (web) -> web.ignoring().antMatchers("/js/**", "/images/**");
 	}
 
-	@SuppressWarnings("removal")
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 	    http.cors().and().csrf().disable()
 	        .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 	        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-	        .authorizeRequests().requestMatchers("/api/auth/**").permitAll()
-	        .requestMatchers("/api/test/**").permitAll()
+	        .authorizeRequests().antMatchers("/api/auth/**").permitAll()
+	        .antMatchers("/api/test/**").permitAll()
 	        .anyRequest().authenticated();
 //	    
 //	    // http....;

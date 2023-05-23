@@ -1,17 +1,19 @@
 package com.ajudaqui.authenticationms.models;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Users {
@@ -32,6 +34,13 @@ public class Users {
 	@NotBlank
 	@Size(max = 120)
 	private String password;
+	@NotNull
+	private Boolean active;
+
+	private LocalDateTime created_at;
+
+	private LocalDateTime update_at;
+	private String access_token;
 
 //	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -44,6 +53,8 @@ public class Users {
 		this.username = username;
 		this.email = email;
 		this.password = password;
+		this.active= true;
+		this.created_at= LocalDateTime.now();
 	}
 
 	public Long getId() {
@@ -85,5 +96,38 @@ public class Users {
 	public void setRoles(Set<Roles> roles) {
 		this.roles = roles;
 	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+
+	public LocalDateTime getCreated_at() {
+		return created_at;
+	}
+
+	public void setCreated_at(LocalDateTime created_at) {
+		this.created_at = created_at;
+	}
+
+	public LocalDateTime getUpdate_at() {
+		return update_at;
+	}
+
+	public void setUpdate_at(LocalDateTime update_at) {
+		this.update_at = update_at;
+	}
+
+	public String getAccess_token() {
+		return access_token;
+	}
+
+	public void setAccess_token(String access_token) {
+		this.access_token = access_token;
+	}
+	
 
 }
