@@ -1,4 +1,4 @@
-package com.ajudaqui.authenticationms.models;
+package com.ajudaqui.authenticationms.entity;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;

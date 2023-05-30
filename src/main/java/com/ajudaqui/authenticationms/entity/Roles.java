@@ -1,4 +1,4 @@
-package com.ajudaqui.authenticationms.models;
+package com.ajudaqui.authenticationms.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
