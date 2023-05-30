@@ -9,6 +9,7 @@ public class LoginResponse {
 	private String username;
 	private String email;
 	private String jwt;
+	private String type = "Bearer";
 	private List<String> roles=new ArrayList<>();
 	
 	
@@ -43,6 +44,13 @@ public class LoginResponse {
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
 	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	
 	
 	
 

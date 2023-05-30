@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import com.ajudaqui.authenticationms.security.UserDetailsImpl;
+import com.ajudaqui.authenticationms.security.service.UserDetailsImpl;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -38,12 +38,12 @@ public class JwtUtils {
 		LocalDateTime expirationDateTime = issuedAt.plus(jwtExpirationMs, ChronoUnit.MILLIS);
 		Date expirationDate = Date.from(expirationDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
-		return Jwts.builder().setSubject(userDetail.getUsername()).setIssuedAt(issuedAtDate)
+		return Jwts.builder().setSubject(userDetail.getEmail()).setIssuedAt(issuedAtDate)
 				.setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
 
 	}
 
-	public String getUserNameFromJwtToken(String token) {
+	public String getEmailFromJwtToken(String token) {
 		return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
 	}
 

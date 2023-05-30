@@ -1,4 +1,4 @@
-package com.ajudaqui.authenticationms.security;
+package com.ajudaqui.authenticationms.security.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

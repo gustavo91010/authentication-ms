@@ -1,4 +1,4 @@
-package com.ajudaqui.authenticationms.security;
+package com.ajudaqui.authenticationms.security.service;
 
 import java.util.Collection;
 import java.util.List;

@@ -15,8 +15,8 @@ import com.ajudaqui.authenticationms.exception.MesageException;
 import com.ajudaqui.authenticationms.request.LoginRequest;
 import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.response.LoginResponse;
-import com.ajudaqui.authenticationms.security.UserDetailsImpl;
 import com.ajudaqui.authenticationms.security.jwt.JwtUtils;
+import com.ajudaqui.authenticationms.security.service.UserDetailsImpl;
 
 @Service
 public class AuthService {
@@ -39,7 +39,7 @@ public class AuthService {
 	public LoginResponse authenticateUser(LoginRequest loginRequest) {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
-						loginRequest.getUsername(), loginRequest.getPassword()));
+						loginRequest.getEmail(), loginRequest.getPassword()));
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtUtils.generatedJwtToken(authentication);
