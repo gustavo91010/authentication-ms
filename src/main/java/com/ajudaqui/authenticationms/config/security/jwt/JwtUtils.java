@@ -1,4 +1,4 @@
-package com.ajudaqui.authenticationms.security.jwt;
+package com.ajudaqui.authenticationms.config.security.jwt;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import com.ajudaqui.authenticationms.security.service.UserDetailsImpl;
+import com.ajudaqui.authenticationms.config.security.service.UserDetailsImpl;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

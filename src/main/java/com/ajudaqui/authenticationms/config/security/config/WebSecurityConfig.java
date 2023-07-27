@@ -1,4 +1,4 @@
-package com.ajudaqui.authenticationms.security.config;
+package com.ajudaqui.authenticationms.config.security.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,10 +16,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.ajudaqui.authenticationms.security.jwt.AuthEntryPointJwt;
-import com.ajudaqui.authenticationms.security.jwt.AuthTokenFilter;
-import com.ajudaqui.authenticationms.security.jwt.CustomAccessDeniedHandler;
-import com.ajudaqui.authenticationms.security.service.UserDetailsServiceImpl;
+import com.ajudaqui.authenticationms.config.security.jwt.AuthEntryPointJwt;
+import com.ajudaqui.authenticationms.config.security.jwt.AuthTokenFilter;
+import com.ajudaqui.authenticationms.config.security.jwt.CustomAccessDeniedHandler;
+import com.ajudaqui.authenticationms.config.security.service.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity

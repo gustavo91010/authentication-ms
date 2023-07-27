@@ -1,4 +1,4 @@
-package com.ajudaqui.authenticationms.security.config;
+package com.ajudaqui.authenticationms.config.security.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

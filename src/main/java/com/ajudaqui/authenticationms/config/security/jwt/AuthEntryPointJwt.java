@@ -1,4 +1,4 @@
-package com.ajudaqui.authenticationms.security.jwt;
+package com.ajudaqui.authenticationms.config.security.jwt;
 
 import java.io.IOException;
 

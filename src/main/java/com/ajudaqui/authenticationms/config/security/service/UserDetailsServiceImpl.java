@@ -1,4 +1,4 @@
-package com.ajudaqui.authenticationms.security.service;
+package com.ajudaqui.authenticationms.config.security.service;
 
 import javax.transaction.Transactional;
 

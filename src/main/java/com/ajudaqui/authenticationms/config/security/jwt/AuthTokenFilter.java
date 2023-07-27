@@ -1,4 +1,4 @@
-package com.ajudaqui.authenticationms.security.jwt;
+package com.ajudaqui.authenticationms.config.security.jwt;
 
 import java.io.IOException;
 
@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.ajudaqui.authenticationms.security.service.UserDetailsServiceImpl;
+import com.ajudaqui.authenticationms.config.security.service.UserDetailsServiceImpl;
 
 
 public class AuthTokenFilter extends OncePerRequestFilter{
