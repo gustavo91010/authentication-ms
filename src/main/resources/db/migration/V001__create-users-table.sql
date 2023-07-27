@@ -6,7 +6,6 @@ BEGIN;
 CREATE TABLE IF NOT EXISTS public.users
 (
     id bigserial NOT NULL,
-    email character varying(50) COLLATE pg_catalog."default",
     password character varying(120) COLLATE pg_catalog."default",
     username character varying(20) COLLATE pg_catalog."default",
     access_token character varying(255) COLLATE pg_catalog."default",

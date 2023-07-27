@@ -42,14 +42,6 @@ public class UsersService {
 
 	}
 
-	public Users findByEmail(String email) {
-		Optional<Users> user = userRepository.findByEmail(email);
-		if (user.isEmpty()) {
-			throw new MesageException("Usuario não encontrado");
-		}
-		return user.get();
-
-	}
 	public Users findById(Long id) {
 		Optional<Users> user = userRepository.findById(id);
 		if (user.isEmpty()) {
@@ -65,9 +57,6 @@ public class UsersService {
 		return userRepository.existsByUsername(username);
 	}
 
-	public Boolean existsByEmail(String email) {
-		return userRepository.existsByEmail(email);
-	}
 
 	// Definir ROLE
 	public Set<Roles> assignRole() {

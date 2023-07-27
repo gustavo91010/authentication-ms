@@ -20,7 +20,6 @@ public class UserDetailsImpl implements UserDetails{
 
 	private String username;
 
-	private String email;
 
 	@JsonIgnore
 	private String password;
@@ -29,12 +28,11 @@ public class UserDetailsImpl implements UserDetails{
 	
 	
 
-	public UserDetailsImpl(Long id, String username, String email, String password,
+	public UserDetailsImpl(Long id, String username,  String password,
 			Collection<? extends GrantedAuthority> authorities) {
 		super();
 		this.id = id;
 		this.username = username;
-		this.email = email;
 		this.password = password;
 		this.authorities = authorities;
 	}
@@ -48,7 +46,6 @@ public class UserDetailsImpl implements UserDetails{
 		return new UserDetailsImpl(
 				users.getId(),
 				users.getUsername(),
-				users.getEmail(),
 				users.getPassword(),
 				authorites);
 	}
@@ -62,13 +59,6 @@ public class UserDetailsImpl implements UserDetails{
 		this.id = id;
 	}
 
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -114,7 +104,7 @@ public class UserDetailsImpl implements UserDetails{
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(authorities, email, id, password, username);
+		return Objects.hash(authorities, id, password, username);
 	}
 
 	@Override
@@ -126,9 +116,8 @@ public class UserDetailsImpl implements UserDetails{
 		if (getClass() != obj.getClass())
 			return false;
 		UserDetailsImpl other = (UserDetailsImpl) obj;
-		return Objects.equals(authorities, other.authorities) && Objects.equals(email, other.email)
-				&& Objects.equals(id, other.id) && Objects.equals(password, other.password)
-				&& Objects.equals(username, other.username);
+		return Objects.equals(authorities, other.authorities) && Objects.equals(id, other.id)
+				&& Objects.equals(password, other.password) && Objects.equals(username, other.username);
 	}
 	
 	

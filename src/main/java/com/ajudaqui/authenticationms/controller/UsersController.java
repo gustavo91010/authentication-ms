@@ -28,12 +28,11 @@ public class UsersController {
 	@GetMapping()
 	@PreAuthorize("hasRole('MODERATOR')")
 	public List<Users> findAll(@RequestHeader("Authorization") String jwtToken) {
-		System.err.println("chamou??");
 		return usersService.findAll();
 	}
-	@GetMapping("/opa")
+	@GetMapping("/vei")
 	public List<Users> opa() {
-		System.err.println("opa!??");
+		System.err.println("vei!??");
 		return usersService.findAll();
 	}
 

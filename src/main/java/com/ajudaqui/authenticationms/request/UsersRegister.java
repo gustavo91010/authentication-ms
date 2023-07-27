@@ -9,13 +9,12 @@ public class UsersRegister {
 
 	private String username;
 	private String password;
-	private String email;
 
 	public Users toDate() {
 		
 		String password = new BCryptPasswordEncoder().encode(this.password);
 		
-		Users user = new Users(this.username, this.email, password);
+		Users user = new Users(this.username,  password);
 		return user;
 	}
 
@@ -35,12 +34,5 @@ public class UsersRegister {
 		this.password = password;
 	}
 
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
 
 }

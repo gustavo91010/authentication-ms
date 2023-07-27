@@ -27,29 +27,28 @@ public class AuthController {
 
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-//		try {
-			System.err.println("é pra entra aqui!");
+		try {
 			LoginResponse userAuthenticated = authService.authenticateUser(loginRequest);
 
 			return ResponseEntity.ok(userAuthenticated);
 
-//		} catch (Exception e) {
-//			return ResponseEntity.badRequest().body(e.getMessage());
-//		}
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 	@PostMapping("/signup")
-	@PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MODERATOR')")
 	public ResponseEntity<?> registerUser(
 			@Valid @RequestBody UsersRegister usersRegister,
 			@RequestHeader("Authorization") String jwtToken) {
 		
-//		try {
+		try {
 			authService.registerUser(usersRegister);			
 			return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 			
-//		} catch (Exception e) {
-//			return ResponseEntity.badRequest().body(e.getMessage());
-//		}
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 	
 

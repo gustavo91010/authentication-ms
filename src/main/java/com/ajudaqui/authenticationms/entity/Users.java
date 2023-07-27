@@ -9,8 +9,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -26,10 +27,6 @@ public class Users {
 	@Size(max = 20)
 	private String username;
 
-	@NotBlank
-	@Size(max = 50)
-	@Email
-	private String email;
 
 	@NotBlank
 	@Size(max = 120)
@@ -48,10 +45,9 @@ public class Users {
 
 	public Users() {}
 
-	public Users(String username, String email, String password) {
+	public Users(String username, String password) {
 
 		this.username = username;
-		this.email = email;
 		this.password = password;
 		this.active= true;
 		this.created_at= LocalDateTime.now();
@@ -73,13 +69,6 @@ public class Users {
 		this.username = username;
 	}
 
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
 
 	public String getPassword() {
 		return password;

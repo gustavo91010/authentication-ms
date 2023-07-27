@@ -30,7 +30,6 @@ public class AuthService {
 //	private RolesRepository roleRepository;
 //
 
-
 	@Autowired
 	private JwtUtils jwtUtils;
 
@@ -38,22 +37,19 @@ public class AuthService {
 
 	public LoginResponse authenticateUser(LoginRequest loginRequest) {
 		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(
-						loginRequest.getEmail(), loginRequest.getPassword()));
+				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtUtils.generatedJwtToken(authentication);
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-		List<String> roles = userDetails.getAuthorities().stream()
-				.map(item -> item.getAuthority())
+		List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
 				.collect(Collectors.toList());
 
 		LoginResponse loginResponse = new LoginResponse();
 
 		loginResponse.setId(userDetails.getId());
 		loginResponse.setUsername(userDetails.getUsername());
-		loginResponse.setEmail(userDetails.getEmail());
 		loginResponse.setJwt(jwt);
 		loginResponse.setRoles(roles);
 
@@ -63,8 +59,7 @@ public class AuthService {
 
 	public Users registerUser(UsersRegister usersRegister) {
 		// Verificando se usuario já possue registro
-		if (usersService.existsByUsername(usersRegister.getUsername())
-				|| usersService.existsByEmail(usersRegister.getEmail())) {
+		if (usersService.existsByUsername(usersRegister.getUsername())) {
 			throw new MesageException("Usuário já cadastrado.");
 		}
 
