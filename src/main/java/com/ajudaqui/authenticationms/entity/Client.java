@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-public class Users {
+public class Client {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,7 @@ public class Users {
 
 	@NotBlank
 	@Size(max = 20)
-	private String username;
+	private String email;
 
 
 	@NotBlank
@@ -43,11 +43,11 @@ public class Users {
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<Roles> roles = new HashSet<>();
 
-	public Users() {}
+	public Client() {}
 
-	public Users(String username, String password) {
+	public Client(String username, String password) {
 
-		this.username = username;
+		this.email = username;
 		this.password = password;
 		this.active= true;
 		this.created_at= LocalDateTime.now();
@@ -61,14 +61,16 @@ public class Users {
 		this.id = id;
 	}
 
-	public String getUsername() {
-		return username;
+	
+
+
+	public String getEmail() {
+		return email;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setEmail(String email) {
+		this.email = email;
 	}
-
 
 	public String getPassword() {
 		return password;

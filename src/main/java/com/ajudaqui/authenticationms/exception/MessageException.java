@@ -1,9 +1,9 @@
 package com.ajudaqui.authenticationms.exception;
 
-public class MesageException extends RuntimeException {
+public class MessageException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
-	public MesageException(String msg) {
+	public MessageException(String msg) {
 		super(msg);
 	}
 

@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ajudaqui.authenticationms.request.LoginRequest;
-import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.response.LoginResponse;
 import com.ajudaqui.authenticationms.response.MessageResponse;
 import com.ajudaqui.authenticationms.service.AuthService;
+import com.ajudaqui.authenticationms.service.model.UsersRegister;
 
 @RestController
 @RequestMapping("/auth")

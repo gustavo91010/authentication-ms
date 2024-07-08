@@ -10,28 +10,28 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ajudaqui.authenticationms.entity.Users;
-import com.ajudaqui.authenticationms.service.UsersService;
+import com.ajudaqui.authenticationms.entity.Client;
+import com.ajudaqui.authenticationms.service.ClientService;
 
 @RestController
 @RequestMapping("/users")
 public class UsersController {
 	
 	@Autowired
-	private UsersService usersService;
+	private ClientService usersService;
 	
 	@GetMapping("/{id}")
-	public Users findById(@PathVariable Long id) {
+	public Client findById(@PathVariable Long id) {
 		return usersService.findById(id);
 	}
 	
 	@GetMapping()
 	@PreAuthorize("hasRole('MODERATOR')")
-	public List<Users> findAll(@RequestHeader("Authorization") String jwtToken) {
+	public List<Client> findAll(@RequestHeader("Authorization") String jwtToken) {
 		return usersService.findAll();
 	}
 	@GetMapping("/vei")
-	public List<Users> opa() {
+	public List<Client> opa() {
 		System.err.println("vei!??");
 		return usersService.findAll();
 	}

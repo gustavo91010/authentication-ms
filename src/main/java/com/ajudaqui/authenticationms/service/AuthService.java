@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.config.security.service.UserDetailsImpl;
-import com.ajudaqui.authenticationms.entity.Users;
-import com.ajudaqui.authenticationms.exception.MesageException;
+import com.ajudaqui.authenticationms.entity.Client;
+import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.request.LoginRequest;
-import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.response.LoginResponse;
+import com.ajudaqui.authenticationms.service.model.UsersRegister;
 
 @Service
 public class AuthService {
@@ -24,7 +24,7 @@ public class AuthService {
 	private AuthenticationManager authenticationManager;
 
 	@Autowired
-	private UsersService usersService;
+	private ClientService usersService;
 
 //	@Autowired
 //	private RolesRepository roleRepository;
@@ -57,10 +57,10 @@ public class AuthService {
 
 	}
 
-	public Users registerUser(UsersRegister usersRegister) {
+	public Client registerUser(UsersRegister usersRegister) {
 		// Verificando se usuario já possue registro
 		if (usersService.existsByUsername(usersRegister.getUsername())) {
-			throw new MesageException("Usuário já cadastrado.");
+			throw new MessageException("Usuário já cadastrado.");
 		}
 
 		return usersService.create(usersRegister);

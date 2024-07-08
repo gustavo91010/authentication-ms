@@ -3,11 +3,11 @@
 BEGIN;
 
 
-CREATE TABLE IF NOT EXISTS public.users
+CREATE TABLE IF NOT EXISTS public.client
 (
     id bigserial NOT NULL,
     password character varying(120) COLLATE pg_catalog."default",
-    username character varying(20) COLLATE pg_catalog."default",
+    email character varying(20) COLLATE pg_catalog."default",
     access_token character varying(255) COLLATE pg_catalog."default",
     active boolean NOT NULL,
     created_at timestamp(6) without time zone,

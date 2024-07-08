@@ -8,19 +8,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.ajudaqui.authenticationms.entity.Users;
-import com.ajudaqui.authenticationms.repository.UsersRepository;
+import com.ajudaqui.authenticationms.entity.Client;
+import com.ajudaqui.authenticationms.repository.ClientRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService{
 	
 	@Autowired
-	private UsersRepository usersRepository;
+	private ClientRepository usersRepository;
 	
 	
 	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Users user = usersRepository.findByUsername(username)
+		Client user = usersRepository.findByEmail(username)
 				.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
 		return UserDetailsImpl.build(user);
