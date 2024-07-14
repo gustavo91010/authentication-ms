@@ -9,8 +9,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -38,6 +36,8 @@ public class Client {
 
 	private LocalDateTime update_at;
 	private String access_token;
+	private String secret_key;
+
 
 //	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -55,6 +55,14 @@ public class Client {
 
 	public Long getId() {
 		return id;
+	}
+
+	public String getSecret_key() {
+		return secret_key;
+	}
+
+	public void setSecret_key(String secret_key) {
+		this.secret_key = secret_key;
 	}
 
 	public void setId(Long id) {

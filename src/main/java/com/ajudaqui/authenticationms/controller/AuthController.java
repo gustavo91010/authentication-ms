@@ -15,7 +15,7 @@ import com.ajudaqui.authenticationms.request.LoginRequest;
 import com.ajudaqui.authenticationms.response.LoginResponse;
 import com.ajudaqui.authenticationms.response.MessageResponse;
 import com.ajudaqui.authenticationms.service.AuthService;
-import com.ajudaqui.authenticationms.service.model.UsersRegister;
+import com.ajudaqui.authenticationms.service.model.ClientRegister;
 
 @RestController
 @RequestMapping("/auth")
@@ -36,14 +36,28 @@ public class AuthController {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
-	@PostMapping("/signup")
-	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MODERATOR')")
-	public ResponseEntity<?> registerUser(
-			@Valid @RequestBody UsersRegister usersRegister,
+	@PostMapping("/signup-client")
+	@PreAuthorize("hasRole('ROLE_ADMIN') ")
+	public ResponseEntity<?> registerClient(
+			@Valid @RequestBody ClientRegister usersRegister,
 			@RequestHeader("Authorization") String jwtToken) {
 		
 		try {
-			authService.registerUser(usersRegister);			
+			authService.registerClient(usersRegister);			
+			return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+			
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+	@PostMapping("/signup-customer")
+	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_CLIENT')")
+	public ResponseEntity<?> registerCustomer(
+			@Valid @RequestBody CustomerRegister consumerRegister,
+			@RequestHeader("Authorization") String jwtToken) {
+		
+		try {
+			authService.registerCustomer(consumerRegister);			
 			return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 			
 		} catch (Exception e) {

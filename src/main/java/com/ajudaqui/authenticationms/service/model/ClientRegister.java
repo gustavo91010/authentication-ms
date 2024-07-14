@@ -4,7 +4,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.ajudaqui.authenticationms.entity.Client;
 
-public class UsersRegister {
+public class ClientRegister {
 
 	private String username;
 	private String password;

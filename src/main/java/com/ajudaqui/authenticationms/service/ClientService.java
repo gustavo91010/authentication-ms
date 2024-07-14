@@ -1,10 +1,14 @@
 package com.ajudaqui.authenticationms.service;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,24 +16,30 @@ import com.ajudaqui.authenticationms.entity.Roles;
 import com.ajudaqui.authenticationms.entity.Client;
 import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.repository.RolesRepository;
-import com.ajudaqui.authenticationms.service.model.UsersRegister;
+import com.ajudaqui.authenticationms.service.model.ClientRegister;
 import com.ajudaqui.authenticationms.repository.ClientRepository;
 import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 
 @Service
 public class ClientService {
+	Logger logger = LoggerFactory.getLogger(ClientService.class);
 
 	@Autowired
 	private ClientRepository clientRepository;
 	@Autowired
 	private RolesRepository rolesRepository;
 
-	public Client create(UsersRegister usersRegister) {
-		Client users = usersRegister.toDate();
-		users.setRoles(assignRole());
+	public Client create(ClientRegister usersRegister) {
+		Client client = usersRegister.toDate();
+		client.setRoles(assignRole());
+		client.setAccess_token(UUID.randomUUID().toString());
+		client.setSecret_key(UUID.randomUUID().toString());
+		client.setUpdate_at(LocalDateTime.now());
 
-		clientRepository.save(users);
-		return users;
+
+		clientRepository.save(client);
+		logger.info("Cliente salvo com sucesso!");
+		return client;
 
 	}
 
