@@ -7,7 +7,9 @@ CREATE TABLE IF NOT EXISTS public.users
 (
     id bigserial NOT NULL,
     password character varying(120) COLLATE pg_catalog."default",
-    username character varying(20) COLLATE pg_catalog."default",
+    email character varying(50) COLLATE pg_catalog."default",
+    aplication character varying(100) COLLATE pg_catalog."default",
+
     access_token character varying(255) COLLATE pg_catalog."default",
     active boolean NOT NULL,
     created_at timestamp(6) without time zone,

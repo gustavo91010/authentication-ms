@@ -34,8 +34,8 @@ public class UsersService {
 	}
 
 	public Users findByUsername(String username) {
-		Optional<Users> user = userRepository.findByUsername(username);
-		if (user.isEmpty()) {
+		Optional<Users> user = userRepository.findByEmail(username);
+		if (!user.isPresent()) {
 			throw new MesageException("Usuario não encontrado");
 		}
 		return user.get();
@@ -44,7 +44,7 @@ public class UsersService {
 
 	public Users findById(Long id) {
 		Optional<Users> user = userRepository.findById(id);
-		if (user.isEmpty()) {
+		if (!user.isPresent()) {
 			throw new MesageException("Usuario não encontrado");
 		}
 		return user.get();

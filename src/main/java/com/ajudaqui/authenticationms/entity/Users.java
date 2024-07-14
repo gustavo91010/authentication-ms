@@ -9,8 +9,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -24,9 +22,8 @@ public class Users {
 	private Long id;
 
 	@NotBlank
-	@Size(max = 20)
-	private String username;
-
+	@Size(max = 50)
+	private String email;
 
 	@NotBlank
 	@Size(max = 120)
@@ -38,19 +35,29 @@ public class Users {
 
 	private LocalDateTime update_at;
 	private String access_token;
+	private String aplication;
+	
+	
 
-//	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+public String getAplication() {
+		return aplication;
+	}
+
+	public void setAplication(String aplication) {
+		this.aplication = aplication;
+	}
+
+	//	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<Roles> roles = new HashSet<>();
 
-	public Users() {}
-
-	public Users(String username, String password) {
-
-		this.username = username;
+	public Users(String email, String password, String aplication) {
+		this.email = email;
 		this.password = password;
+		this.aplication= aplication;
 		this.active= true;
 		this.created_at= LocalDateTime.now();
+		
 	}
 
 	public Long getId() {
@@ -61,12 +68,12 @@ public class Users {
 		this.id = id;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 

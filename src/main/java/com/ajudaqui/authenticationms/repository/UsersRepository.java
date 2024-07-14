@@ -9,14 +9,10 @@ import com.ajudaqui.authenticationms.entity.Users;
 
 public interface UsersRepository extends JpaRepository<Users, Long> {
 
-	Optional<Users> findByUsername(String username);
+	Optional<Users> findByEmail(String email);
 
-
-	
-	
-	
-	@Query(value = "SELECT COUNT(*) > 0 FROM users WHERE username= :username ", nativeQuery = true)
-	Boolean existsByUsername(String username);
+	@Query(value = "SELECT COUNT(*) > 0 FROM users WHERE email= :email ", nativeQuery = true)
+	Boolean existsByUsername(String email);
 
 
 }

@@ -9,12 +9,13 @@ public class UsersRegister {
 
 	private String username;
 	private String password;
+	private String aplication;
 
 	public Users toDate() {
 		
 		String password = new BCryptPasswordEncoder().encode(this.password);
 		
-		Users user = new Users(this.username,  password);
+		Users user = new Users(this.username,  password, this.aplication);
 		return user;
 	}
 
