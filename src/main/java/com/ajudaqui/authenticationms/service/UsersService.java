@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ajudaqui.authenticationms.controller.UsersController;
 import com.ajudaqui.authenticationms.entity.Roles;
 import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.exception.MesageException;
@@ -18,6 +21,7 @@ import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 
 @Service
 public class UsersService {
+	Logger logger = LoggerFactory.getLogger(UsersService.class);
 
 	@Autowired
 	private UsersRepository userRepository;
@@ -25,6 +29,7 @@ public class UsersService {
 	private RolesRepository rolesRepository;
 
 	public Users create(UsersRegister usersRegister) {
+		System.out.println("hum...");
 		Users users = usersRegister.toDate();
 		users.setRoles(assignRole());
 
@@ -33,8 +38,8 @@ public class UsersService {
 
 	}
 
-	public Users findByUsername(String username) {
-		Optional<Users> user = userRepository.findByEmail(username);
+	public Users findByEmail(String email) {
+		Optional<Users> user = userRepository.findByEmail(email);
 		if (!user.isPresent()) {
 			throw new MesageException("Usuario não encontrado");
 		}
@@ -53,8 +58,8 @@ public class UsersService {
 		return userRepository.findAll();
 	}
 
-	public Boolean existsByUsername(String username) {
-		return userRepository.existsByUsername(username);
+	public Boolean existsByEmail(String username) {
+		return userRepository.findByEmail(username).isPresent();
 	}
 
 

@@ -36,8 +36,12 @@ public class AuthService {
 //	https://www.bezkoder.com/spring-boot-jwt-authentication/
 
 	public LoginResponse authenticateUser(LoginRequest loginRequest) {
+		System.out.println(loginRequest.toString());
+
 		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+				new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+		
+System.out.println("aqui??");
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtUtils.generatedJwtToken(authentication);
@@ -58,8 +62,10 @@ public class AuthService {
 	}
 
 	public Users registerUser(UsersRegister usersRegister) {
+		
+		
 		// Verificando se usuario já possue registro
-		if (usersService.existsByUsername(usersRegister.getUsername())) {
+		if (usersService.existsByEmail(usersRegister.getEmail())) {
 			throw new MesageException("Usuário já cadastrado.");
 		}
 

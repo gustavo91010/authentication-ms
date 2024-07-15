@@ -36,21 +36,10 @@ public class Users {
 	private LocalDateTime update_at;
 	private String access_token;
 	private String aplication;
-	
-	
-
-public String getAplication() {
-		return aplication;
+	public Users() {
+		// TODO Auto-generated constructor stub
 	}
-
-	public void setAplication(String aplication) {
-		this.aplication = aplication;
-	}
-
-	//	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-	@ManyToMany(fetch = FetchType.EAGER)
-	private Set<Roles> roles = new HashSet<>();
-
+	
 	public Users(String email, String password, String aplication) {
 		this.email = email;
 		this.password = password;
@@ -59,6 +48,19 @@ public String getAplication() {
 		this.created_at= LocalDateTime.now();
 		
 	}
+
+	public String getAplication() {
+		return aplication;
+	}
+
+	public void setAplication(String aplication) {
+		this.aplication = aplication;
+	}
+
+	// @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
+	// inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@ManyToMany(fetch = FetchType.EAGER)
+	private Set<Roles> roles = new HashSet<>();
 
 	public Long getId() {
 		return id;
@@ -75,7 +77,6 @@ public String getAplication() {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
 
 	public String getPassword() {
 		return password;
@@ -124,6 +125,5 @@ public String getAplication() {
 	public void setAccess_token(String access_token) {
 		this.access_token = access_token;
 	}
-	
 
 }
