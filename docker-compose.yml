@@ -1,0 +1,26 @@
+version: '3.7'
+services:
+  authentication-api:
+    image: 'authentication-api:${VERSION}'
+    ports:
+      - "${PORT}:8082"
+    build:
+      context: .
+    environment:
+      - TZ=America/Sao_Paulo
+      - spring.datasource.url=${DATABASE_URL}
+      - spring.datasource.username=${DATABASE_USERNAME}
+      - spring.datasource.password=${DATABASE_PASSWORD}
+    container_name: authentication-api
+    restart: no
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge

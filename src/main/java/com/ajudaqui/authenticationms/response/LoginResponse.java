@@ -5,31 +5,22 @@ import java.util.List;
 
 public class LoginResponse {
 	
-	private Long id;
-	private String username;
+	private String email;
 	private String jwt;
-	private String type = "Bearer";
 	private List<String> roles=new ArrayList<>();
-	
-	
-	
+	private Boolean active;
+	private String access_token;
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
 	public String getJwt() {
 		return jwt;
 	}
 	public void setJwt(String jwt) {
 		this.jwt = jwt;
-	}
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
 	}
 	public List<String> getRoles() {
 		return roles;
@@ -37,12 +28,22 @@ public class LoginResponse {
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
 	}
-	public String getType() {
-		return type;
+	public Boolean getActive() {
+		return active;
 	}
-	public void setType(String type) {
-		this.type = type;
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
+	public String getAccess_token() {
+		return access_token;
+	}
+	public void setAccess_token(String access_token) {
+		this.access_token = access_token;
+	}
+
+	
+	
+	
 	
 	
 	

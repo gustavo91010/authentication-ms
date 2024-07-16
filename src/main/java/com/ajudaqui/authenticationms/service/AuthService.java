@@ -26,23 +26,15 @@ public class AuthService {
 	@Autowired
 	private UsersService usersService;
 
-//	@Autowired
-//	private RolesRepository roleRepository;
-//
-
 	@Autowired
 	private JwtUtils jwtUtils;
 
-//	https://www.bezkoder.com/spring-boot-jwt-authentication/
 
 	public LoginResponse authenticateUser(LoginRequest loginRequest) {
-		System.out.println(loginRequest.toString());
 
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 		
-System.out.println("aqui??");
-
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtUtils.generatedJwtToken(authentication);
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -50,13 +42,16 @@ System.out.println("aqui??");
 		List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
 				.collect(Collectors.toList());
 
+		Users user = usersService.findByEmail(loginRequest.getEmail());
 		LoginResponse loginResponse = new LoginResponse();
+		
 
-		loginResponse.setId(userDetails.getId());
-		loginResponse.setUsername(userDetails.getUsername());
+		loginResponse.setEmail(userDetails.getUsername());
+		loginResponse.setActive(userDetails.getActive());
 		loginResponse.setJwt(jwt);
 		loginResponse.setRoles(roles);
-
+		loginResponse.setAccess_token(user.getAccess_token());
+		
 		return loginResponse;
 
 	}

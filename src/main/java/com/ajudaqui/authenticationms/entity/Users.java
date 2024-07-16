@@ -3,6 +3,7 @@ package com.ajudaqui.authenticationms.entity;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -46,6 +47,9 @@ public class Users {
 		this.aplication= aplication;
 		this.active= true;
 		this.created_at= LocalDateTime.now();
+		this.update_at= LocalDateTime.now();
+
+		this.access_token= UUID.randomUUID().toString();
 		
 	}
 
@@ -124,6 +128,13 @@ public class Users {
 
 	public void setAccess_token(String access_token) {
 		this.access_token = access_token;
+	}
+
+	@Override
+	public String toString() {
+		return "Users [id=" + id + ", email=" + email + ", password=" + password + ", active=" + active
+				+ ", created_at=" + created_at + ", update_at=" + update_at + ", access_token=" + access_token
+				+ ", aplication=" + aplication + ", roles=" + roles + "]";
 	}
 
 }

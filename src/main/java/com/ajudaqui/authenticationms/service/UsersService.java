@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ajudaqui.authenticationms.controller.UsersController;
 import com.ajudaqui.authenticationms.entity.Roles;
 import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.exception.MesageException;
@@ -29,10 +28,12 @@ public class UsersService {
 	private RolesRepository rolesRepository;
 
 	public Users create(UsersRegister usersRegister) {
-		System.out.println("hum...");
 		Users users = usersRegister.toDate();
 		users.setRoles(assignRole());
-
+		users.setAplication(usersRegister.getAplication());
+		
+		
+		System.out.println("users " + users.toString());
 		userRepository.save(users);
 		return users;
 
@@ -54,6 +55,7 @@ public class UsersService {
 		}
 		return user.get();
 	}
+
 	public List<Users> findAll() {
 		return userRepository.findAll();
 	}
@@ -61,7 +63,6 @@ public class UsersService {
 	public Boolean existsByEmail(String username) {
 		return userRepository.findByEmail(username).isPresent();
 	}
-
 
 	// Definir ROLE
 	public Set<Roles> assignRole() {
