@@ -41,6 +41,7 @@ public class Users {
 		// TODO Auto-generated constructor stub
 	}
 	
+	
 	public Users(String email, String password, String aplication) {
 		this.email = email;
 		this.password = password;
