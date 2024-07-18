@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.entity.Roles;
 import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.exception.MesageException;
@@ -26,6 +27,9 @@ public class UsersService {
 	private UsersRepository userRepository;
 	@Autowired
 	private RolesRepository rolesRepository;
+	
+	@Autowired
+	private JwtUtils jwtUtils;
 
 	public Users create(UsersRegister usersRegister) {
 		Users users = usersRegister.toDate();
@@ -73,6 +77,12 @@ public class UsersService {
 		roles.add(user_role);
 
 		return roles;
+	}
+
+	public Users findByJwt(String jwtToken) {
+		String email= jwtUtils.getEmailFromJwtToken(jwtToken);
+
+		return findByEmail(email);
 	}
 
 }

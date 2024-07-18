@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +31,18 @@ public class UsersController {
 		try {
 
 			Users users = usersService.findById(id);
+			return ResponseEntity.ok(users);
+		} catch (RuntimeException e) {
+			logger.error(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+	}
+	@GetMapping("/jwt")
+	public ResponseEntity<?> findByJwt(@RequestHeader("Authorization") String jwtToken) {
+		logger.info("Solicitando usuário pelo jwtToken");
+		try {
+
+			Users users = usersService.findByJwt(jwtToken);
 			return ResponseEntity.ok(users);
 		} catch (RuntimeException e) {
 			logger.error(e.getMessage());
