@@ -19,8 +19,8 @@ services:
           cpus: '1'
           memory: 1G
     networks:
-      - my_network
+      - financeiro_network
 
 networks:
-  my_network:
+  financeiro_network:
     driver: bridge
