@@ -23,4 +23,7 @@ services:
 
 networks:
   my_network:
-    driver: bridge
+    external: true
+    name: bill-manager-network
+
+# Colouei todos os outros containers que ele precisa nessa rede aqui... 
