@@ -15,58 +15,60 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ajudaqui.authenticationms.entity.Users;
+import com.ajudaqui.authenticationms.response.error.ResponseError;
 import com.ajudaqui.authenticationms.service.UsersService;
 
 @RestController
 @RequestMapping("/users")
 public class UsersController {
-	Logger logger = LoggerFactory.getLogger(UsersController.class);
-	
-	@Autowired
-	private UsersService usersService;
-	
-	@GetMapping("/{id}")
-	public ResponseEntity<?> findById(@PathVariable Long id) {
-		logger.info("Solicitando usuário pelo id "+id);
-		try {
+  Logger logger = LoggerFactory.getLogger(UsersController.class);
 
-			Users users = usersService.findById(id);
-			return ResponseEntity.ok(users);
-		} catch (RuntimeException e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-		}
-	}
-	@GetMapping("/jwt")
-	public ResponseEntity<?> findByJwt(@RequestHeader("Authorization") String jwtToken) {
-		logger.info("Solicitando usuário pelo jwtToken");
-		try {
+  @Autowired
+  private UsersService usersService;
 
-			Users users = usersService.findByJwt(jwtToken);
-			return ResponseEntity.ok(users);
-		} catch (RuntimeException e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-		}
-	}
-	
-	@GetMapping()
-	@PreAuthorize("hasRole('MODERATOR')")
-	public  ResponseEntity<?> findAll() {
-		logger.info("Lista de todos os usuários");		
-		try {
-			List<Users> users = usersService.findAll();
-			return ResponseEntity.ok(users);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-		}
-	}
-	@GetMapping("/vei")
-	public List<Users> opa() {
-		logger.info("vei!??");
-		System.out.println(usersService.findAll().size());
-		return usersService.findAll();
-	}
+  @GetMapping("/{id}")
+  public ResponseEntity<?> findById(@PathVariable Long id) {
+    try {
+
+      logger.info("[GET] | /users/{id}", id);
+      Users users = usersService.findById(id);
+      return ResponseEntity.ok(users);
+    } catch (RuntimeException e) {
+      logger.error(e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));
+    }
+  }
+
+  @GetMapping("/jwt")
+  public ResponseEntity<?> findByJwt(@RequestHeader("Authorization") String jwtToken) {
+    try {
+      logger.info("[GET] /users/jwt |");
+      Users users = usersService.findByJwt(jwtToken);
+      return ResponseEntity.ok(users);
+    } catch (RuntimeException e) {
+      logger.error(e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));
+    }
+  }
+
+  @GetMapping()
+  @PreAuthorize("hasRole('MODERATOR')")
+  public ResponseEntity<?> findAll() {
+    try {
+      logger.info("[GET] | /users |");
+      List<Users> users = usersService.findAll();
+      return ResponseEntity.ok(users);
+    } catch (Exception e) {
+      logger.error(e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));
+    }
+  }
+
+  // @GetMapping("/vei")
+  public List<Users> opa() {
+    logger.info("vei!??");
+    System.out.println(usersService.findAll().size());
+    return usersService.findAll();
+  }
 
 }

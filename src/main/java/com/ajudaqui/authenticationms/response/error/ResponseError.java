@@ -1,11 +1,21 @@
 package com.ajudaqui.authenticationms.response.error;
 
 public class ResponseError {
-	
-	public String response (String message) {
-		return message;
-	}
-	
-	
+  private String message;
 
+  public ResponseError(String message) {
+    this.message = message;
+  }
+
+  public String response(String message) {
+    return message;
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
 }

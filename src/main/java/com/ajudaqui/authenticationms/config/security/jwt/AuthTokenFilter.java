@@ -17,48 +17,45 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.ajudaqui.authenticationms.config.security.service.UserDetailsServiceImpl;
 
+public class AuthTokenFilter extends OncePerRequestFilter {
 
-public class AuthTokenFilter extends OncePerRequestFilter{
-	
-	@Autowired
-	private JwtUtils jwtUtils;
-	@Autowired
-	private UserDetailsServiceImpl userDetailsServiceImpl;
-	
+  @Autowired
+  private JwtUtils jwtUtils;
+  @Autowired
+  private UserDetailsServiceImpl userDetailsServiceImpl;
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		try {
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+    try {
 
-			String jwt = parseJwt(request);
+      String jwt = parseJwt(request);
 
-			if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+      if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
 
-				String email = jwtUtils.getEmailFromJwtToken(jwt);
-System.err.println("email "+email);
-				UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(email);
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-						userDetails, null, userDetails.getAuthorities());
+        String email = jwtUtils.getEmailFromJwtToken(jwt);
+        UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(email);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+            userDetails, null, userDetails.getAuthorities());
 
-				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				SecurityContextHolder.getContext().setAuthentication(authentication);
-			}
-		} catch (Exception e) {
-			logger.error("Cannot set user authentication: {}", e);
-		}
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+      }
+    } catch (Exception e) {
+      logger.error("Cannot set user authentication: {}", e);
+    }
 
-		filterChain.doFilter(request, response);
-	}
-	
-	public String parseJwt(HttpServletRequest request) {
-		String headerAuth = request.getHeader("Authorization");
+    filterChain.doFilter(request, response);
+  }
 
-		if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-			return headerAuth.substring(7, headerAuth.length());
-		}
-		
-		return null;
-	}
+  public String parseJwt(HttpServletRequest request) {
+    String headerAuth = request.getHeader("Authorization");
+
+    if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+      return headerAuth.substring(7, headerAuth.length());
+    }
+
+    return null;
+  }
 
 }

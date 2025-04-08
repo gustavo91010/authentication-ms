@@ -21,68 +21,72 @@ import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 
 @Service
 public class UsersService {
-	Logger logger = LoggerFactory.getLogger(UsersService.class);
+  Logger logger = LoggerFactory.getLogger(UsersService.class);
 
-	@Autowired
-	private UsersRepository userRepository;
-	@Autowired
-	private RolesRepository rolesRepository;
-	
-	@Autowired
-	private JwtUtils jwtUtils;
+  @Autowired
+  private UsersRepository userRepository;
+  @Autowired
+  private RolesRepository rolesRepository;
 
-	public Users create(UsersRegister usersRegister) {
-		Users users = usersRegister.toDate();
-		users.setRoles(assignRole());
-		users.setAplication(usersRegister.getAplication());
-		
-		
-		System.out.println("users " + users.toString());
-		userRepository.save(users);
-		return users;
+  @Autowired
+  private JwtUtils jwtUtils;
 
-	}
+  public Users create(UsersRegister usersRegister) {
+    Users users = usersRegister.toDate();
+    users.setRoles(assignRole());
+    users.setAplication(usersRegister.getAplication());
+    userRepository.save(users);
+    return users;
+  }
 
-	public Users findByEmail(String email) {
-		Optional<Users> user = userRepository.findByEmail(email);
-		if (!user.isPresent()) {
-			throw new MesageException("Usuario não encontrado");
-		}
-		return user.get();
+  public Users findByEmail(String email) {
+    Optional<Users> user = userRepository.findByEmail(email);
+    if (!user.isPresent()) {
+      throw new MesageException("Usuario não encontrado");
+    }
+    return user.get();
 
-	}
+  }
 
-	public Users findById(Long id) {
-		Optional<Users> user = userRepository.findById(id);
-		if (!user.isPresent()) {
-			throw new MesageException("Usuario não encontrado");
-		}
-		return user.get();
-	}
+  public Users findByAccessToken(String accessToken) {
+    Optional<Users> user = userRepository.findByAccessToken(accessToken);
+    if (!user.isPresent()) {
+      throw new MesageException("Usuario não encontrado");
+    }
+    return user.get();
+  }
 
-	public List<Users> findAll() {
-		return userRepository.findAll();
-	}
+  public Users findById(Long id) {
+    Optional<Users> user = userRepository.findById(id);
+    if (!user.isPresent()) {
+      throw new MesageException("Usuario não encontrado");
+    }
+    return user.get();
+  }
 
-	public Boolean existsByEmail(String username) {
-		return userRepository.findByEmail(username).isPresent();
-	}
+  public List<Users> findAll() {
+    return userRepository.findAll();
+  }
 
-	// Definir ROLE
-	public Set<Roles> assignRole() {
+  public Boolean existsByEmail(String username) {
+    return userRepository.findByEmail(username).isPresent();
+  }
 
-		Set<Roles> roles = new HashSet<>();
-		Roles user_role = rolesRepository.findByName(ERoles.ROLE_USER)
-				.orElseThrow(() -> new RuntimeException("Erro: Type Roles não encontrado."));
-		roles.add(user_role);
+  // Definir ROLE
+  public Set<Roles> assignRole() {
 
-		return roles;
-	}
+    Set<Roles> roles = new HashSet<>();
+    Roles user_role = rolesRepository.findByName(ERoles.ROLE_USER)
+        .orElseThrow(() -> new RuntimeException("Erro: Type Roles não encontrado."));
+    roles.add(user_role);
 
-	public Users findByJwt(String jwtToken) {
-		String email= jwtUtils.getEmailFromJwtToken(jwtToken);
+    return roles;
+  }
 
-		return findByEmail(email);
-	}
+  public Users findByJwt(String jwtToken) {
+    String email = jwtUtils.getEmailFromJwtToken(jwtToken);
+
+    return findByEmail(email);
+  }
 
 }

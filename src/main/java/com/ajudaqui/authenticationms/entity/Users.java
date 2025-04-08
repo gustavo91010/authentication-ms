@@ -22,11 +22,11 @@ public class Users {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotBlank
+	@NotBlank(message = "Campo email não pode estar vazio")
 	@Size(max = 50)
 	private String email;
 
-	@NotBlank
+	@NotBlank(message = "Campo password não pode estar vazio")
 	@Size(max = 120)
 	private String password;
 	@NotNull
