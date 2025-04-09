@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,15 +34,11 @@ public class AuthController {
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-    try {
-      LoginResponse userAuthenticated = authService.authenticateUser(loginRequest);
+    LoginResponse userAuthenticated = authService.authenticateUser(loginRequest);
 
-      logger.info("[POST] | auth/signin | email: " + loginRequest.getEmail());
-      return ResponseEntity.ok(userAuthenticated);
-    } catch (Exception e) {
-      String msg = "Login / senha incorreto";
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(msg));
-    }
+    logger.info("[POST] | auth/signin | email: " + loginRequest.getEmail());
+    return ResponseEntity.ok(userAuthenticated);
+
   }
 
   @PostMapping("/signup")
@@ -59,7 +56,7 @@ public class AuthController {
     }
   }
 
-  @GetMapping("/token/{token}")
+  @GetMapping("/permission/{token}")
   public ResponseEntity<?> verifyToken(@PathVariable String token) {
     try {
 
@@ -67,6 +64,18 @@ public class AuthController {
       logger.info("[GET] | /auth/token/{}", token);
       boolean isAccess = authService.verifyToken(token);
       return ResponseEntity.ok(new AccessApi(isAccess));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseError(e.getMessage()));
+    }
+  }
+
+  @GetMapping("/test")
+  public ResponseEntity<?> lalal(
+      @RequestParam(value = "lalala") String lalala,
+      @RequestParam(value = "configFile") String configFile) {
+    try {
+
+      return ResponseEntity.ok(new MessageResponse(configFile + " " + lalala));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e.getMessage()));
     }
