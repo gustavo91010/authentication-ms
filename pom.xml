@@ -86,6 +86,14 @@
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-config</artifactId>
     </dependency>
+
+
+      <!-- Para ver visto pelo eureka -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+    </dependency>
+
   </dependencies>
 
   <dependencyManagement>
