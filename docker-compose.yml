@@ -1,29 +1,11 @@
-version: '3.7'
 services:
   authentication-api:
-    image: 'authentication-api:${VERSION}'
+    build: .
     ports:
-      - "${PORT}:8082"
-    build:
-      context: .
-    environment:
-      - TZ=America/Sao_Paulo
-      - spring.datasource.url=${DATABASE_URL}
-      - spring.datasource.username=${DATABASE_USERNAME}
-      - spring.datasource.password=${DATABASE_PASSWORD}
+      - "8181:8181"
+
     container_name: authentication-api
-    restart: no
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
-    networks:
-      - my_network
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://3.95.53.198:8888
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database-2.c3o6kq6w84an.us-east-2.rds.amazonaws.com:5432/authentication_ms
 
-networks:
-  my_network:
-    external: true
-    name: bill-manager-network
-
-# Colouei todos os outros containers que ele precisa nessa rede aqui... 
