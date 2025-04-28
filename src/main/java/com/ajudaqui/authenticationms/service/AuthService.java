@@ -1,8 +1,17 @@
 package com.ajudaqui.authenticationms.service;
 
-import java.nio.channels.Pipe.SourceChannel;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
+import com.ajudaqui.authenticationms.config.security.service.UserDetailsImpl;
+import com.ajudaqui.authenticationms.entity.Users;
+import com.ajudaqui.authenticationms.exception.MessageException;
+import com.ajudaqui.authenticationms.request.LoginRequest;
+import com.ajudaqui.authenticationms.request.UsersRegister;
+import com.ajudaqui.authenticationms.response.LoginResponse;
+import com.ajudaqui.authenticationms.service.sqs.SqsService;
+import com.google.gson.JsonObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,18 +20,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
-import com.ajudaqui.authenticationms.config.security.service.UserDetailsImpl;
-import com.ajudaqui.authenticationms.entity.Users;
-import com.ajudaqui.authenticationms.exception.MesageException;
-import com.ajudaqui.authenticationms.request.LoginRequest;
-import com.ajudaqui.authenticationms.request.UsersRegister;
-import com.ajudaqui.authenticationms.response.LoginResponse;
-
 @Service
 public class AuthService {
+
   @Autowired
   private AuthenticationManager authenticationManager;
+
+  @Autowired
+  private SqsService sqsService;
 
   @Autowired
   private UsersService usersService;
@@ -58,9 +63,27 @@ public class AuthService {
 
     // Verificando se usuario já possue registro
     if (usersService.existsByEmail(usersRegister.getEmail())) {
-      throw new MesageException("Usuário já cadastrado.");
+      throw new MessageException("Usuário já cadastrado.");
     }
-    return usersService.create(usersRegister);
+    Users users = usersService.create(usersRegister);
+    if (users.getId() != null) {
+      messageSqsFactor(users);
+    }
+    return users;
+  }
+
+  private void messageSqsFactor(Users users) {
+    String application = users.getAplication();
+    JsonObject sqsUsers = new JsonObject();
+    sqsUsers.addProperty("access_token", users.getAccess_token());
+    sqsUsers.addProperty("application", application);
+
+    // JSONObject sqsUsers = new JSONObject();
+    // sqsusers.put("access_token", users.getaccess_token());
+    // sqsusers.put("aplication", application);
+    System.out.println("a mensagema qui: " + sqsUsers);
+    sqsService.sendMessage(application, sqsUsers.toString());
+
   }
 
   public boolean verifyToken(String accessToken) {

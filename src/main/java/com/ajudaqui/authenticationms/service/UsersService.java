@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.entity.Roles;
 import com.ajudaqui.authenticationms.entity.Users;
-import com.ajudaqui.authenticationms.exception.MesageException;
+import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.repository.RolesRepository;
 import com.ajudaqui.authenticationms.repository.UsersRepository;
 import com.ajudaqui.authenticationms.request.UsersRegister;
@@ -42,7 +42,7 @@ public class UsersService {
   public Users findByEmail(String email) {
     Optional<Users> user = userRepository.findByEmail(email);
     if (!user.isPresent()) {
-      throw new MesageException("Usuario não encontrado");
+      throw new MessageException("Usuario não encontrado");
     }
     return user.get();
 
@@ -51,7 +51,7 @@ public class UsersService {
   public Users findByAccessToken(String accessToken) {
     Optional<Users> user = userRepository.findByAccessToken(accessToken);
     if (!user.isPresent()) {
-      throw new MesageException("Usuario não encontrado");
+      throw new MessageException("Usuario não encontrado");
     }
     return user.get();
   }
@@ -59,7 +59,7 @@ public class UsersService {
   public Users findById(Long id) {
     Optional<Users> user = userRepository.findById(id);
     if (!user.isPresent()) {
-      throw new MesageException("Usuario não encontrado");
+      throw new MessageException("Usuario não encontrado");
     }
     return user.get();
   }
