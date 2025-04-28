@@ -30,11 +30,8 @@ public class SqsService {
 
   public void sendMessage(String aplpicationName, String messageBody) {
     String applicationFilaName = queueService.getNameFileByApplication(aplpicationName);
+    String queueUrl = queueService.checkinfFile(applicationFilaName);
 
-    applicationFilaName = queueService.checkinfFile(applicationFilaName);
-
-    String queueUrl = String.format("https://sqs.%s.amazonaws.com/%s/%s", region, awsId,
-        applicationFilaName);
     SendMessageRequest request = SendMessageRequest.builder()
         .queueUrl(queueUrl)
         .messageBody(messageBody)

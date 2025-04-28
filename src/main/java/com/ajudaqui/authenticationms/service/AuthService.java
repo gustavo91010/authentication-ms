@@ -78,10 +78,6 @@ public class AuthService {
     sqsUsers.addProperty("access_token", users.getAccess_token());
     sqsUsers.addProperty("application", application);
 
-    // JSONObject sqsUsers = new JSONObject();
-    // sqsusers.put("access_token", users.getaccess_token());
-    // sqsusers.put("aplication", application);
-    System.out.println("a mensagema qui: " + sqsUsers);
     sqsService.sendMessage(application, sqsUsers.toString());
 
   }
