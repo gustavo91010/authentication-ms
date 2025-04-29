@@ -12,6 +12,7 @@ import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.response.LoginResponse;
 import com.ajudaqui.authenticationms.service.sqs.SqsService;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -47,6 +48,7 @@ public class AuthService {
     List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
         .collect(Collectors.toList());
 
+    JsonParser.parseString("uisdhf");
     Users user = usersService.findByEmail(loginRequest.getEmail());
     LoginResponse loginResponse = new LoginResponse();
 
