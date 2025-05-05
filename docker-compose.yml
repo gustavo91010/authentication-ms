@@ -3,9 +3,13 @@ services:
     build: .
     ports:
       - "8181:8181"
-
     container_name: authentication-api
     environment:
       - SPRING_CLOUD_CONFIG_URI=http://3.95.53.198:8888
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database-2.c3o6kq6w84an.us-east-2.rds.amazonaws.com:5432/authentication_ms
+    volumes:
+      - volume_authentication:/data
+
+volumes:
+  volume_authentication:
 
