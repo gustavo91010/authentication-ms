@@ -72,14 +72,15 @@ public class AuthService {
       messageSqsFactor(users);
     }
     return users;
+
   }
 
   private void messageSqsFactor(Users users) {
+
     String application = users.getAplication();
     JsonObject sqsUsers = new JsonObject();
     sqsUsers.addProperty("access_token", users.getAccess_token());
     sqsUsers.addProperty("application", application);
-
     sqsService.sendMessage(application, sqsUsers.toString());
 
   }

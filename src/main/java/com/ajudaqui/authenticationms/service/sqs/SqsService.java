@@ -1,10 +1,5 @@
 package com.ajudaqui.authenticationms.service.sqs;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
-import com.ajudaqui.authenticationms.exception.MessageException;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +15,9 @@ public class SqsService {
   @Value("${aws.region}")
   private String region;
 
+  @Value("${aws.fila.names}")
+  private String applicationNames;
+
   private final SqsClient sqsClient;
   private final QueueService queueService;
 
@@ -29,6 +27,7 @@ public class SqsService {
   }
 
   public void sendMessage(String aplpicationName, String messageBody) {
+
     String applicationFilaName = queueService.getNameFileByApplication(aplpicationName);
     String queueUrl = queueService.checkinfFile(applicationFilaName);
 
@@ -39,5 +38,4 @@ public class SqsService {
 
     sqsClient.sendMessage(request);
   }
-
 }
