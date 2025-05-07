@@ -9,9 +9,9 @@ COPY --from=build /app/target/*.jar /app/myapp.jar
 
 # Criação do arquivo com conteúdo
 RUN mkdir -p /root/.aws && \
-    echo "[vm_007]" > /root/.aws/credentials && \
-    echo "aws_access_key_id = REMOVED" >> /root/.aws/credentials  && \
-    echo "aws_secret_access_key = 3lxxcGB2+21wvLMjBPHCVx3m8AU8BnXLgeP8QD/M" >> /root/.aws/credentials
+    echo "[]" > /root/.aws/credentials && \
+    echo "aws_access_key_id = " >> /root/.aws/credentials  && \
+    echo "aws_secret_access_key = " >> /root/.aws/credentials
 
 ENTRYPOINT ["java", "-jar", "/app/myapp.jar"]
 
