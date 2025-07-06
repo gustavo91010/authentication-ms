@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,11 +44,13 @@ public class AuthController {
 
   @PostMapping("/signup")
   @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MODERATOR')")
-  public ResponseEntity<?> registerUser(@Valid @RequestBody UsersRegister usersRegister) {
-
+  public ResponseEntity<?> registerUser(
+      @RequestHeader("Authorization") String jwtToken,
+      @Valid @RequestBody UsersRegister usersRegister) {
     try {
-      authService.registerUser(usersRegister);
       logger.info(String.format("[POST] | auth/signup | email: " + usersRegister.getEmail()));
+
+      authService.registerUser(usersRegister);
       return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 
     } catch (Exception e) {

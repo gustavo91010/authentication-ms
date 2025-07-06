@@ -47,8 +47,6 @@ public class AuthService {
 
     List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
         .collect(Collectors.toList());
-
-    JsonParser.parseString("uisdhf");
     Users user = usersService.findByEmail(loginRequest.getEmail());
     LoginResponse loginResponse = new LoginResponse();
 

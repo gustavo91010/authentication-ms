@@ -58,9 +58,8 @@ public class QueueService {
     ListQueuesResponse listQueues = sqsClient.listQueues();
     Optional<?> queueUrls = listQueues.getValueForField("QueueUrls", List.class);
 
-    if (queueUrls.isPresent()) {
+    if (queueUrls.isPresent())
       response = (List<String>) queueUrls.get();
-    }
     return response;
   }
 

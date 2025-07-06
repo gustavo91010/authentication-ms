@@ -30,7 +30,6 @@ public class SqsService {
 
     String applicationFilaName = queueService.getNameFileByApplication(aplpicationName);
     String queueUrl = queueService.checkinfFile(applicationFilaName);
-
     SendMessageRequest request = SendMessageRequest.builder()
         .queueUrl(queueUrl)
         .messageBody(messageBody)

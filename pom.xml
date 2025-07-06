@@ -118,20 +118,19 @@
 
   </dependencies>
 
-  <dependencyManagement>
-    <dependencies>
-      <!-- Para ser visto pelo config server -->
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>2020.0.6</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+  <!-- <dependencyManagement> -->
+  <!--   <dependencies> -->
+  <!--     <!-1- Para ser visto pelo config server -1-> -->
+  <!--     <dependency> -->
+  <!--       <groupId>org.springframework.cloud</groupId> -->
+  <!--       <artifactId>spring-cloud-dependencies</artifactId> -->
+  <!--       <version>2020.0.6</version> -->
+  <!--       <type>pom</type> -->
+  <!--       <scope>import</scope> -->
+  <!--     </dependency> -->
+  <!--   </dependencies> -->
+  <!-- </dependencyManagement> -->
 
-
-    </dependencies>
-  </dependencyManagement>
   <build>
     <plugins>
       <plugin>
