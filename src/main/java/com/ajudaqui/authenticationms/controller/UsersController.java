@@ -26,6 +26,18 @@ public class UsersController {
   @Autowired
   private UsersService usersService;
 
+  @GetMapping("/authorization")
+  public ResponseEntity<?> getUsers(@RequestHeader("Authorization") String accessToken) {
+    try {
+
+      logger.info("[GET] | /users/authorization");
+      return ResponseEntity.ok(usersService.findByAccessToken(accessToken));
+    } catch (RuntimeException e) {
+      logger.error(e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));
+    }
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<?> findById(@PathVariable Long id) {
     try {
@@ -43,8 +55,7 @@ public class UsersController {
   public ResponseEntity<?> findByJwt(@RequestHeader("Authorization") String jwtToken) {
     try {
       logger.info("[GET] /users/jwt |");
-      Users users = usersService.findByJwt(jwtToken);
-      return ResponseEntity.ok(users);
+      return ResponseEntity.ok(usersService.findByJwt(jwtToken));
     } catch (RuntimeException e) {
       logger.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));
