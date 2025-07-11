@@ -43,9 +43,7 @@ public class AuthController {
   }
 
   @PostMapping("/signup")
-  @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MODERATOR')")
   public ResponseEntity<?> registerUser(
-      @RequestHeader("Authorization") String jwtToken,
       @Valid @RequestBody UsersRegister usersRegister) {
     try {
       logger.info(String.format("[POST] | auth/signup | email: " + usersRegister.getEmail()));
@@ -63,7 +61,6 @@ public class AuthController {
   public ResponseEntity<?> verifyToken(@PathVariable String token) {
     try {
 
-      // LOGGER.info("[GET] | auth/verify | ");
       logger.info("[GET] | /auth/token/{}", token);
       boolean isAccess = authService.verifyToken(token);
       return ResponseEntity.ok(new AccessApi(isAccess));
@@ -71,17 +68,4 @@ public class AuthController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseError(e.getMessage()));
     }
   }
-
-  @GetMapping("/test")
-  public ResponseEntity<?> lalal(
-      @RequestParam(value = "lalala") String lalala,
-      @RequestParam(value = "configFile") String configFile) {
-    try {
-
-      return ResponseEntity.ok(new MessageResponse(configFile + " " + lalala));
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e.getMessage()));
-    }
-  }
-
 }

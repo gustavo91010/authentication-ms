@@ -31,7 +31,7 @@ public class UsersController {
     try {
       logger.info("[GET] | /users/authorization");
       return ResponseEntity.ok(usersService.findByAccessToken(accessToken));
-    } catch (RuntimeException e) {
+    } catch (Exception e) {
       logger.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));
     }
@@ -44,7 +44,7 @@ public class UsersController {
       logger.info("[GET] | /users/{id}", id);
       Users users = usersService.findById(id);
       return ResponseEntity.ok(users);
-    } catch (RuntimeException e) {
+    } catch (Exception e) {
       logger.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));
     }
@@ -55,7 +55,7 @@ public class UsersController {
     try {
       logger.info("[GET] /users/jwt |");
       return ResponseEntity.ok(usersService.findByJwt(jwtToken));
-    } catch (RuntimeException e) {
+    } catch (Exception e) {
       logger.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));
     }
