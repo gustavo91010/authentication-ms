@@ -22,6 +22,9 @@ public class Users {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@NotBlank(message = "Campo nome não pode estar vazio")
+	@Size(max = 100)
+	private String name;
 	@NotBlank(message = "Campo email não pode estar vazio")
 	@Size(max = 50)
 	private String email;
@@ -42,7 +45,8 @@ public class Users {
 	}
 	
 	
-	public Users(String email, String password, String aplication) {
+	public Users(String name, String email, String password, String aplication) {
+    this.name= name;
 		this.email = email;
 		this.password = password;
 		this.aplication= aplication;
@@ -137,5 +141,15 @@ public class Users {
 				+ ", created_at=" + created_at + ", update_at=" + update_at + ", access_token=" + access_token
 				+ ", aplication=" + aplication + ", roles=" + roles + "]";
 	}
+
+
+  public String getName() {
+    return name;
+  }
+
+
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }

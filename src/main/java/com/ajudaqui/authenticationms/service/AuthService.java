@@ -48,15 +48,10 @@ public class AuthService {
     List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
         .collect(Collectors.toList());
     Users user = usersService.findByEmail(loginRequest.getEmail());
-    LoginResponse loginResponse = new LoginResponse();
+    LoginResponse loginResponse = new LoginResponse(user, roles, jwt);
 
-    loginResponse.setEmail(userDetails.getUsername());
-    loginResponse.setActive(userDetails.getActive());
-    loginResponse.setJwt(jwt);
-    loginResponse.setRoles(roles);
-    loginResponse.setAccess_token(user.getAccess_token());
 
-    return loginResponse;
+    return new LoginResponse(user, roles, jwt);
   }
 
   public Users registerUser(UsersRegister usersRegister) {

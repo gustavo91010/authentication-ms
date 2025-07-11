@@ -29,7 +29,6 @@ public class UsersController {
   @GetMapping("/authorization")
   public ResponseEntity<?> getUsers(@RequestHeader("Authorization") String accessToken) {
     try {
-
       logger.info("[GET] | /users/authorization");
       return ResponseEntity.ok(usersService.findByAccessToken(accessToken));
     } catch (RuntimeException e) {
