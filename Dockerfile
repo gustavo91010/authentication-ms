@@ -8,10 +8,6 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar /app/myapp.jar
 
 # Criação do arquivo com conteúdo
-RUN mkdir -p /root/.aws && \
-    echo "[]" > /root/.aws/credentials && \
-    echo "aws_access_key_id = " >> /root/.aws/credentials  && \
-    echo "aws_secret_access_key = " >> /root/.aws/credentials
 
 ENTRYPOINT ["java", "-jar", "/app/myapp.jar"]
 
