@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +47,7 @@ public class LoginGithubService {
     return URI.create(urlGithub + params + scope);
   }
 
-  public String obterToken(String authorization_code) {
+  private  String obterToken(String authorization_code) {
     String url = "https://github.com/login/oauth/access_token";
 
     Map<String, String> body = new HashMap<>();
@@ -55,14 +56,30 @@ public class LoginGithubService {
     body.put("client_secret", clientSecret);
     body.put("client_secret", clientSecret);
 
-    Arrays.asList("");
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_JSON); // Enviar o conteudo tipo json
     httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON)); // espero receber tipo json
 
     HttpEntity<Map<String, String>> request = new HttpEntity<>(body, httpHeaders);
 
-    return restTemplate.postForEntity(url, request, String.class).getBody();
+    return restTemplate.postForEntity(url, request, Map.class).getBody().get("access_token").toString();
+  }
+
+  public String obterEmail(String authorization_code) {
+    // String url = "https://api.github.com/user"; // Dados da bios do usuário
+    String url = "https://api.github.com/user/emails";
+    String token = obterToken(authorization_code);
+
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.setBearerAuth(token);
+    httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+
+    HttpEntity<Object> httpEntity = new HttpEntity<>(httpHeaders);
+
+    ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+
+
+    return exchange.getBody();
   }
 
 }

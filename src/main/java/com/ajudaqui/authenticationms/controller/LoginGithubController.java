@@ -31,7 +31,7 @@ public class LoginGithubController {
   public ResponseEntity<String> obterToken(@RequestParam String code) {
 
     // eu chamo o de cima.. com a uri que constri, e ele chama esse aqui, me passand os dads de auth do cliente
-    String token = loginGithubService.obterToken(code);
+    String token = loginGithubService.obterEmail(code);
     return ResponseEntity.ok(token);
   }
 }
