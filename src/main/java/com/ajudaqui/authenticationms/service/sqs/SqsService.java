@@ -36,5 +36,6 @@ public class SqsService {
         .build();
 
     sqsClient.sendMessage(request);
+    System.out.println("Mensagem enviada para a fila: " + applicationFilaName);
   }
 }
