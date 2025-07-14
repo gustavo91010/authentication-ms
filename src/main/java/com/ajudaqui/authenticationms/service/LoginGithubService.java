@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ajudaqui.authenticationms.exception.MessageException;
+import com.ajudaqui.authenticationms.request.dto.DataEmailGithub;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -47,7 +50,7 @@ public class LoginGithubService {
     return URI.create(urlGithub + params + scope);
   }
 
-  private  String obterToken(String authorization_code) {
+  private String obterToken(String authorization_code) {
     String url = "https://github.com/login/oauth/access_token";
 
     Map<String, String> body = new HashMap<>();
@@ -76,10 +79,15 @@ public class LoginGithubService {
 
     HttpEntity<Object> httpEntity = new HttpEntity<>(httpHeaders);
 
-    ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+    ResponseEntity<DataEmailGithub[]> exchange = restTemplate.exchange(url, HttpMethod.GET, httpEntity,
+        DataEmailGithub[].class);
 
-
-    return exchange.getBody();
+    return Arrays.asList(exchange.getBody()).stream()
+        .filter(DataEmailGithub::getPrimary)
+        .filter(DataEmailGithub::getVerified)
+        .findFirst()
+        .orElseThrow(() -> new MessageException("Email nao localizado"))
+        .getEmail();
   }
 
 }
