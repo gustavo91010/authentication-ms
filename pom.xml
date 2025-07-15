@@ -116,6 +116,15 @@
     </dependency>
 
 
+    <!--para
+    autenticação em 2 aftires, indicação do alura -->
+
+    <dependency>
+      <groupId>com.atlassian</groupId>
+      <artifactId>onetime</artifactId>
+      <version>2.1.2</version>
+    </dependency>
+
   </dependencies>
 
   <!-- <dependencyManagement> -->

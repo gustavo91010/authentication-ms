@@ -9,8 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
+import com.ajudaqui.authenticationms.config.security.totp.TotpService;
 import com.ajudaqui.authenticationms.entity.Roles;
 import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.exception.MessageException;
@@ -27,7 +29,8 @@ public class UsersService {
   private UsersRepository userRepository;
   @Autowired
   private RolesRepository rolesRepository;
-
+  @Autowired
+  private TotpService totpService;
   @Autowired
   private JwtUtils jwtUtils;
 
@@ -87,6 +90,19 @@ public class UsersService {
     String email = jwtUtils.getEmailFromJwtToken(jwtToken);
 
     return findByEmail(email);
+  }
+
+  @Transactional
+  public String generatedQrCode(String jwtToken) {
+
+    Users users = findByJwt(jwtToken);
+    users.setSecret(totpService.generatedSecret());
+    update(users);
+    return totpService.generatedQrCode(users.getEmail(), users.getSecret());
+  }
+
+  private Users update(Users byJwt) {
+    return userRepository.save(byJwt);
   }
 
 }

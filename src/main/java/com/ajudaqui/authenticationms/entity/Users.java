@@ -18,138 +18,148 @@ import javax.validation.constraints.Size;
 @Entity
 public class Users {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	@NotBlank(message = "Campo nome não pode estar vazio")
-	@Size(max = 100)
-	private String name;
-	@NotBlank(message = "Campo email não pode estar vazio")
-	@Size(max = 50)
-	private String email;
+  @NotBlank(message = "Campo nome não pode estar vazio")
+  @Size(max = 100)
+  private String name;
+  @NotBlank(message = "Campo email não pode estar vazio")
+  @Size(max = 50)
+  private String email;
+  @NotBlank(message = "Campo password não pode estar vazio")
+  @Size(max = 120)
+  private String password;
+  @NotNull
+  private Boolean active;
+  private LocalDateTime created_at;
+  private LocalDateTime update_at;
+  private String access_token;
+  private String aplication;
+  private String secret;
+  private Boolean a2fActive;
 
-	@NotBlank(message = "Campo password não pode estar vazio")
-	@Size(max = 120)
-	private String password;
-	@NotNull
-	private Boolean active;
+  public Users() {
+  }
 
-	private LocalDateTime created_at;
+  public Users(String name, String email, String password, String aplication) {
+    this.name = name;
+    this.email = email;
+    this.password = password;
+    this.aplication = aplication;
+    this.active = true;
+    this.created_at = LocalDateTime.now();
+    this.update_at = LocalDateTime.now();
+    this.secret = UUID.randomUUID().toString();
+    this.a2fActive = false;
+    this.access_token = UUID.randomUUID().toString();
+  }
 
-	private LocalDateTime update_at;
-	private String access_token;
-	private String aplication;
-	public Users() {
-		// TODO Auto-generated constructor stub
-	}
-	
-	
-	public Users(String name, String email, String password, String aplication) {
-    this.name= name;
-		this.email = email;
-		this.password = password;
-		this.aplication= aplication;
-		this.active= true;
-		this.created_at= LocalDateTime.now();
-		this.update_at= LocalDateTime.now();
+  public String getAplication() {
+    return aplication;
+  }
 
-		this.access_token= UUID.randomUUID().toString();
-		
-	}
+  public void setAplication(String aplication) {
+    this.aplication = aplication;
+  }
 
-	public String getAplication() {
-		return aplication;
-	}
+  @ManyToMany(fetch = FetchType.EAGER)
+  private Set<Roles> roles = new HashSet<>();
 
-	public void setAplication(String aplication) {
-		this.aplication = aplication;
-	}
+  public Long getId() {
+    return id;
+  }
 
-	// @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
-	// inverseJoinColumns = @JoinColumn(name = "role_id"))
-	@ManyToMany(fetch = FetchType.EAGER)
-	private Set<Roles> roles = new HashSet<>();
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public Long getId() {
-		return id;
-	}
+  public String getEmail() {
+    return email;
+  }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-	public String getEmail() {
-		return email;
-	}
+  public String getPassword() {
+    return password;
+  }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-	public String getPassword() {
-		return password;
-	}
+  public Set<Roles> getRoles() {
+    return roles;
+  }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+  public void setRoles(Set<Roles> roles) {
+    this.roles = roles;
+  }
 
-	public Set<Roles> getRoles() {
-		return roles;
-	}
+  public Boolean getActive() {
+    return active;
+  }
 
-	public void setRoles(Set<Roles> roles) {
-		this.roles = roles;
-	}
+  public void setActive(Boolean active) {
+    this.active = active;
+  }
 
-	public Boolean getActive() {
-		return active;
-	}
+  public LocalDateTime getCreated_at() {
+    return created_at;
+  }
 
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
+  public void setCreated_at(LocalDateTime created_at) {
+    this.created_at = created_at;
+  }
 
-	public LocalDateTime getCreated_at() {
-		return created_at;
-	}
+  public LocalDateTime getUpdate_at() {
+    return update_at;
+  }
 
-	public void setCreated_at(LocalDateTime created_at) {
-		this.created_at = created_at;
-	}
+  public void setUpdate_at(LocalDateTime update_at) {
+    this.update_at = update_at;
+  }
 
-	public LocalDateTime getUpdate_at() {
-		return update_at;
-	}
+  public String getAccess_token() {
+    return access_token;
+  }
 
-	public void setUpdate_at(LocalDateTime update_at) {
-		this.update_at = update_at;
-	}
+  public void setAccess_token(String access_token) {
+    this.access_token = access_token;
+  }
 
-	public String getAccess_token() {
-		return access_token;
-	}
-
-	public void setAccess_token(String access_token) {
-		this.access_token = access_token;
-	}
-
-	@Override
-	public String toString() {
-		return "Users [id=" + id + ", email=" + email + ", password=" + password + ", active=" + active
-				+ ", created_at=" + created_at + ", update_at=" + update_at + ", access_token=" + access_token
-				+ ", aplication=" + aplication + ", roles=" + roles + "]";
-	}
-
+  @Override
+  public String toString() {
+    return "Users [id=" + id + ", email=" + email + ", password=" + password + ", active=" + active
+        + ", created_at=" + created_at + ", update_at=" + update_at + ", access_token=" + access_token
+        + ", aplication=" + aplication + ", roles=" + roles + "]";
+  }
 
   public String getName() {
     return name;
   }
 
-
   public void setName(String name) {
     this.name = name;
+  }
+
+  public String getSecret() {
+    return secret;
+  }
+
+  public void setSecret(String secret) {
+    this.secret = secret;
+  }
+
+  public Boolean getA2fActive() {
+    return a2fActive;
+  }
+
+  public void setA2fActive(Boolean a2fActive) {
+    this.a2fActive = a2fActive;
   }
 
 }
