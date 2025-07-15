@@ -1,6 +1,5 @@
 package com.ajudaqui.authenticationms.controller;
 
-import com.ajudaqui.authenticationms.service.LoginGithubService;
 import com.ajudaqui.authenticationms.service.LoginGoogleService;
 
 import org.springframework.beans.factory.annotation.Autowired;

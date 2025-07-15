@@ -27,13 +27,13 @@ public class LoginGithubService {
   @Autowired
   private AuthService authService;
   @Value("${oauth.github.client-id}")
-  private String clientId = "";
+  private String clientId;
 
   @Value("${oauth.github.client-secret}")
-  private String clientSecret = "";
+  private String clientSecret;
 
   @Value("${oauth.github.redirect-uri}")
-  private String redirectUri = "";
+  private String redirectUri;
 
   // @Autowired
   private final RestTemplate restTemplate;

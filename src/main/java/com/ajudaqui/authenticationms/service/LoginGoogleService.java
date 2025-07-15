@@ -5,13 +5,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.request.DataUserOAuth2;
-import com.ajudaqui.authenticationms.request.dto.DataEmailGithub;
 import com.ajudaqui.authenticationms.response.LoginResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -27,13 +26,13 @@ public class LoginGoogleService {
   @Autowired
   private AuthService authService;
   @Value("${oauth.google.client-id}")
-  private String clientId = "";
+  private String clientId;
 
   @Value("${oauth.google.client-secret}")
-  private String clientSecret = "";
+  private String clientSecret;
 
   @Value("${oauth.google.redirect-uri}")
-  private String redirectUri = "";
+  private String redirectUri;
 
   private final RestTemplate restTemplate;
 
@@ -56,7 +55,6 @@ public class LoginGoogleService {
     String urlGithub = "https://github.com/login/oauth/authorize";
     String params = "?client_id=" + clientId + "&redirect_uri=" + redirectUri;
     String scope = "&scope=read:user,user:email"; // Quais informações do usuário pegar...
-    System.out.println("params " + params);
     return URI.create(urlGithub + params + scope);
   }
 
