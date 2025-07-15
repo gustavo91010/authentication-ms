@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.ajudaqui.authenticationms.exception.MessageException;
-import com.ajudaqui.authenticationms.request.DataUserGithub;
+import com.ajudaqui.authenticationms.request.DataUserOAuth2;
 import com.ajudaqui.authenticationms.request.dto.DataEmailGithub;
 import com.ajudaqui.authenticationms.response.LoginResponse;
 
@@ -102,13 +102,13 @@ public class LoginGithubService {
 
     HttpEntity<Object> entity = new HttpEntity<>(headers);
 
-    ResponseEntity<DataUserGithub> userResponse = restTemplate.exchange(
+    ResponseEntity<DataUserOAuth2> userResponse = restTemplate.exchange(
         "https://api.github.com/user",
         HttpMethod.GET,
         entity,
-        DataUserGithub.class);
+        DataUserOAuth2.class);
 
-    DataUserGithub user = userResponse.getBody();
+    DataUserOAuth2 user = userResponse.getBody();
 
     String email = user.getEmail();
 

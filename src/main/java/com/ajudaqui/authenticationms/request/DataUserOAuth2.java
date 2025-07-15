@@ -1,6 +1,6 @@
 package com.ajudaqui.authenticationms.request;
 
-public class DataUserGithub {
+public class DataUserOAuth2 {
 
   private String name;
   private String email;
