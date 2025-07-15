@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,11 +20,16 @@ public class LoginGithubController {
   @Autowired
   private LoginGithubService loginGithubService;
 
-  @GetMapping
+  @GetMapping()
   public ResponseEntity<Void> redirecinarGithub() {
     HttpHeaders headers = new HttpHeaders();
-    headers.setLocation(loginGithubService.factorUri());
-
+    headers.setLocation(loginGithubService.authorizedUri());
+    return new ResponseEntity<>(headers, HttpStatus.FOUND); // tem que devolver um code 302
+  }
+  @GetMapping("/user")
+  public ResponseEntity<Void> register() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setLocation(loginGithubService.registerUri());
     return new ResponseEntity<>(headers, HttpStatus.FOUND); // tem que devolver um code 302
   }
 
