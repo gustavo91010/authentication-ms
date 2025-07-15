@@ -12,7 +12,6 @@ import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.response.LoginResponse;
 import com.ajudaqui.authenticationms.service.sqs.SqsService;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,45 +36,47 @@ public class AuthService {
   private JwtUtils jwtUtils;
 
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
-
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
-    String jwt = jwtUtils.generatedJwtToken(authentication);
+    Users user = usersService.findByEmail(loginRequest.getEmail());
+    String jwt = jwtUtils.generatedJwtToken(user);
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
     List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
         .collect(Collectors.toList());
-    Users user = usersService.findByEmail(loginRequest.getEmail());
-    LoginResponse loginResponse = new LoginResponse(user, roles, jwt);
 
+    return new LoginResponse(user, roles, jwt);
+  }
 
+  public LoginResponse authenticateUser(String email) {
+    Users user = usersService.findByEmail(email);
+    String jwt = jwtUtils.generatedJwtToken(user);
+
+    List<String> roles = user.getRoles().stream()
+        .map(role -> "ROLE_" + role.getName())
+        .collect(Collectors.toList());
     return new LoginResponse(user, roles, jwt);
   }
 
   public Users registerUser(UsersRegister usersRegister) {
 
-    // Verificando se usuario já possue registro
-    if (usersService.existsByEmail(usersRegister.getEmail())) {
+    if (usersService.existsByEmail(usersRegister.getEmail()))
       throw new MessageException("Usuário já cadastrado.");
-    }
     Users users = usersService.create(usersRegister);
     if (users.getId() != null) {
       messageSqsFactor(users);
     }
     return users;
-
   }
 
   private void messageSqsFactor(Users users) {
-
     String application = users.getAplication();
     JsonObject sqsUsers = new JsonObject();
     sqsUsers.addProperty("access_token", users.getAccess_token());
     sqsUsers.addProperty("application", application);
     sqsService.sendMessage(application, sqsUsers.toString());
-
   }
 
   public boolean verifyToken(String accessToken) {

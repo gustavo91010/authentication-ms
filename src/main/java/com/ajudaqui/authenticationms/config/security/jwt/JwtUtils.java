@@ -5,14 +5,12 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-import org.hibernate.engine.internal.TwoPhaseLoad;
+import com.ajudaqui.authenticationms.entity.Users;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-
-import com.ajudaqui.authenticationms.config.security.service.UserDetailsImpl;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -30,17 +28,14 @@ public class JwtUtils {
   @Value("${bezkoder.app.jwtExpirationMs}")
   private int jwtExpirationMs;
 
-  public String generatedJwtToken(Authentication authentication) {
-    UserDetailsImpl userDetail = (UserDetailsImpl) authentication.getPrincipal();
+  public String generatedJwtToken(Users users) {
     LocalDateTime issuedAt = LocalDateTime.now(ZoneId.systemDefault());
     Date issuedAtDate = Date.from(issuedAt.atZone(ZoneId.systemDefault()).toInstant());
-
     LocalDateTime expirationDateTime = issuedAt.plus(jwtExpirationMs, ChronoUnit.MILLIS);
     Date expirationDate = Date.from(expirationDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
-    return Jwts.builder().setSubject(userDetail.getUsername()).setIssuedAt(issuedAtDate)
+    return Jwts.builder().setSubject(users.getEmail()).setIssuedAt(issuedAtDate)
         .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
-
   }
 
   public String getEmailFromJwtToken(String token) {
@@ -60,8 +55,6 @@ public class JwtUtils {
     } catch (IllegalArgumentException e) {
       logger.error("JWT claims string is empty: {}", e.getMessage());
     }
-
     return false;
   }
-
 }

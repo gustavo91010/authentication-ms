@@ -3,11 +3,11 @@ package com.ajudaqui.authenticationms.service;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.request.dto.DataEmailGithub;
+import com.ajudaqui.authenticationms.response.LoginResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,15 +17,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import software.amazon.awssdk.services.sqs.endpoints.internal.Value.Str;
 
 @Service
 public class LoginGithubService {
 
+  @Autowired
+  private AuthService authService;
   @Value("${oauth.github.client-id}")
   private String clientId = "";
 
@@ -68,7 +67,7 @@ public class LoginGithubService {
     return restTemplate.postForEntity(url, request, Map.class).getBody().get("access_token").toString();
   }
 
-  public String obterEmail(String authorization_code) {
+  private String obterEmail(String authorization_code) {
     // String url = "https://api.github.com/user"; // Dados da bios do usuário
     String url = "https://api.github.com/user/emails";
     String token = obterToken(authorization_code);
@@ -88,6 +87,10 @@ public class LoginGithubService {
         .findFirst()
         .orElseThrow(() -> new MessageException("Email nao localizado"))
         .getEmail();
+  }
+
+  public LoginResponse authorized(String code) {
+    return authService.authenticateUser(obterEmail(code));
   }
 
 }

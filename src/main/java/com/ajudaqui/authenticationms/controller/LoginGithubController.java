@@ -28,10 +28,10 @@ public class LoginGithubController {
   }
 
   @GetMapping("/autorizado")
-  public ResponseEntity<String> obterToken(@RequestParam String code) {
+  public ResponseEntity<?> authorized(@RequestParam String code) {
 
-    // eu chamo o de cima.. com a uri que constri, e ele chama esse aqui, me passand os dads de auth do cliente
-    String token = loginGithubService.obterEmail(code);
-    return ResponseEntity.ok(token);
+    // eu chamo o de cima.. com a uri que constri, e ele chama esse aqui, me passand
+    // os dads de auth do cliente
+    return ResponseEntity.ok(loginGithubService.authorized(code));
   }
 }
