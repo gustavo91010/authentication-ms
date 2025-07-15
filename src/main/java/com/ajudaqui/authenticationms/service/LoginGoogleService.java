@@ -22,17 +22,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class LoginGithubService {
+public class LoginGoogleService {
 
   @Autowired
   private AuthService authService;
-  @Value("${oauth.github.client-id}")
+  @Value("${oauth.google.client-id}")
   private String clientId = "";
 
-  @Value("${oauth.github.client-secret}")
+  @Value("${oauth.google.client-secret}")
   private String clientSecret = "";
 
-  @Value("${oauth.github.redirect-uri}")
+  4 minutos de video
+  @Value("${oauth.google.redirect-uri}")
   private String redirectUri = "";
 
   // @Autowired
