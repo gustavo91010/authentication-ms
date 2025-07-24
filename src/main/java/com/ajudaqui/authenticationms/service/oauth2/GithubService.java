@@ -3,11 +3,15 @@ package com.ajudaqui.authenticationms.service.oauth2;
 import static java.util.Arrays.asList;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.request.DataUserOAuth2;
 import com.ajudaqui.authenticationms.request.dto.DataEmailGithub;
@@ -20,9 +24,10 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Service
-public class LoginGithubService {
+public class GithubService {
 
   @Autowired
   private AuthService authService;
@@ -38,7 +43,7 @@ public class LoginGithubService {
   // @Autowired
   private final RestTemplate restTemplate;
 
-  public LoginGithubService(RestTemplateBuilder build) {
+  public GithubService(RestTemplateBuilder build) {
     this.restTemplate = build.build();
   }
 
@@ -67,7 +72,16 @@ public class LoginGithubService {
   }
 
   public LoginResponse authorized(String code) {
-    return authService.authenticateUser(getUserData(code).get("email"));
+    LoginResponse hunta = new LoginResponse();
+    Map<String, String> data = getUserData(code);
+    try {
+
+      hunta = authService.authenticateUser(data.get("email"));
+    } catch (Exception e) {
+      lalala(data.get("email"), data.get("name"));
+    }
+
+    return hunta;
   }
 
   private Map<String, String> getUserData(String authorization_code) {
@@ -95,7 +109,7 @@ public class LoginGithubService {
     Map<String, String> result = new HashMap<>();
     result.put("name", user.getName());
     result.put("email", email);
-
+    System.out.println(result);
     return result;
   }
 
@@ -113,4 +127,10 @@ public class LoginGithubService {
   // .orElseThrow(() -> new MessageException("Email não localizado"))
   // .getEmail();
   // }
+
+  public RedirectView lalala(String email, String name) throws UnsupportedEncodingException {
+    return new RedirectView("/login/register/auth2?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8.name())
+        + "&name=" + URLEncoder.encode(name, StandardCharsets.UTF_8.name()));
+
+  }
 }

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Registro Google</title>
+</head>
+<body>
+  <h2>Complete seu cadastro</h2>
+  <form method="POST" action="/register/google">
+    <label>Email:</label><br />
+    <input type="email" name="email" th:value="${email}" readonly /><br />
+
+    <label>Nome:</label><br />
+    <input type="text" name="name" th:value="${name}" required /><br />
+
+    <label>Senha:</label><br />
+    <input type="password" name="password" required /><br />
+
+    <label>Confirmar senha:</label><br />
+    <input type="password" name="confirmPassword" required /><br /><br />
+
+    <button type="submit">Cadastrar</button>
+  </form>
+</body>
+</html>
+

@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class LoginGoogleService {
+public class GoogleService {
 
   @Autowired
   private AuthService authService;
@@ -36,7 +36,7 @@ public class LoginGoogleService {
 
   private final RestTemplate restTemplate;
 
-  public LoginGoogleService(RestTemplateBuilder build) {
+  public GoogleService(RestTemplateBuilder build) {
     this.restTemplate = build.build();
   }
 

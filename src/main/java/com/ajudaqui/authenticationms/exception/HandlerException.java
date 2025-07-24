@@ -1,10 +1,15 @@
 package com.ajudaqui.authenticationms.exception;
 
+import static org.springframework.http.HttpStatus.*;
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.ajudaqui.authenticationms.response.error.ResponseError;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +22,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 @RestControllerAdvice
 public class HandlerException {
+
+  private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getSimpleName());
 
   // Para tratar ausencia de parametros em objetos validado na chamada de enpoints
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -61,4 +68,38 @@ public class HandlerException {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
   }
 
+  // Tratar exception em geral:
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<Object> handleException(Exception exception) {
+    HttpStatus status = determineHttpStatus(exception);
+    infoTrace(exception);
+    return new ResponseEntity<>(new ApiErrorResponse(exception.getMessage(), status.value()), status);
+  }
+
+  private HttpStatus determineHttpStatus(Exception exception) {
+    return EXCEPTION_STATUS.getOrDefault(exception.getClass(), INTERNAL_SERVER_ERROR);
+  }
+
+  private void infoTrace(Exception exception) {
+    StackTraceElement element = exception.getStackTrace()[0];
+    StackTraceElement callElement = exception.getStackTrace()[1];
+
+    logger.error("Exception occurred at: [{}] {}, line: {} with error Details: [{}] {}, line: {} | {}",
+        callElement.getFileName(), callElement.getMethodName(),
+        callElement.getLineNumber(), element.getFileName(), element.getMethodName(),
+        element.getLineNumber(), exception.getMessage());
+  }
+
+  private static final Map<Class<? extends Exception>, HttpStatus> EXCEPTION_STATUS = new HashMap<>();
+  static {
+    // EXCEPTION_STATUS.put(FeignException.class, BAD_GATEWAY);
+    // EXCEPTION_STATUS.put(MsgException.class, BAD_REQUEST);
+    EXCEPTION_STATUS.put(IllegalArgumentException.class, BAD_REQUEST);
+    EXCEPTION_STATUS.put(NullPointerException.class, BAD_REQUEST);
+    EXCEPTION_STATUS.put(IOException.class, INTERNAL_SERVER_ERROR);
+    EXCEPTION_STATUS.put(IndexOutOfBoundsException.class, INTERNAL_SERVER_ERROR);
+    EXCEPTION_STATUS.put(RuntimeException.class, INTERNAL_SERVER_ERROR);
+    EXCEPTION_STATUS.put(Exception.class, INTERNAL_SERVER_ERROR);
+    // EXCEPTION_STATUS.put(NotFoundEntityException.class, NOT_FOUND);
+  }
 }

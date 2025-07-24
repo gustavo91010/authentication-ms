@@ -29,6 +29,9 @@ public class LoginResponse {
     this.access_token = user.getAccess_token();
   }
 
+  public LoginResponse() {
+  }
+
   public String getName() {
     return name;
   }
