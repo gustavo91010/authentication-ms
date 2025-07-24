@@ -52,12 +52,10 @@ public class AuthService {
 
   public LoginResponse authenticateUser(String email) {
     Users user = usersService.findByEmail(email);
-    String jwt = jwtUtils.generatedJwtToken(user);
-
     List<String> roles = user.getRoles().stream()
         .map(role -> "ROLE_" + role.getName())
         .collect(Collectors.toList());
-    return new LoginResponse(user, roles, jwt);
+    return new LoginResponse(user, roles, jwtUtils.generatedJwtToken(user));
   }
 
   public Users registerUser(UsersRegister usersRegister) {

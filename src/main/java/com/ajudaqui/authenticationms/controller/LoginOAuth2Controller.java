@@ -50,18 +50,8 @@ public class LoginOAuth2Controller {
     return new ResponseEntity<>(headers, HttpStatus.FOUND); // tem que devolver um code 302
   }
 
-  @GetMapping("/github/user")
-  public ResponseEntity<Void> register() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setLocation(loginGithubService.registerUri());
-    return new ResponseEntity<>(headers, HttpStatus.FOUND); // tem que devolver um code 302
-  }
-
   @GetMapping("/github/autorizado")
   public ResponseEntity<?> authorized(@RequestParam String code) {
-
-    // eu chamo o de cima.. com a uri que constri, e ele chama esse aqui, me passand
-    // os dads de auth do cliente
     return ResponseEntity.ok(loginGithubService.authorized(code));
   }
 }

@@ -1,5 +1,8 @@
 package com.ajudaqui.authenticationms.service.oauth2;
 
+import static java.util.Arrays.asList;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,16 +46,6 @@ public class LoginGithubService {
     String urlGithub = "https://github.com/login/oauth/authorize";
     String params = "?client_id=" + clientId + "&redirect_uri=" + redirectUri;
     String scope = "&scope=read:user,user:email"; // Quais informações do usuário
-    // pegar...
-    System.out.println("params " + params);
-    return URI.create(urlGithub + params + scope);
-  }
-
-  public URI registerUri() {
-    String urlGithub = "https://github.com/login/oauth/authorize";
-    String params = "?client_id=" + clientId + "&redirect_uri=" + redirectUri;
-    String scope = "&scope=read:user,user:email"; // Quais informações do usuário pegar...
-    System.out.println("params " + params);
     return URI.create(urlGithub + params + scope);
   }
 
@@ -66,28 +59,15 @@ public class LoginGithubService {
     body.put("client_secret", clientSecret);
 
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.setContentType(MediaType.APPLICATION_JSON); // Enviar o conteudo tipo json
-    httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON)); // espero receber tipo json
+    httpHeaders.setContentType(APPLICATION_JSON);
+    httpHeaders.setAccept(asList(APPLICATION_JSON));
 
     HttpEntity<Map<String, String>> request = new HttpEntity<>(body, httpHeaders);
     return restTemplate.postForEntity(url, request, Map.class).getBody().get("access_token").toString();
   }
 
-  private String obterEmail(String authorization_code) {
-    String url = "https://api.github.com/user/emails";
-    String token = getToken(authorization_code);
-
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.setBearerAuth(token);
-    httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-
-    return getEmail(new HttpEntity<>(httpHeaders));
-  }
-
   public LoginResponse authorized(String code) {
-    Map<String, String> obterDadosUsuario = getUserData(code);
-    // return authService.authenticateUser(obterEmail(code));
-    return authService.authenticateUser(obterDadosUsuario.get("email"));
+    return authService.authenticateUser(getUserData(code).get("email"));
   }
 
   private Map<String, String> getUserData(String authorization_code) {
@@ -95,7 +75,7 @@ public class LoginGithubService {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(token);
-    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+    headers.setAccept(asList(APPLICATION_JSON));
 
     HttpEntity<Object> entity = new HttpEntity<>(headers);
 
@@ -109,9 +89,9 @@ public class LoginGithubService {
 
     String email = user.getEmail();
 
-    if (email == null || email.isEmpty()) {
-      email = getEmail(entity);
-    }
+    // if (email == null || email.isEmpty()) {
+    // email = getEmail(entity);
+    // }
     Map<String, String> result = new HashMap<>();
     result.put("name", user.getName());
     result.put("email", email);
@@ -119,18 +99,18 @@ public class LoginGithubService {
     return result;
   }
 
-  private String getEmail(HttpEntity<Object> entity) {
-    ResponseEntity<DataEmailGithub[]> emailsResponse = restTemplate.exchange(
-        "https://api.github.com/user/emails",
-        HttpMethod.GET,
-        entity,
-        DataEmailGithub[].class);
+  // private String getEmail(HttpEntity<Object> entity) {
+  // ResponseEntity<DataEmailGithub[]> emailsResponse = restTemplate.exchange(
+  // "https://api.github.com/user/emails",
+  // HttpMethod.GET,
+  // entity,
+  // DataEmailGithub[].class);
 
-    return Arrays.stream(emailsResponse.getBody())
-        .filter(DataEmailGithub::getPrimary)
-        .filter(DataEmailGithub::getVerified)
-        .findFirst()
-        .orElseThrow(() -> new MessageException("Email não localizado"))
-        .getEmail();
-  }
+  // return Arrays.stream(emailsResponse.getBody())
+  // .filter(DataEmailGithub::getPrimary)
+  // .filter(DataEmailGithub::getVerified)
+  // .findFirst()
+  // .orElseThrow(() -> new MessageException("Email não localizado"))
+  // .getEmail();
+  // }
 }
