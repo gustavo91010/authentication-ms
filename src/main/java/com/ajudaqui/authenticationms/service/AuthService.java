@@ -14,6 +14,7 @@ import com.ajudaqui.authenticationms.service.sqs.SqsService;
 import com.google.gson.JsonObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,17 +24,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-  @Autowired
+  @Value("app.info.enviroment")
+  private String enviriment;
   private AuthenticationManager authenticationManager;
-
-  @Autowired
   private SqsService sqsService;
-
-  @Autowired
   private UsersService usersService;
-
-  @Autowired
   private JwtUtils jwtUtils;
+
+  public AuthService(AuthenticationManager authenticationManager, SqsService sqsService, UsersService usersService,
+      JwtUtils jwtUtils) {
+    this.authenticationManager = authenticationManager;
+    this.sqsService = sqsService;
+    this.usersService = usersService;
+    this.jwtUtils = jwtUtils;
+  }
 
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
     Authentication authentication = authenticationManager.authenticate(
@@ -63,7 +67,7 @@ public class AuthService {
     if (usersService.existsByEmail(usersRegister.getEmail()))
       throw new MessageException("Usuário já cadastrado.");
     Users users = usersService.create(usersRegister);
-    if (users.getId() != null) {
+    if (users.getId() != null && "homol".equals(enviriment)) {
       messageSqsFactor(users);
     }
     return users;
@@ -78,7 +82,6 @@ public class AuthService {
   }
 
   public boolean verifyToken(String accessToken) {
-    Users users = usersService.findByAccessToken(accessToken);
-    return users.getActive();
+    return usersService.findByAccessToken(accessToken).getActive();
   }
 }

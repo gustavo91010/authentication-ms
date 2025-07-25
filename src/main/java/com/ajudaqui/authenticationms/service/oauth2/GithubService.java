@@ -3,28 +3,28 @@ package com.ajudaqui.authenticationms.service.oauth2;
 import static java.util.Arrays.asList;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.request.DataUserOAuth2;
 import com.ajudaqui.authenticationms.request.dto.DataEmailGithub;
 import com.ajudaqui.authenticationms.response.LoginResponse;
 import com.ajudaqui.authenticationms.service.AuthService;
+import com.ajudaqui.authenticationms.service.PageService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.view.RedirectView;
 
 @Service
 public class GithubService {
@@ -39,8 +39,8 @@ public class GithubService {
 
   @Value("${oauth.github.redirect-uri}")
   private String redirectUri;
-
-  // @Autowired
+  @Autowired
+  private PageService pageService;
   private final RestTemplate restTemplate;
 
   public GithubService(RestTemplateBuilder build) {
@@ -71,28 +71,26 @@ public class GithubService {
     return restTemplate.postForEntity(url, request, Map.class).getBody().get("access_token").toString();
   }
 
-  public LoginResponse authorized(String code) {
-    LoginResponse hunta = new LoginResponse();
+  public String authorized(String code, Model model) {
     Map<String, String> data = getUserData(code);
+    String urlRegister = "http://localhost:8082/login/register-auth2";
+    String urlLogin = "redirect:http://localhost:3000/?token=";
+    String application = "bill-manager";
     try {
-
-      hunta = authService.authenticateUser(data.get("email"));
+      LoginResponse login = authService.authenticateUser(data.get("email"));
+      return urlLogin + login.getAccess_token();
     } catch (Exception e) {
-      lalala(data.get("email"), data.get("name"));
+      return pageService.showRegisterForm(application, urlLogin, urlRegister, data.get("email"), data.get("name"),
+          model);
     }
-
-    return hunta;
   }
 
   private Map<String, String> getUserData(String authorization_code) {
-    String token = getToken(authorization_code);
-
     HttpHeaders headers = new HttpHeaders();
-    headers.setBearerAuth(token);
+    headers.setBearerAuth(getToken(authorization_code));
     headers.setAccept(asList(APPLICATION_JSON));
 
     HttpEntity<Object> entity = new HttpEntity<>(headers);
-
     ResponseEntity<DataUserOAuth2> userResponse = restTemplate.exchange(
         "https://api.github.com/user",
         HttpMethod.GET,
@@ -100,37 +98,28 @@ public class GithubService {
         DataUserOAuth2.class);
 
     DataUserOAuth2 user = userResponse.getBody();
-
     String email = user.getEmail();
+    if (email == null || email.isEmpty()) {
+      email = getEmail(entity);
+    }
 
-    // if (email == null || email.isEmpty()) {
-    // email = getEmail(entity);
-    // }
     Map<String, String> result = new HashMap<>();
     result.put("name", user.getName());
     result.put("email", email);
-    System.out.println(result);
     return result;
   }
 
-  // private String getEmail(HttpEntity<Object> entity) {
-  // ResponseEntity<DataEmailGithub[]> emailsResponse = restTemplate.exchange(
-  // "https://api.github.com/user/emails",
-  // HttpMethod.GET,
-  // entity,
-  // DataEmailGithub[].class);
-
-  // return Arrays.stream(emailsResponse.getBody())
-  // .filter(DataEmailGithub::getPrimary)
-  // .filter(DataEmailGithub::getVerified)
-  // .findFirst()
-  // .orElseThrow(() -> new MessageException("Email não localizado"))
-  // .getEmail();
-  // }
-
-  public RedirectView lalala(String email, String name) throws UnsupportedEncodingException {
-    return new RedirectView("/login/register/auth2?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8.name())
-        + "&name=" + URLEncoder.encode(name, StandardCharsets.UTF_8.name()));
-
+  private String getEmail(HttpEntity<Object> entity) {
+    ResponseEntity<DataEmailGithub[]> emailsResponse = restTemplate.exchange(
+        "https://api.github.com/user/emails",
+        HttpMethod.GET,
+        entity,
+        DataEmailGithub[].class);
+    return Arrays.stream(emailsResponse.getBody())
+        .filter(DataEmailGithub::getPrimary)
+        .filter(DataEmailGithub::getVerified)
+        .findFirst()
+        .orElseThrow(() -> new MessageException("Email não localizado"))
+        .getEmail();
   }
 }

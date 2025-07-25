@@ -1,5 +1,9 @@
 package com.ajudaqui.authenticationms.service.sqs;
 
+import com.ajudaqui.authenticationms.config.security.jwt.AuthEntryPointJwt;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +13,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 @Service
 public class SqsService {
 
+  private static final Logger logger = LoggerFactory.getLogger(SqsService.class);
   @Value("${aws.id}")
   private String awsId;
 
@@ -36,6 +41,6 @@ public class SqsService {
         .build();
 
     sqsClient.sendMessage(request);
-    System.out.println("Mensagem enviada para a fila: " + applicationFilaName);
+    logger.info("Mensagem enviada para a fila: {}", applicationFilaName);
   }
 }

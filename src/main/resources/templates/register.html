@@ -1,26 +1,120 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
-  <title>Registro Google</title>
+  <title>Registro [[${appName}]]</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+
+    .form-container h2 {
+      text-align: center;
+    }
+
+    .form-container label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    .form-container input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .form-container input.invalid {
+      border-color: red;
+    }
+
+    .form-container .error-message {
+      color: red;
+      font-size: 0.85em;
+      margin-top: 3px;
+    }
+
+    .form-container button {
+      width: 100%;
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .form-container button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .form-container button:hover:enabled {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
+
 <body>
-  <h2>Complete seu cadastro</h2>
-  <form method="POST" action="/register/google">
-    <label>Email:</label><br />
-    <input type="email" name="email" th:value="${email}" readonly /><br />
+  <div class="form-container">
+    <h2>Complete seu cadastro</h2>
+    <form method="POST" th:action="${urlRegister}">
+      <input type="email" name="email" th:value="${email}" readonly />
+      <label>Nome:</label>
+      <input type="text" name="name" th:value="${name}" required />
 
-    <label>Nome:</label><br />
-    <input type="text" name="name" th:value="${name}" required /><br />
+      <label>Senha:</label>
+      <input type="password" name="password" id="senha" required oninput="verificarSenhas()" />
 
-    <label>Senha:</label><br />
-    <input type="password" name="password" required /><br />
+      <label>Confirmar senha:</label>
+      <input type="password" name="confirmPassword" id="confirmarSenha" required oninput="verificarSenhas()" />
+      <input type="hidden" name="urlLogin" th:value="${urlLogin}" />
+      <input type="hidden" name="appName" th:value="${appName}" />
 
-    <label>Confirmar senha:</label><br />
-    <input type="password" name="confirmPassword" required /><br /><br />
+      <div id="erroSenha" class="error-message" style="display: none;">As senhas não coincidem.</div>
 
-    <button type="submit">Cadastrar</button>
-  </form>
+      <button type="submit" id="btnSubmit" disabled>Cadastrar</button>
+    </form>
+  </div>
+
+  <script>
+    function verificarSenhas() {
+      const senha = document.getElementById("senha");
+      const confirmar = document.getElementById("confirmarSenha");
+      const erro = document.getElementById("erroSenha");
+      const botao = document.getElementById("btnSubmit");
+
+      if (senha.value && confirmar.value && senha.value !== confirmar.value) {
+        senha.classList.add("invalid");
+        confirmar.classList.add("invalid");
+        erro.style.display = "block";
+        botao.disabled = true;
+      } else {
+        senha.classList.remove("invalid");
+        confirmar.classList.remove("invalid");
+        erro.style.display = "none";
+        botao.disabled = !(senha.value && confirmar.value);
+      }
+    }
+  </script>
 </body>
-</html>
 
+</html>

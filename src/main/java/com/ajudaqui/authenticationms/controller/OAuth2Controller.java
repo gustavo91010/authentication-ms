@@ -1,11 +1,15 @@
 package com.ajudaqui.authenticationms.controller;
 
+import com.ajudaqui.authenticationms.entity.Users;
+import com.ajudaqui.authenticationms.request.UsersRegister;
+import com.ajudaqui.authenticationms.service.AuthService;
 import com.ajudaqui.authenticationms.service.oauth2.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.ui.Model;
 // import springfox.documentation.schema.Model;
 
-@RestController
+// @RestController
+@Controller
 @RequestMapping("/login")
 public class OAuth2Controller {
 
   @Autowired
   private GithubService githubService;
+  @Autowired
+  private AuthService authService;
 
   @Autowired
   private GoogleService googleService;
@@ -55,33 +62,29 @@ public class OAuth2Controller {
   }
 
   @GetMapping("/github/autorizado")
-  public ResponseEntity<?> authorized(@RequestParam String code) {
-    return ResponseEntity.ok(githubService.authorized(code));
+  // public ResponseEntity<?> authorized(@RequestParam String code, Model model) {
+  public String authorized(@RequestParam String code, Model model) {
+    // ResponseEntity.ok(githubService.authorized(code, model));
+    return githubService.authorized(code, model);
   }
 
-  // @GetMapping("/register/auth2")
-  // public ResponseEntity<?> showRegisterForm(@RequestParam String email, @RequestParam String name, Model model) {
-  //   model.addAttribute("email", email);
-  //   model.addAttribute("name", name);
-  //   // return "register";
-  //   HttpHeaders headers = new HttpHeaders();
-  //   return new ResponseEntity<>(headers, HttpStatus.FOUND); // tem que devolver um code 302
-  // }
+  @PostMapping("/register-auth2")
+  public String registerByGithub(
+      @RequestParam String email,
+      @RequestParam String name,
+      @RequestParam String password,
+      @RequestParam String confirmPassword,
+      @RequestParam String appName,
+      @RequestParam String urlLogin) {
 
-  // @PostMapping("/register/google")
-  // public ResponseEntity<String> processRegisterGoogleForm(
-  //     @RequestParam String email,
-  //     @RequestParam String name,
-  //     @RequestParam String password,
-  //     @RequestParam String confirmPassword) {
+    UsersRegister usersRegister = new UsersRegister();
+    usersRegister.setName(name);
+    usersRegister.setEmail(email);
 
-  //   if (!password.equals(confirmPassword)) {
-  //     return ResponseEntity.badRequest().body("Senhas não conferem.");
-  //   }
-
-  //   // Aqui, salva o usuário no banco, criptografa a senha etc.
-
-  //   return ResponseEntity.ok("Usuário registrado com sucesso!");
-  // }
-
+    usersRegister.setPassword(password);
+    usersRegister.setAplication(appName);
+    Users response = authService.registerUser(usersRegister);
+    // return "redirect:http://3.229.225.73:3000/?token=" + response.getAccess_token();
+    return urlLogin+ response.getAccess_token();
+  }
 }
