@@ -13,7 +13,6 @@ import com.ajudaqui.authenticationms.response.LoginResponse;
 import com.ajudaqui.authenticationms.service.sqs.SqsService;
 import com.google.gson.JsonObject;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -50,8 +49,7 @@ public class AuthService {
 
     List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
         .collect(Collectors.toList());
-
-    return new LoginResponse(user, roles, jwt);
+return new LoginResponse(user, roles, jwt);
   }
 
   public LoginResponse authenticateUser(String email) {

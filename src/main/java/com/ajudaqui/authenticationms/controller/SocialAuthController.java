@@ -6,23 +6,15 @@ import com.ajudaqui.authenticationms.service.AuthService;
 import com.ajudaqui.authenticationms.service.oauth2.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import org.springframework.ui.Model;
-// import springfox.documentation.schema.Model;
 
-// @RestController
 @Controller
 @RequestMapping("/login")
-public class OAuth2Controller {
+public class SocialAuthController {
 
   @Autowired
   private GithubService githubService;
@@ -36,14 +28,14 @@ public class OAuth2Controller {
   public ResponseEntity<Void> redirecinarGoogle() {
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(googleService.authorizedUri());
-    return new ResponseEntity<>(headers, HttpStatus.FOUND); // tem que devolver um code 302
+    return new ResponseEntity<>(headers, HttpStatus.FOUND);
   }
 
   @GetMapping("/google/user")
   public ResponseEntity<Void> registerGoogle() {
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(googleService.registerUri());
-    return new ResponseEntity<>(headers, HttpStatus.FOUND); // tem que devolver um code 302
+    return new ResponseEntity<>(headers, HttpStatus.FOUND);
   }
 
   @GetMapping("/google/autorizado")
@@ -62,9 +54,7 @@ public class OAuth2Controller {
   }
 
   @GetMapping("/github/autorizado")
-  // public ResponseEntity<?> authorized(@RequestParam String code, Model model) {
   public String authorized(@RequestParam String code, Model model) {
-    // ResponseEntity.ok(githubService.authorized(code, model));
     return githubService.authorized(code, model);
   }
 
@@ -83,8 +73,6 @@ public class OAuth2Controller {
 
     usersRegister.setPassword(password);
     usersRegister.setAplication(appName);
-    Users response = authService.registerUser(usersRegister);
-    // return "redirect:http://3.229.225.73:3000/?token=" + response.getAccess_token();
-    return urlLogin+ response.getAccess_token();
+    return urlLogin + authService.registerUser(usersRegister).getAccess_token();
   }
 }

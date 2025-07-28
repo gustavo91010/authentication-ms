@@ -7,38 +7,31 @@ import javax.validation.constraints.NotBlank;
 import com.ajudaqui.authenticationms.entity.Users;
 
 public class UsersRegister {
-
-
   @NotBlank(message = "Campo nome é obrigatorio")
-	private String name;
+  private String name;
   @NotBlank(message = "Campo email é obrigatorio")
-	private String email;
+  private String email;
   @NotBlank(message = "Campo password é obrigatorio")
-	private String password;
+  private String password;
   @NotBlank(message = "Campo aplication é obrigatorio")
-	private String aplication;
+  private String aplication;
 
-	public Users toDate() {
-		
-		String password = new BCryptPasswordEncoder().encode(this.password);
-		
-		Users user = new Users(this.name, this.email,  password, this.aplication);
-		return user;
-	}
+  public Users toDate() {
+    String password = new BCryptPasswordEncoder().encode(this.password);
+    return new Users(this.name, this.email, password, this.aplication);
+  }
 
-	public String getEmail() {
-		return email;
-	}
+  public String getEmail() {
+    return email;
+  }
 
+  public String getPassword() {
+    return password;
+  }
 
-	public String getPassword() {
-		return password;
-	}
-
-
-	public String getAplication() {
-		return aplication;
-	}
+  public String getAplication() {
+    return aplication;
+  }
 
   public String getName() {
     return name;
@@ -59,6 +52,5 @@ public class UsersRegister {
   public void setAplication(String aplication) {
     this.aplication = aplication;
   }
-
 
 }

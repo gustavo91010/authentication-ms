@@ -1,15 +1,9 @@
 package com.ajudaqui.authenticationms.service;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.config.security.totp.TotpService;
@@ -21,9 +15,12 @@ import com.ajudaqui.authenticationms.repository.UsersRepository;
 import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class UsersService {
-  Logger logger = LoggerFactory.getLogger(UsersService.class);
 
   @Autowired
   private UsersRepository userRepository;
@@ -38,33 +35,28 @@ public class UsersService {
     Users users = usersRegister.toDate();
     users.setRoles(assignRole());
     users.setAplication(usersRegister.getAplication());
-    userRepository.save(users);
-    return users;
+    return save(users);
+  }
+
+  private Users save(Users users) {
+    users.setUpdate_at(LocalDateTime.now());
+    users.setCreated_at(LocalDateTime.now());
+    return userRepository.save(users);
   }
 
   public Users findByEmail(String email) {
-    Optional<Users> user = userRepository.findByEmail(email);
-    if (!user.isPresent()) {
-      throw new MessageException("Usuario não encontrado");
-    }
-    return user.get();
-
+    return userRepository.findByEmail(email)
+        .orElseThrow(() -> new MessageException("Usuario não encontrado"));
   }
 
   public Users findByAccessToken(String accessToken) {
-    Optional<Users> user = userRepository.findByAccessToken(accessToken);
-    if (!user.isPresent()) {
-      throw new MessageException("Usuario não encontrado");
-    }
-    return user.get();
+    return userRepository.findByAccessToken(accessToken)
+        .orElseThrow(() -> new MessageException("Usuario não encontrado"));
   }
 
   public Users findById(Long id) {
-    Optional<Users> user = userRepository.findById(id);
-    if (!user.isPresent()) {
-      throw new MessageException("Usuario não encontrado");
-    }
-    return user.get();
+    return userRepository.findById(id)
+        .orElseThrow(() -> new MessageException("Usuario não encontrado"));
   }
 
   public List<Users> findAll() {
@@ -75,34 +67,28 @@ public class UsersService {
     return userRepository.findByEmail(username).isPresent();
   }
 
-  // Definir ROLE
   public Set<Roles> assignRole() {
-
     Set<Roles> roles = new HashSet<>();
     Roles user_role = rolesRepository.findByName(ERoles.ROLE_USER)
         .orElseThrow(() -> new RuntimeException("Erro: Type Roles não encontrado."));
     roles.add(user_role);
-
     return roles;
   }
 
   public Users findByJwt(String jwtToken) {
-    String email = jwtUtils.getEmailFromJwtToken(jwtToken);
-
-    return findByEmail(email);
+    return findByEmail(jwtUtils.getEmailFromJwtToken(jwtToken));
   }
 
   @Transactional
   public String generatedQrCode(String jwtToken) {
-
     Users users = findByJwt(jwtToken);
     users.setSecret(totpService.generatedSecret());
     update(users);
     return totpService.generatedQrCode(users.getEmail(), users.getSecret());
   }
 
-  private Users update(Users byJwt) {
-    return userRepository.save(byJwt);
+  private Users update(Users users) {
+    users.setUpdate_at(LocalDateTime.now());
+    return save(users);
   }
-
 }

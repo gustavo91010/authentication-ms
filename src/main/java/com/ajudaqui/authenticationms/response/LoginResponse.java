@@ -14,17 +14,11 @@ public class LoginResponse {
   private Boolean active;
   private String access_token;
 
-  // loginResponse.setEmail(userDetails.getUsername());
-  // loginResponse.setActive(userDetails.getActive());
-  // loginResponse.setJwt(jwt);
-  // loginResponse.setRoles(roles);
-  // loginResponse.setAccess_token(user.getAccess_token());
-
-  public LoginResponse(Users user, List<String> roles2, String jwt2) {
+  public LoginResponse(Users user, List<String> roles, String jwt2) {
     this.name = user.getName();
     this.email = user.getEmail();
     this.active = user.getActive();
-    this.roles = roles2;
+    this.roles = roles;
     this.jwt = jwt2;
     this.access_token = user.getAccess_token();
   }
