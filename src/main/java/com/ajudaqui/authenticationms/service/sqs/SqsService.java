@@ -1,7 +1,5 @@
 package com.ajudaqui.authenticationms.service.sqs;
 
-import com.ajudaqui.authenticationms.config.security.jwt.AuthEntryPointJwt;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

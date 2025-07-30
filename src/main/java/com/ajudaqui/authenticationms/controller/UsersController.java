@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.response.error.ResponseError;
 import com.ajudaqui.authenticationms.service.UsersService;
+import com.ajudaqui.authenticationms.service.EmailService;
 
 @RestController
 @RequestMapping("/users")
@@ -21,6 +22,23 @@ public class UsersController {
 
   @Autowired
   private UsersService usersService;
+
+  @Autowired
+  private EmailService emailService;
+
+  @GetMapping("/email")
+  public ResponseEntity<?> lalala(@RequestParam String to,
+      @RequestParam String text,
+      @RequestParam String subject) {
+    try {
+      logger.info("disparo de email");
+      emailService.sendEmail(to, subject, text);
+      return ResponseEntity.ok("emial enviado com sucesso");
+    } catch (Exception e) {
+      logger.error(e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));
+    }
+  }
 
   @GetMapping("/authorization")
   public ResponseEntity<?> getUsers(@RequestHeader("Authorization") String accessToken) {
