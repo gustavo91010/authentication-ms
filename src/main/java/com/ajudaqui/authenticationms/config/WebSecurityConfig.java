@@ -54,17 +54,10 @@ public class WebSecurityConfig {
   @Bean
   public DaoAuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
     authProvider.setUserDetailsService(userDetailsService);
     authProvider.setPasswordEncoder(passwordEncoder());
-
     return authProvider;
   }
-
-  // @Bean
-  // public WebSecurityCustomizer webSecurityCustomizer() {
-  // return (web) -> web.ignoring().antMatchers("/js/**", "/images/**");
-  // }
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -72,17 +65,12 @@ public class WebSecurityConfig {
         .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
         .and()
         .exceptionHandling().accessDeniedHandler(accessDeniedHandler())
-
         .and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests().antMatchers("/**")
         .permitAll().anyRequest().authenticated();
-
     http.authenticationProvider(authenticationProvider());
-
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-
     return http.build();
   }
-
 }

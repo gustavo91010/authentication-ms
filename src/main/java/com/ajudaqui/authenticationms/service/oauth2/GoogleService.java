@@ -9,6 +9,7 @@ import com.ajudaqui.authenticationms.request.DataUserOAuth2;
 import com.ajudaqui.authenticationms.response.LoginResponse;
 import com.ajudaqui.authenticationms.service.AuthService;
 
+import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -47,15 +48,7 @@ public class GoogleService {
     String params = "?client_id=" + clientId + "&redirect_uri=" + redirectUri;
     String scope = "&scope=" + urlApis + urlScope;
     String responseType = "&response_type=code";
-
     return URI.create(urlGithub + params + scope + responseType);
-  }
-
-  public URI registerUri() {
-    String urlGithub = "https://github.com/login/oauth/authorize";
-    String params = "?client_id=" + clientId + "&redirect_uri=" + redirectUri;
-    String scope = "&scope=read:user,user:email"; // Quais informações do usuário pegar...
-    return URI.create(urlGithub + params + scope);
   }
 
   private String getToken(String authorization_code) {
@@ -75,8 +68,9 @@ public class GoogleService {
     return restTemplate.postForEntity(url, request, Map.class).getBody().get("access_token").toString();
   }
 
-  public LoginResponse authorized(String code) {
-    return authService.authenticateUser(getUserData(code).getEmail());
+  public String authorized(String code, Model mode) {
+    DataUserOAuth2 data = getUserData(code);
+    return authService.authOrRegister(data.getEmail(),data.getName(), mode);
   }
 
   private DataUserOAuth2 getUserData(String authorization_code) {

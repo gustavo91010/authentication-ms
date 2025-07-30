@@ -31,26 +31,16 @@ public class SocialAuthController {
     return new ResponseEntity<>(headers, HttpStatus.FOUND);
   }
 
-  @GetMapping("/google/user")
-  public ResponseEntity<Void> registerGoogle() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setLocation(googleService.registerUri());
-    return new ResponseEntity<>(headers, HttpStatus.FOUND);
-  }
-
-  @GetMapping("/google/autorizado")
-  public ResponseEntity<?> authorizedGoohle(@RequestParam String code) {
-
-    // eu chamo o de cima.. com a uri que constri, e ele chama esse aqui, me passand
-    // os dads de auth do cliente
-    return ResponseEntity.ok(googleService.authorized(code));
-  }
-
-  @GetMapping("/github")
+  @GetMapping("/github") // Login ou regitro
   public ResponseEntity<Void> redirecinarGithub() {
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(githubService.authorizedUri());
     return new ResponseEntity<>(headers, HttpStatus.FOUND); // tem que devolver um code 302
+  }
+
+  @GetMapping("/google/autorizado")
+  public String authorizedGoohle(@RequestParam String code, Model model) {
+    return googleService.authorized(code, model);
   }
 
   @GetMapping("/github/autorizado")
@@ -70,7 +60,6 @@ public class SocialAuthController {
     UsersRegister usersRegister = new UsersRegister();
     usersRegister.setName(name);
     usersRegister.setEmail(email);
-
     usersRegister.setPassword(password);
     usersRegister.setAplication(appName);
     return urlLogin + authService.registerUser(usersRegister).getAccess_token();

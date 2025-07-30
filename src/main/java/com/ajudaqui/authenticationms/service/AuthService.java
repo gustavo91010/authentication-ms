@@ -3,6 +3,7 @@ package com.ajudaqui.authenticationms.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.ui.Model;
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.config.security.service.UserDetailsImpl;
 import com.ajudaqui.authenticationms.entity.Users;
@@ -13,6 +14,7 @@ import com.ajudaqui.authenticationms.response.LoginResponse;
 import com.ajudaqui.authenticationms.service.sqs.SqsService;
 import com.google.gson.JsonObject;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +25,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
+  @Autowired
+  private PageService pageService;
   @Value("app.info.enviroment")
   private String enviriment;
   private AuthenticationManager authenticationManager;
@@ -49,7 +53,7 @@ public class AuthService {
 
     List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
         .collect(Collectors.toList());
-return new LoginResponse(user, roles, jwt);
+    return new LoginResponse(user, roles, jwt);
   }
 
   public LoginResponse authenticateUser(String email) {
@@ -60,14 +64,22 @@ return new LoginResponse(user, roles, jwt);
     return new LoginResponse(user, roles, jwtUtils.generatedJwtToken(user));
   }
 
-  public Users registerUser(UsersRegister usersRegister) {
+  public String authOrRegister(String email, String name, Model modal) {
+    String urlRegister = "http://localhost:8082/login/register-auth2";
+    String urlLogin = "redirect:http://localhost:3000/?token=";
+    String application = "bill-manager";
+    if (usersService.existsByEmail(email))
+      return urlLogin + authenticateUser(email).getAccess_token();
+    return pageService.showRegisterForm(application, urlLogin, urlRegister, email, name,
+        modal);
+  }
 
+  public Users registerUser(UsersRegister usersRegister) {
     if (usersService.existsByEmail(usersRegister.getEmail()))
       throw new MessageException("Usuário já cadastrado.");
     Users users = usersService.create(usersRegister);
-    if (users.getId() != null && "homol".equals(enviriment)) {
+    if (users.getId() != null && "homol".equals(enviriment))
       messageSqsFactor(users);
-    }
     return users;
   }
 
