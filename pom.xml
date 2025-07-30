@@ -129,6 +129,12 @@
       <version>2.1.2</version>
     </dependency>
 
+    <!-- Ela ativa endpoints prontos para monitoramento da aplicação, como /actuator/health,
+    /actuator/info -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
   </dependencies>
 
   <!-- <dependencyManagement> -->
