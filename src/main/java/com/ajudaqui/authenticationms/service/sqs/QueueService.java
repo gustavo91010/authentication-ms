@@ -19,7 +19,7 @@ import software.amazon.awssdk.services.sqs.model.CreateQueueRequest;
 import software.amazon.awssdk.services.sqs.model.DeleteQueueRequest;
 import software.amazon.awssdk.services.sqs.model.ListQueuesResponse;
 
-// @Service
+@Service
 public class QueueService {
   @Autowired
   private SqsClient sqsClient;

@@ -4,9 +4,14 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-// @Service
+@Service
 public class EmailService {
+
   private JavaMailSender mailSender;
+
+  public EmailService(JavaMailSender mailSender) {
+    this.mailSender = mailSender;
+  }
 
   public void sendEmail(String to, String subject, String text) {
 
