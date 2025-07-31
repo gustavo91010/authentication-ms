@@ -39,6 +39,7 @@ public class JwtUtils {
   }
 
   public String getEmailFromJwtToken(String token) {
+    token = token.replace("Bearer ", "");
     return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
   }
 

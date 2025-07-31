@@ -1,6 +1,8 @@
 package com.ajudaqui.authenticationms.entity;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Locale;
 
 import javax.persistence.*;
 
@@ -26,6 +28,7 @@ public class Token {
     this.token = token;
     this.userId = userId;
     this.expirationDate = expirationDate;
+    this.createdAt = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"));
   }
 
   public Token() {

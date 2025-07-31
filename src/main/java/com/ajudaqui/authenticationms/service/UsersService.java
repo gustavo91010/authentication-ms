@@ -87,7 +87,7 @@ public class UsersService {
     return totpService.generatedQrCode(users.getEmail(), users.getSecret());
   }
 
-  private Users update(Users users) {
+ public Users update(Users users) {
     users.setUpdate_at(LocalDateTime.now());
     return save(users);
   }

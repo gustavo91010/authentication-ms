@@ -23,28 +23,22 @@ public class UsersController {
   @Autowired
   private UsersService usersService;
 
-  @Autowired
-  private EmailService emailService;
-
-  @GetMapping("/email")
-  public ResponseEntity<?> lalala(@RequestParam String to,
-      @RequestParam String text,
-      @RequestParam String subject) {
+  @GetMapping("/authorization")
+  public ResponseEntity<?> getUsers(@RequestHeader("Authorization") String accessToken) {
     try {
-      logger.info("disparo de email");
-      emailService.sendEmail(to, subject, text);
-      return ResponseEntity.ok("emial enviado com sucesso");
+      logger.info("[GET] | /users/authorization");
+      return ResponseEntity.ok(usersService.findByAccessToken(accessToken));
     } catch (Exception e) {
       logger.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));
     }
   }
 
-  @GetMapping("/authorization")
-  public ResponseEntity<?> getUsers(@RequestHeader("Authorization") String accessToken) {
+  @GetMapping("/email/{email}")
+  public ResponseEntity<?> findById(@PathVariable String email) {
     try {
-      logger.info("[GET] | /users/authorization");
-      return ResponseEntity.ok(usersService.findByAccessToken(accessToken));
+      logger.info("[GET] | /users/email/{email}", email);
+      return ResponseEntity.ok(usersService.findByEmail(email));
     } catch (Exception e) {
       logger.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));

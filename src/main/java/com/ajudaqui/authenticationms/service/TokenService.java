@@ -25,7 +25,7 @@ public class TokenService {
     this.tokenRepository = tokenRepository;
   }
 
-  public String createToken(Long userId) {
+  public  String createToken(Long userId) {
     LocalDateTime expiration = ofInstant(now().plusMillis(360000),
         ZoneId.of("America/Sao_Paulo"));
     Token token = tokenRepository.save(new Token(generateToken(), userId, expiration));

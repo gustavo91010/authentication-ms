@@ -20,6 +20,8 @@ public class EmailService {
     message.setSubject(subject);
     message.setText(text);
     mailSender.send(message);
+    System.out.println("Email enviado para "+to);
+    System.out.println("O tolen foi: "+text);
   }
 
 }

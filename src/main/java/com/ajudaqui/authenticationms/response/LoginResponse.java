@@ -7,6 +7,7 @@ import com.ajudaqui.authenticationms.entity.Users;
 
 public class LoginResponse {
 
+  private Long id;
   private String name;
   private String email;
   private String jwt;
@@ -15,6 +16,7 @@ public class LoginResponse {
   private String access_token;
 
   public LoginResponse(Users user, List<String> roles, String jwt2) {
+    this.id = user.getId();
     this.name = user.getName();
     this.email = user.getEmail();
     this.active = user.getActive();
@@ -72,6 +74,14 @@ public class LoginResponse {
 
   public void setAccess_token(String access_token) {
     this.access_token = access_token;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
 }
