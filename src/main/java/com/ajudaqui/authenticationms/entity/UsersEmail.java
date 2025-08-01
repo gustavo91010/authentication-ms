@@ -28,4 +28,60 @@ public class UsersEmail {
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
+  public UsersEmail(Users user, String email) {
+    this.user = user;
+    this.email = email;
+    this.isVerified = false;
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = LocalDateTime.now();
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public Users getUser() {
+    return user;
+  }
+
+  public void setUser(Users user) {
+    this.user = user;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public Boolean getIsVerified() {
+    return isVerified;
+  }
+
+  public void setIsVerified(Boolean isVerified) {
+    this.isVerified = isVerified;
+  }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public LocalDateTime getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(LocalDateTime updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
 }

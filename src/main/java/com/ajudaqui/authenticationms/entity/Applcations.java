@@ -1,6 +1,8 @@
 package com.ajudaqui.authenticationms.entity;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,6 +12,7 @@ public class Applcations {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(nullable = false, unique = true)
   private String name;
 
   @Column(name = "client_id")
@@ -23,6 +26,16 @@ public class Applcations {
   private LocalDateTime createdAt;
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
+
+  public Applcations( String name) {
+    this.clientId = UUID.randomUUID().toString();
+    this.name = name;
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = LocalDateTime.now();
+  }
+
+  public Applcations() {
+  }
 
   public Long getId() {
     return id;
