@@ -27,68 +27,67 @@ public class UsersService {
   @Autowired
   private RolesRepository rolesRepository;
   @Autowired
-  private TotpService totpService;
-  @Autowired
   private JwtUtils jwtUtils;
 
   public Users create(UsersRegister usersRegister) {
     Users users = usersRegister.toDate();
-    users.setRoles(assignRole());
-    users.setAplication(usersRegister.getAplication());
-    return save(users);
+    // users.setRoles(assignRole());
+    // users.setAplication(usersRegister.getAplication());
+    // return save(users);
+    return null;
   }
 
-  private Users save(Users users) {
-    users.setUpdate_at(LocalDateTime.now());
-    users.setCreated_at(LocalDateTime.now());
-    return userRepository.save(users);
-  }
+  // private Users save(Users users) {
+  //   users.setUpdate_at(LocalDateTime.now());
+  //   users.setCreated_at(LocalDateTime.now());
+  //   return userRepository.save(users);
+  // }
 
-  public Users findByEmail(String email) {
-    return userRepository.findByEmail(email)
-        .orElseThrow(() -> new MessageException("Usuario não encontrado"));
-  }
+  // public Users findByEmail(String email) {
+  //   return userRepository.findByEmail(email)
+  //       .orElseThrow(() -> new MessageException("Usuario não encontrado"));
+  // }
 
-  public Users findByAccessToken(String accessToken) {
-    return userRepository.findByAccessToken(accessToken)
-        .orElseThrow(() -> new MessageException("Usuario não encontrado"));
-  }
+  // public Users findByAccessToken(String accessToken) {
+  //   return userRepository.findByAccessToken(accessToken)
+  //       .orElseThrow(() -> new MessageException("Usuario não encontrado"));
+  // }
 
-  public Users findById(Long id) {
-    return userRepository.findById(id)
-        .orElseThrow(() -> new MessageException("Usuario não encontrado"));
-  }
+  // public Users findById(Long id) {
+  //   return userRepository.findById(id)
+  //       .orElseThrow(() -> new MessageException("Usuario não encontrado"));
+  // }
 
-  public List<Users> findAll() {
-    return userRepository.findAll();
-  }
+  // public List<Users> findAll() {
+  //   return userRepository.findAll();
+  // }
 
-  public Boolean existsByEmail(String username) {
-    return userRepository.findByEmail(username).isPresent();
-  }
+  // public Boolean existsByEmail(String username) {
+  //   return userRepository.findByEmail(username).isPresent();
+  // }
 
-  public Set<Roles> assignRole() {
-    Set<Roles> roles = new HashSet<>();
-    Roles user_role = rolesRepository.findByName(ERoles.ROLE_USER)
-        .orElseThrow(() -> new RuntimeException("Erro: Type Roles não encontrado."));
-    roles.add(user_role);
-    return roles;
-  }
+  // public Set<Roles> assignRole() {
+  //   Set<Roles> roles = new HashSet<>();
+  //   Roles user_role = rolesRepository.findByName(ERoles.ROLE_USER)
+  //       .orElseThrow(() -> new RuntimeException("Erro: Type Roles não encontrado."));
+  //   roles.add(user_role);
+  //   return roles;
+  // }
 
-  public Users findByJwt(String jwtToken) {
-    return findByEmail(jwtUtils.getEmailFromJwtToken(jwtToken));
-  }
+  // public Users findByJwt(String jwtToken) {
+  //   return findByEmail(jwtUtils.getEmailFromJwtToken(jwtToken));
+  // }
 
-  @Transactional
-  public String generatedQrCode(String jwtToken) {
-    Users users = findByJwt(jwtToken);
-    users.setSecret(totpService.generatedSecret());
-    update(users);
-    return totpService.generatedQrCode(users.getEmail(), users.getSecret());
-  }
+  // @Transactional
+  // public String generatedQrCode(String jwtToken) {
+  //   Users users = findByJwt(jwtToken);
+  //   users.setSecret(totpService.generatedSecret());
+  //   update(users);
+  //   return totpService.generatedQrCode(users.getEmail(), users.getSecret());
+  // }
 
- public Users update(Users users) {
-    users.setUpdate_at(LocalDateTime.now());
-    return save(users);
-  }
+ // public Users update(Users users) {
+  //   users.setUpdate_at(LocalDateTime.now());
+  //   return save(users);
+  // }
 }

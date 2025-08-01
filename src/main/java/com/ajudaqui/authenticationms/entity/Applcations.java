@@ -1,33 +1,28 @@
 package com.ajudaqui.authenticationms.entity;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
 import javax.persistence.*;
-import javax.validation.constraints.*;
 
 @Entity
-public class Users {
-
+@Table(name = "applications")
+public class Applcations {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NotBlank(message = "Campo nome não pode estar vazio")
-  @Size(max = 100)
   private String name;
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<UsersEmail> emails;
+  @Column(name = "client_id")
+  private String clientId; // codigo unico da aplicação
 
+  @Column(name = "secret_id")
+  private String secretId;
+  @Column(name = "redirect_url")
+  private String redirectUrl;
   @Column(name = "created_at")
   private LocalDateTime createdAt;
-
-  @Column(name = "update_at")
+  @Column(name = "updated_at")
   private LocalDateTime updatedAt;
-
-  public Users() {
-  }
 
   public Long getId() {
     return id;
@@ -45,6 +40,30 @@ public class Users {
     this.name = name;
   }
 
+  public String getClientId() {
+    return clientId;
+  }
+
+  public void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
+
+  public String getSecretId() {
+    return secretId;
+  }
+
+  public void setSecretId(String secretId) {
+    this.secretId = secretId;
+  }
+
+  public String getRedirectUrl() {
+    return redirectUrl;
+  }
+
+  public void setRedirectUrl(String redirectUrl) {
+    this.redirectUrl = redirectUrl;
+  }
+
   public LocalDateTime getCreatedAt() {
     return createdAt;
   }
@@ -60,5 +79,4 @@ public class Users {
   public void setUpdatedAt(LocalDateTime updatedAt) {
     this.updatedAt = updatedAt;
   }
-
 }

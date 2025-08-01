@@ -20,10 +20,11 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 	
 	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Users user = usersRepository.findByEmail(username)
-				.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+		// Users user = usersRepository.findByEmail(username)
+		// 		.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
-		return UserDetailsImpl.build(user);
+		// return UserDetailsImpl.build(user);
+    return null;
 	}
 
 }

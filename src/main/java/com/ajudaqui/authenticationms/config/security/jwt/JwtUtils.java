@@ -34,8 +34,9 @@ public class JwtUtils {
     LocalDateTime expirationDateTime = issuedAt.plus(jwtExpirationMs, ChronoUnit.MILLIS);
     Date expirationDate = Date.from(expirationDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
-    return Jwts.builder().setSubject(users.getEmail()).setIssuedAt(issuedAtDate)
-        .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+    return null;
+    // return Jwts.builder().setSubject(users.getEmail()).setIssuedAt(issuedAtDate)
+    //     .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
   }
 
   public String getEmailFromJwtToken(String token) {

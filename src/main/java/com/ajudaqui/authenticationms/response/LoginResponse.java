@@ -18,11 +18,11 @@ public class LoginResponse {
   public LoginResponse(Users user, List<String> roles, String jwt2) {
     this.id = user.getId();
     this.name = user.getName();
-    this.email = user.getEmail();
-    this.active = user.getActive();
-    this.roles = roles;
-    this.jwt = jwt2;
-    this.access_token = user.getAccess_token();
+    // this.email = user.getEmail();
+    // this.active = user.getActive();
+    // this.roles = roles;
+    // this.jwt = jwt2;
+    // this.access_token = user.getAccess_token();
   }
 
   public LoginResponse() {

@@ -17,8 +17,9 @@ public class UsersRegister {
   private String aplication;
 
   public Users toDate() {
-    String password = new BCryptPasswordEncoder().encode(this.password);
-    return new Users(this.name, this.email, password, this.aplication);
+    // String password = new BCryptPasswordEncoder().encode(this.password);
+    return null;
+    // return new Users(this.name, this.email, password, this.aplication);
   }
 
   public String getEmail() {
