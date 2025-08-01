@@ -92,8 +92,8 @@ public class AuthService {
       String token = tokenService.createToken(users.getId());
       emailService.sendEmail(users.getEmail(), "Token de confirmação do registro", token);
     }
-    // if (users.getId() != null && ENVIROMENT.equals(enviriment))
-      // messageSqsFactor(users);
+    if (users.getId() != null && ENVIROMENT.equals(enviriment))
+      messageSqsFactor(users);
 
     List<String> roles = users.getRoles().stream()
         .map(role -> "ROLE_" + role.getName())
