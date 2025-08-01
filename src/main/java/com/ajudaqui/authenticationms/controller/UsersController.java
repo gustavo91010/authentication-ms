@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.response.error.ResponseError;
 import com.ajudaqui.authenticationms.service.UsersService;
+import com.ajudaqui.authenticationms.service.EmailService;
 
 @RestController
 @RequestMapping("/users")
@@ -27,6 +28,17 @@ public class UsersController {
     try {
       logger.info("[GET] | /users/authorization");
       return ResponseEntity.ok(usersService.findByAccessToken(accessToken));
+    } catch (Exception e) {
+      logger.error(e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));
+    }
+  }
+
+  @GetMapping("/email/{email}")
+  public ResponseEntity<?> findById(@PathVariable String email) {
+    try {
+      logger.info("[GET] | /users/email/{email}", email);
+      return ResponseEntity.ok(usersService.findByEmail(email));
     } catch (Exception e) {
       logger.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));

@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.ui.Model;
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.config.security.service.UserDetailsImpl;
+import com.ajudaqui.authenticationms.entity.Token;
+import com.ajudaqui.authenticationms.entity.Token;
 import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.request.LoginRequest;
@@ -25,29 +27,37 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
+  final private String ENVIROMENT = "prod";
   @Autowired
   private PageService pageService;
-  @Value("app.info.enviroment")
+  @Value("${app.info.enviroment}")
   private String enviriment;
   private AuthenticationManager authenticationManager;
   private SqsService sqsService;
   private UsersService usersService;
   private JwtUtils jwtUtils;
+  final private EmailService emailService;
+  final private TokenService tokenService;
 
   public AuthService(AuthenticationManager authenticationManager, SqsService sqsService, UsersService usersService,
-      JwtUtils jwtUtils) {
+      JwtUtils jwtUtils, EmailService emailService, TokenService tokenService) {
     this.authenticationManager = authenticationManager;
     this.sqsService = sqsService;
     this.usersService = usersService;
     this.jwtUtils = jwtUtils;
+    this.emailService = emailService;
+    this.tokenService = tokenService;
   }
 
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
+    Users user = usersService.findByEmail(loginRequest.getEmail());
+    if (!user.getActive()) {
+      throw new MessageException("sua conta esta desativada, por favor, procure o patrão...");
+    }
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
-    Users user = usersService.findByEmail(loginRequest.getEmail());
     String jwt = jwtUtils.generatedJwtToken(user);
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
@@ -74,13 +84,32 @@ public class AuthService {
         modal);
   }
 
-  public Users registerUser(UsersRegister usersRegister) {
+  public LoginResponse registerUser(UsersRegister usersRegister) {
     if (usersService.existsByEmail(usersRegister.getEmail()))
       throw new MessageException("Usuário já cadastrado.");
     Users users = usersService.create(usersRegister);
-    if (users.getId() != null && "homol".equals(enviriment))
+    if (!users.getActive() && ENVIROMENT.equals(enviriment)) {
+      String token = tokenService.createToken(users.getId());
+      emailService.sendEmail(users.getEmail(), "Token de confirmação do registro", token);
+    }
+    if (users.getId() != null && ENVIROMENT.equals(enviriment))
       messageSqsFactor(users);
-    return users;
+
+    List<String> roles = users.getRoles().stream()
+        .map(role -> "ROLE_" + role.getName())
+        .collect(Collectors.toList());
+    return new LoginResponse(users, roles, jwtUtils.generatedJwtToken(users));
+  }
+
+  public Boolean confirmByToken(String email, String token) {
+    Token byToken = tokenService.findByToken(token);
+    Users byEmail = usersService.findByEmail(email);
+    if (byToken.getUserId() == byEmail.getId()) {
+      byEmail.setActive(true);
+      usersService.update(byEmail);
+      tokenService.delete(token);
+    }
+    return byEmail.getActive();
   }
 
   private void messageSqsFactor(Users users) {
