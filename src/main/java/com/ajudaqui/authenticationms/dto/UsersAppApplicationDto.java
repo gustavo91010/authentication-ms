@@ -1,25 +1,33 @@
 package com.ajudaqui.authenticationms.dto;
 
 import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.UUID;
 
-import com.ajudaqui.authenticationms.entity.Users;
+import com.ajudaqui.authenticationms.entity.Roles;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
 
 public class UsersAppApplicationDto {
 
   private Long userId;
-  private Long appId;
+  private String appName;
   private String name;
   private String email;
+  private boolean isActive;
+  private UUID accessTokne;
   private LocalDateTime createdAt;
   private LocalDateTime lastLogin;
+  private Set<Roles> roles;
 
-  public UsersAppApplicationDto(UsersAppData usersAppData, String name, String email) {
-    this.userId = usersAppData.getUserId();
-    this.appId = usersAppData.getAppId();
-    this.name = name;
-    this.email = email;
+  public UsersAppApplicationDto(UsersAppData usersAppData) {
+    this.userId = usersAppData.getUsers().getId();
+    this.appName = usersAppData.getApplications().getName();
+    this.name = usersAppData.getUsers().getName();
+    this.email = usersAppData.getUsers().getEmail();
     this.createdAt = usersAppData.getCreatedAt();
+    this.isActive = usersAppData.isActive();
+    this.accessTokne = usersAppData.getAccessToken();
+    this. roles = usersAppData.getRoles();
     if (usersAppData.getLastLogin() != null)
       this.lastLogin = usersAppData.getLastLogin();
   }
@@ -32,12 +40,12 @@ public class UsersAppApplicationDto {
     this.userId = userId;
   }
 
-  public Long getAppId() {
-    return appId;
+  public String getAppName() {
+    return appName;
   }
 
-  public void setAppId(Long appId) {
-    this.appId = appId;
+  public void setAppName(String appName) {
+    this.appName = appName;
   }
 
   public String getName() {
@@ -56,12 +64,20 @@ public class UsersAppApplicationDto {
     this.email = email;
   }
 
-  public LocalDateTime getLastLogin() {
-    return lastLogin;
+  public boolean isActive() {
+    return isActive;
   }
 
-  public void setLastLogin(LocalDateTime lastLogin) {
-    this.lastLogin = lastLogin;
+  public void setActive(boolean isActive) {
+    this.isActive = isActive;
+  }
+
+  public UUID getAccessTokne() {
+    return accessTokne;
+  }
+
+  public void setAccessTokne(UUID accessTokne) {
+    this.accessTokne = accessTokne;
   }
 
   public LocalDateTime getCreatedAt() {
@@ -70,6 +86,22 @@ public class UsersAppApplicationDto {
 
   public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
+  }
+
+  public LocalDateTime getLastLogin() {
+    return lastLogin;
+  }
+
+  public void setLastLogin(LocalDateTime lastLogin) {
+    this.lastLogin = lastLogin;
+  }
+
+  public Set<Roles> getRoles() {
+    return roles;
+  }
+
+  public void setRoles(Set<Roles> roles) {
+    this.roles = roles;
   }
 
 }

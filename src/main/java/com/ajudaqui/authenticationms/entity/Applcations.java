@@ -1,6 +1,8 @@
 package com.ajudaqui.authenticationms.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.*;
@@ -27,7 +29,10 @@ public class Applcations {
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
-  public Applcations( String name) {
+  @OneToMany(mappedBy = "applications")
+  private Set<UsersAppData> usersAppData = new HashSet<>();
+
+  public Applcations(String name) {
     this.clientId = UUID.randomUUID().toString();
     this.name = name;
     this.createdAt = LocalDateTime.now();
@@ -91,5 +96,13 @@ public class Applcations {
 
   public void setUpdatedAt(LocalDateTime updatedAt) {
     this.updatedAt = updatedAt;
+  }
+
+  public Set<UsersAppData> getUsersAppData() {
+    return usersAppData;
+  }
+
+  public void setUsersAppData(Set<UsersAppData> usersAppData) {
+    this.usersAppData = usersAppData;
   }
 }

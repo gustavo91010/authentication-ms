@@ -1,14 +1,18 @@
 package com.ajudaqui.authenticationms.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.ui.Model;
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.config.security.service.UserDetailsImpl;
+import com.ajudaqui.authenticationms.dto.UsersAppApplicationDto;
+import com.ajudaqui.authenticationms.dto.UsersAppApplicationDto;
 import com.ajudaqui.authenticationms.entity.Token;
 import com.ajudaqui.authenticationms.entity.Token;
 import com.ajudaqui.authenticationms.entity.Users;
+import com.ajudaqui.authenticationms.entity.UsersAppData;
 import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.request.LoginRequest;
 import com.ajudaqui.authenticationms.request.UsersRegister;
@@ -33,15 +37,20 @@ public class AuthService {
   @Value("${app.info.enviroment}")
   private String enviriment;
   private AuthenticationManager authenticationManager;
+  private UsersAppDataService usersAppDataService;
+  private EmailService emailService;
   private SqsService sqsService;
   private UsersService usersService;
   private JwtUtils jwtUtils;
   final private TokenService tokenService;
 
   public AuthService(AuthenticationManager authenticationManager, SqsService sqsService, UsersService usersService,
-      JwtUtils jwtUtils,  TokenService tokenService) {
+      JwtUtils jwtUtils, TokenService tokenService, EmailService emailService,
+      UsersAppDataService usersAppDataService) {
     this.authenticationManager = authenticationManager;
     this.sqsService = sqsService;
+    this.usersAppDataService = usersAppDataService;
+    this.emailService = emailService;
     this.usersService = usersService;
     this.jwtUtils = jwtUtils;
     this.tokenService = tokenService;
@@ -70,12 +79,10 @@ public class AuthService {
   }
 
   public LoginResponse authenticateUser(String email) {
-    return null;
-    // Users user = usersService.findByEmail(email);
-    // List<String> roles = user.getRoles().stream()
-    // .map(role -> "ROLE_" + role.getName())
-    // .collect(Collectors.toList());
-    // return new LoginResponse(user, roles, jwtUtils.generatedJwtToken(user));
+    UsersAppData usersApp = usersAppDataService.findByUsersEmail(email)
+        .orElseThrow(() -> new MessageException("Usuário não regisrado"));
+    UsersAppApplicationDto userAppDto = new UsersAppApplicationDto(usersApp);
+    return new LoginResponse(userAppDto, jwtUtils.generatedJwtToken(userAppDto));
   }
 
   public String authOrRegister(String email, String name, Model modal) {
@@ -89,22 +96,16 @@ public class AuthService {
   }
 
   public LoginResponse registerUser(UsersRegister usersRegister) {
-    return null;
-    // if (usersService.existsByEmail(usersRegister.getEmail()))
-    // throw new MessageException("Usuário já cadastrado.");
-    // Users users = usersService.create(usersRegister);
-    // if (!users.getActive() && ENVIROMENT.equals(enviriment)) {
-    // String token = tokenService.createToken(users.getId());
-    // emailService.sendEmail(users.getEmail(), "Token de confirmação do registro",
-    // token);
-    // }
-    // if (users.getId() != null && ENVIROMENT.equals(enviriment))
-    // messageSqsFactor(users);
+    UsersAppApplicationDto users = usersService.create(usersRegister);
+    if (!users.isActive() && ENVIROMENT.equals(enviriment)) {
+      String token = tokenService.createToken(users.getUserId());
+      emailService.sendEmail(users.getEmail(), "Token de confirmação do registro",
+          token);
+    }
+    if (users.getUserId() != null && ENVIROMENT.equals(enviriment))
+      messageSqsFactor(users);
 
-    // List<String> roles = users.getRoles().stream()
-    // .map(role -> "ROLE_" + role.getName())
-    // .collect(Collectors.toList());
-    // return new LoginResponse(users, roles, jwtUtils.generatedJwtToken(users));
+    return new LoginResponse(users, jwtUtils.generatedJwtToken(users));
   }
 
   public Boolean confirmByToken(String email, String token) {
@@ -119,12 +120,12 @@ public class AuthService {
     // return byEmail.getActive();
   }
 
-  private void messageSqsFactor(Users users) {
-    // String application = users.getAplication();
-    // JsonObject sqsUsers = new JsonObject();
-    // sqsUsers.addProperty("access_token", users.getAccess_token());
-    // sqsUsers.addProperty("application", application);
-    // sqsService.sendMessage(application, sqsUsers.toString());
+  private void messageSqsFactor(UsersAppApplicationDto users) {
+    String application = users.getAppName();
+    JsonObject sqsUsers = new JsonObject();
+    sqsUsers.addProperty("access_token", users.getAccessTokne().toString());
+    sqsUsers.addProperty("application", application);
+    sqsService.sendMessage(application, sqsUsers.toString());
   }
 
   public boolean verifyToken(String accessToken) {

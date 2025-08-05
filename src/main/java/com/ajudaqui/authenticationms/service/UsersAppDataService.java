@@ -2,7 +2,6 @@ package com.ajudaqui.authenticationms.service;
 
 import java.util.Optional;
 
-import com.ajudaqui.authenticationms.dto.UsersAppApplicationDto;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
 import com.ajudaqui.authenticationms.exception.NotFoundException;
 import com.ajudaqui.authenticationms.repository.UsersAppDataRepository;

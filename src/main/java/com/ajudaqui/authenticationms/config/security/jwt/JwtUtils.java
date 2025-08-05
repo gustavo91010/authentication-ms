@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
+import com.ajudaqui.authenticationms.dto.UsersAppApplicationDto;
 import com.ajudaqui.authenticationms.entity.Users;
 
 import org.slf4j.Logger;
@@ -28,15 +29,15 @@ public class JwtUtils {
   @Value("${bezkoder.app.jwtExpirationMs}")
   private int jwtExpirationMs;
 
-  public String generatedJwtToken(Users users) {
+  public String generatedJwtToken(UsersAppApplicationDto users) {
     LocalDateTime issuedAt = LocalDateTime.now(ZoneId.systemDefault());
     Date issuedAtDate = Date.from(issuedAt.atZone(ZoneId.systemDefault()).toInstant());
     LocalDateTime expirationDateTime = issuedAt.plus(jwtExpirationMs, ChronoUnit.MILLIS);
     Date expirationDate = Date.from(expirationDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
-    return null;
-    // return Jwts.builder().setSubject(users.getEmail()).setIssuedAt(issuedAtDate)
-    //     .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+    // return null;
+    return Jwts.builder().setSubject(users.getEmail()).setIssuedAt(issuedAtDate)
+        .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
   }
 
   public String getEmailFromJwtToken(String token) {

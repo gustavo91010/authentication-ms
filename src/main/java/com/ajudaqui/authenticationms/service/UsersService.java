@@ -41,9 +41,9 @@ public class UsersService {
         .orElseThrow(() -> new BadRequestException("Email já registrado"));
 
     Users users = save(usersRegister.toUsers());
-    UsersAppData usersAppData = usersRegister.toAppData(users.getId(), application.getId(), assignRole());
+    UsersAppData usersAppData = usersRegister.toAppData(users, application, assignRole());
     UsersAppData userAppDataSaved = appDataService.save(usersAppData);
-    return new UsersAppApplicationDto(userAppDataSaved, users.getName(), users.getEmail());
+    return new UsersAppApplicationDto(userAppDataSaved);
   }
 
   private Users save(Users users) {
@@ -57,6 +57,7 @@ public class UsersService {
         .orElseThrow(() -> new MessageException("Usuario não encontrado"));
   }
 
+  
   public Users findById(Long id) {
     return userRepository.findById(id)
         .orElseThrow(() -> new MessageException("Usuario não encontrado"));

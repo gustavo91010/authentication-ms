@@ -4,9 +4,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.validation.constraints.NotBlank;
 
+import com.ajudaqui.authenticationms.entity.Applcations;
 import com.ajudaqui.authenticationms.entity.Roles;
 import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
@@ -60,12 +62,13 @@ public class UsersRegister {
     return users;
   }
 
-  public UsersAppData toAppData(Long userId,Long appId, Set<Roles> roles) {
+  public UsersAppData toAppData(Users users, Applcations applications, Set<Roles> roles) {
     UsersAppData usersAppData = new UsersAppData();
-    usersAppData.setUserId(userId);
+    usersAppData.setUsers(users);
     usersAppData.setRoles(roles);
+    usersAppData.setAccessToken(UUID.randomUUID()); // TODO se quebrar, sei que é aqui
     usersAppData.setPassword(new BCryptPasswordEncoder().encode(this.password));
-    usersAppData.setAppId(appId);
+    usersAppData.setApplications(applications);
     usersAppData.setCreatedAt(LocalDateTime.now());
     usersAppData.setActive(false);
     return usersAppData;

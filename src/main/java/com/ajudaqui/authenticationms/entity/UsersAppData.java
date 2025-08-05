@@ -3,21 +3,24 @@ package com.ajudaqui.authenticationms.entity;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "user_app_data")
-@IdClass(UserAppDataId.class)
 public class UsersAppData {
 
   @Id
-  @Column(name = "user_id")
-  private Long userId;
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  @JoinColumn(name = "user_id")
+  @ManyToOne // um usuair opode rer maus de um app data
+  private Users users;
 
-  @Id
-  @Column(name = "app_id")
-  private Long appId;
+  @JoinColumn(name = "app_id")
+  @ManyToOne // um usuair opode rer maus de um app data
+  private Applcations applications;
 
   @Column(name = "password", length = 255)
   private String password;
@@ -42,24 +45,12 @@ public class UsersAppData {
 
   @Column(name = "is_active")
   private boolean isActive;
+
+  @Column(name = "access_token")
+  private UUID accessToken;
+
   @ManyToMany(fetch = FetchType.EAGER)
   private Set<Roles> roles = new HashSet<>();
-
-  public Long getUserId() {
-    return userId;
-  }
-
-  public void setUserId(Long userId) {
-    this.userId = userId;
-  }
-
-  public Long getAppId() {
-    return appId;
-  }
-
-  public void setAppId(Long appId) {
-    this.appId = appId;
-  }
 
   public String getPassword() {
     return password;
@@ -131,6 +122,38 @@ public class UsersAppData {
 
   public void setActive(boolean isActive) {
     this.isActive = isActive;
+  }
+
+  public UUID getAccessToken() {
+    return accessToken;
+  }
+
+  public void setAccessToken(UUID accessToken) {
+    this.accessToken = accessToken;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public Users getUsers() {
+    return users;
+  }
+
+  public void setUsers(Users users) {
+    this.users = users;
+  }
+
+  public Applcations getApplications() {
+    return applications;
+  }
+
+  public void setApplications(Applcations applications) {
+    this.applications = applications;
   }
 
 }

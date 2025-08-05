@@ -1,11 +1,18 @@
 package com.ajudaqui.authenticationms.entity;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "users")
@@ -28,6 +35,8 @@ public class Users {
   @NotBlank(message = "Campo email não pode estar vazio")
   @Size(max = 50)
   private String email;
+  @OneToMany(mappedBy = "users")
+  private Set<UsersAppData> usersAppData = new HashSet<>();
 
   public Users() {
   }
@@ -76,6 +85,14 @@ public class Users {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public Set<UsersAppData> getUsersAppData() {
+    return usersAppData;
+  }
+
+  public void setUsersAppData(Set<UsersAppData> usersAppData) {
+    this.usersAppData = usersAppData;
   }
 
 }
