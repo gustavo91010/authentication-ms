@@ -6,8 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.ajudaqui.authenticationms.entity.Users;
+import com.ajudaqui.authenticationms.entity.UsersAppData;
 
 public interface UsersRepository extends JpaRepository<Users, Long> {
+
+    Optional<Users> findByEmail(String email);
 
   // Optional<Users> findByEmail(String email);
 

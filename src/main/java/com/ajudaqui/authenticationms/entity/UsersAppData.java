@@ -11,7 +11,7 @@ import javax.persistence.*;
 @IdClass(UserAppDataId.class)
 public class UsersAppData {
 
-   @Id
+  @Id
   @Column(name = "user_id")
   private Long userId;
 
@@ -25,7 +25,7 @@ public class UsersAppData {
   @Column(name = "auth_provider", length = 50)
   private String authProvider = "email"; // metodo de login por aplicação
 
-  @Column(name = "provider_id", length = 255)// Id retonado pelo provedor, no caso de auth2
+  @Column(name = "provider_id", length = 255) // Id retonado pelo provedor, no caso de auth2
   private String providerId;
 
   @Column(name = "profile_data", columnDefinition = "jsonb")
@@ -40,6 +40,8 @@ public class UsersAppData {
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
+  @Column(name = "is_active")
+  private boolean isActive;
   @ManyToMany(fetch = FetchType.EAGER)
   private Set<Roles> roles = new HashSet<>();
 
@@ -121,6 +123,14 @@ public class UsersAppData {
 
   public void setRoles(Set<Roles> roles) {
     this.roles = roles;
+  }
+
+  public boolean isActive() {
+    return isActive;
+  }
+
+  public void setActive(boolean isActive) {
+    this.isActive = isActive;
   }
 
 }

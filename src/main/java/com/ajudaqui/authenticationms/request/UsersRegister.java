@@ -2,9 +2,14 @@ package com.ajudaqui.authenticationms.request;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.LocalDateTime;
+import java.util.Set;
+
 import javax.validation.constraints.NotBlank;
 
+import com.ajudaqui.authenticationms.entity.Roles;
 import com.ajudaqui.authenticationms.entity.Users;
+import com.ajudaqui.authenticationms.entity.UsersAppData;
 
 public class UsersRegister {
   @NotBlank(message = "Campo nome é obrigatorio")
@@ -48,4 +53,21 @@ public class UsersRegister {
     this.aplication = aplication;
   }
 
+  public Users toUsers() {
+    Users users = new Users();
+    users.setName(this.name);
+    users.setEmail(this.email);
+    return users;
+  }
+
+  public UsersAppData toAppData(Long userId,Long appId, Set<Roles> roles) {
+    UsersAppData usersAppData = new UsersAppData();
+    usersAppData.setUserId(userId);
+    usersAppData.setRoles(roles);
+    usersAppData.setPassword(new BCryptPasswordEncoder().encode(this.password));
+    usersAppData.setAppId(appId);
+    usersAppData.setCreatedAt(LocalDateTime.now());
+    usersAppData.setActive(false);
+    return usersAppData;
+  }
 }

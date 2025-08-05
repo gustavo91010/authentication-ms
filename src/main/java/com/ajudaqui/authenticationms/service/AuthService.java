@@ -36,16 +36,14 @@ public class AuthService {
   private SqsService sqsService;
   private UsersService usersService;
   private JwtUtils jwtUtils;
-  final private EmailService emailService;
   final private TokenService tokenService;
 
   public AuthService(AuthenticationManager authenticationManager, SqsService sqsService, UsersService usersService,
-      JwtUtils jwtUtils, EmailService emailService, TokenService tokenService) {
+      JwtUtils jwtUtils,  TokenService tokenService) {
     this.authenticationManager = authenticationManager;
     this.sqsService = sqsService;
     this.usersService = usersService;
     this.jwtUtils = jwtUtils;
-    this.emailService = emailService;
     this.tokenService = tokenService;
   }
 

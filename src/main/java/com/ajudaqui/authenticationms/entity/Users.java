@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 
 @Entity
+@Table(name = "users")
 public class Users {
 
   @Id
@@ -18,14 +19,15 @@ public class Users {
   @Size(max = 100)
   private String name;
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<UsersEmail> emails;
-
   @Column(name = "created_at")
   private LocalDateTime createdAt;
 
   @Column(name = "update_at")
   private LocalDateTime updatedAt;
+
+  @NotBlank(message = "Campo email não pode estar vazio")
+  @Size(max = 50)
+  private String email;
 
   public Users() {
   }
@@ -66,6 +68,14 @@ public class Users {
 
   public void setUpdatedAt(LocalDateTime updatedAt) {
     this.updatedAt = updatedAt;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
   }
 
 }
