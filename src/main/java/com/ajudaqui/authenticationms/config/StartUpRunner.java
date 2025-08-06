@@ -2,7 +2,13 @@ package com.ajudaqui.authenticationms.config;
 
 import com.ajudaqui.authenticationms.entity.Applcations;
 import com.ajudaqui.authenticationms.entity.Users;
+import com.ajudaqui.authenticationms.entity.UsersAppData;
+
+import com.ajudaqui.authenticationms.entity.UsersAppData;
+
 import java.util.List;
+import java.util.Optional;
+import java.util.Optional;
 
 import com.ajudaqui.authenticationms.entity.Users;
 import java.util.List;
@@ -42,22 +48,34 @@ public class StartUpRunner implements CommandLineRunner {
     System.out.println("Quantos temos ma base? " + all.size());
 
     for (Users users : all) {
-      if (!usersAppDataService.findByUsersEmail(users.getEmail()).isPresent()) {
-        System.out.println("entrou o email: " + users.getEmail());
-        UsersRegister register = new UsersRegister();
-        register.setName(users.getName());
-        if (users.getName() == null || users.getName().isEmpty())
-          register.setName(users.getEmail());
-        register.setEmail(users.getEmail());
-        register.setPassword("123456");
-        register.setAplication(app.getName());
-        authService.registerUser(register);
-        Users userSave = usersServices.findByEmail(register.getEmail());
-        userSave.setPassword(users.getPassword());
+      try {
 
-        usersServices.update(userSave);
+        if (!usersAppDataService.findByUsersEmail(users.getEmail()).isPresent()) {
+          System.out.println("Tratando o email: " + users.getEmail());
+          UsersRegister register = new UsersRegister();
+
+          String name = users.getEmail().replaceAll("@.*", "");
+          System.out.println("nome "+name);
+          register.setName(name);
+          register.setEmail(users.getEmail());
+          register.setPassword("123456");
+          register.setAplication(app.getName());
+          authService.registerUser(register);
+        }
+        usersAppDataService.findByUsersEmail(users.getEmail())
+            .ifPresent(u -> {
+
+              u.setPassword(users.getPassword());
+              usersAppDataService.save(u);
+            });
+
+      } catch (Exception e) {
+        e.printStackTrace();
       }
+
     }
+    System.out.println("✅ Finalizou StartUpRunner.");
+
   }
 
 }

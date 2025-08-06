@@ -5,7 +5,6 @@ CREATE TABLE user_app_data (
   password VARCHAR(255),
   auth_provider VARCHAR(50) DEFAULT 'email',
   provider_id VARCHAR(255),
-  profile_data JSONB DEFAULT '{}'::jsonb,
   last_login TIMESTAMP,
   created_at TIMESTAMP,
   updated_at TIMESTAMP,

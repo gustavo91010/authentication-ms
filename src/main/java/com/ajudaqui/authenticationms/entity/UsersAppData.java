@@ -31,9 +31,6 @@ public class UsersAppData {
   @Column(name = "provider_id", length = 255) // Id retonado pelo provedor, no caso de auth2
   private String providerId;
 
-  @Column(name = "profile_data", columnDefinition = "jsonb")
-  private String profileData;
-
   @Column(name = "last_login")
   private LocalDateTime lastLogin;
 
@@ -50,6 +47,7 @@ public class UsersAppData {
   private UUID accessToken;
 
   @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "user_app_data_roles", joinColumns = @JoinColumn(name = "user_app_data_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
   private Set<Roles> roles = new HashSet<>();
 
   public String getPassword() {
@@ -74,14 +72,6 @@ public class UsersAppData {
 
   public void setProviderId(String providerId) {
     this.providerId = providerId;
-  }
-
-  public String getProfileData() {
-    return profileData;
-  }
-
-  public void setProfileData(String profileData) {
-    this.profileData = profileData;
   }
 
   public LocalDateTime getLastLogin() {

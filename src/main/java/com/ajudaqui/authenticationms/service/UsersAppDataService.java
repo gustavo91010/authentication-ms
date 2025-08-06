@@ -30,7 +30,6 @@ public class UsersAppDataService {
   }
 
   public UsersAppData save(UsersAppData usersAppData) {
-    usersAppData.setProfileData("{\"\": \"\"}");
 
     return repository.save(usersAppData);
   }

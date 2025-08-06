@@ -35,15 +35,20 @@ public class UsersService {
     this.applicationsService = applicationsService;
   }
 
-  public UsersAppApplicationDto create(UsersRegister usersRegister) {
+  public UsersAppApplicationDto create(UsersRegister usersRegister, boolean isInternal) {
     Applcations application = applicationsService.findByName(usersRegister.getAplication());
-    Users users = save(usersRegister.toUsers());
+    // Users users = save(usersRegister.toUsers());
+    Users users = userRepository.findByEmail(usersRegister.getEmail())
+        .orElseGet(() -> save(usersRegister.toUsers(isInternal)));
+    System.out.println("user name " + users.getName());
     UsersAppData usersAppData = appDataService.findByUsersEmail(usersRegister.getEmail())
-        .orElseGet(() -> usersRegister.toAppData(users, application, assignRole()));
+        .orElseGet(() -> usersRegister.toAppData(users, isInternal, application, assignRole()));
+    if (usersAppData.getApplications().getName() == null || usersAppData.getApplications().getName() == null) {
+      throw new MessageException("sem o aplicatuion name nm da né...");
+    }
 
-    // UsersAppData usersAppData = usersRegister.toAppData(users, application,
-    // assignRole());
     UsersAppData userAppDataSaved = appDataService.save(usersAppData);
+    System.out.println("usersAppData "+userAppDataSaved.getUsers().getName());
     return new UsersAppApplicationDto(userAppDataSaved);
   }
 

@@ -53,7 +53,6 @@ public class AuthService {
         .orElseThrow(() -> new MessageException("Usuário não localizado"));
     if (!user.isActive())
       throw new MessageException("sua conta esta desativada, por favor, entre em contato...");
-
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
             loginRequest.getPassword()));
@@ -82,15 +81,15 @@ public class AuthService {
   }
 
   public LoginResponse registerUser(UsersRegister usersRegister) {
-    UsersAppApplicationDto users = usersService.create(usersRegister);
-    if (!users.isActive() && ENVIROMENT.equals(enviriment)) {
+    boolean isInternal = !ENVIROMENT.equals(enviriment);
+    UsersAppApplicationDto users = usersService.create(usersRegister, isInternal);
+    if (!isInternal) {
       String token = tokenService.createToken(users.getUserId());
       emailService.sendEmail(users.getEmail(), "Token de confirmação do registro",
           token);
     }
-    // TODO só libera isso depois de ter corrigido os regsitros em producao
-    // if (users.getUserId() != null && ENVIROMENT.equals(enviriment))
-    //   messageSqsFactor(users);
+    if (users.getUserId() != null && ENVIROMENT.equals(enviriment))
+      messageSqsFactor(users);
 
     return new LoginResponse(users, jwtUtils.generatedJwtToken(users));
   }

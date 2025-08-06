@@ -31,9 +31,9 @@ public class LoginResponse {
 
   private List<String> rolesToList(Set<Roles> roles) {
     return roles.stream()
-        .map(role -> "ROLE_" + role.getName())
+        // .map(role -> "ROLE_" + role.getName())
+        .map(role -> role.getName().name())
         .collect(Collectors.toList());
-
   }
 
   public LoginResponse() {

@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.ajudaqui.authenticationms.entity.Users;
+import com.ajudaqui.authenticationms.entity.UsersAppData;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class UserDetailsImpl implements UserDetails {
@@ -36,15 +37,13 @@ public class UserDetailsImpl implements UserDetails {
     this.active = active;
   }
 
-  public static UserDetailsImpl build(Users users) {
+  public static UserDetailsImpl build(UsersAppData users) {
 
-    // List<GrantedAuthority> authorites = users.getRoles().stream()
-    // .map(role -> new
-    // SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
+    List<GrantedAuthority> authorites = users.getRoles().stream()
+        .map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
 
-    // return new UserDetailsImpl(users.getId(), users.getEmail(),
-    // users.getPassword(), users.getActive(), authorites);
-    return null;
+    return new UserDetailsImpl(users.getId(), users.getUsers().getEmail(),
+        users.getPassword(), users.isActive(), authorites);
   }
 
   public Long getId() {

@@ -55,15 +55,15 @@ public class UsersRegister {
     this.aplication = aplication;
   }
 
-  public Users toUsers() {
+  public Users toUsers(boolean isInternal) {
     Users users = new Users();
     users.setName(this.name);
     users.setEmail(this.email);
-    users.setActive(false);
+    users.setActive(isInternal);
     return users;
   }
 
-  public UsersAppData toAppData(Users users, Applcations applications, Set<Roles> roles) {
+  public UsersAppData toAppData(Users users,boolean isInternal, Applcations applications, Set<Roles> roles) {
     UsersAppData usersAppData = new UsersAppData();
     usersAppData.setUsers(users);
     usersAppData.setRoles(roles);
@@ -71,7 +71,7 @@ public class UsersRegister {
     usersAppData.setPassword(new BCryptPasswordEncoder().encode(this.password));
     usersAppData.setApplications(applications);
     usersAppData.setCreatedAt(LocalDateTime.now());
-    usersAppData.setActive(false);
+    usersAppData.setActive(isInternal);
     return usersAppData;
   }
 }
