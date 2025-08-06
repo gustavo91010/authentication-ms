@@ -20,7 +20,7 @@ public class Applcations {
   @Column(name = "client_id")
   private String clientId; // codigo unico da aplicação
 
-  @Column(name = "secret_id")
+  @Column(name = "secret_key")
   private String secretId;
   @Column(name = "redirect_url")
   private String redirectUrl;
@@ -34,6 +34,7 @@ public class Applcations {
 
   public Applcations(String name) {
     this.clientId = UUID.randomUUID().toString();
+    this.secretId = UUID.randomUUID().toString();
     this.name = name;
     this.createdAt = LocalDateTime.now();
     this.updatedAt = LocalDateTime.now();

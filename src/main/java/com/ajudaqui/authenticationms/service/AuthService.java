@@ -88,8 +88,9 @@ public class AuthService {
       emailService.sendEmail(users.getEmail(), "Token de confirmação do registro",
           token);
     }
-    if (users.getUserId() != null && ENVIROMENT.equals(enviriment))
-      messageSqsFactor(users);
+    // TODO só libera isso depois de ter corrigido os regsitros em producao
+    // if (users.getUserId() != null && ENVIROMENT.equals(enviriment))
+    //   messageSqsFactor(users);
 
     return new LoginResponse(users, jwtUtils.generatedJwtToken(users));
   }

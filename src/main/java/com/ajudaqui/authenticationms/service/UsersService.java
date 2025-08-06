@@ -37,11 +37,12 @@ public class UsersService {
 
   public UsersAppApplicationDto create(UsersRegister usersRegister) {
     Applcations application = applicationsService.findByName(usersRegister.getAplication());
-    appDataService.findByUsersEmail(usersRegister.getEmail())
-        .orElseThrow(() -> new BadRequestException("Email já registrado"));
-
     Users users = save(usersRegister.toUsers());
-    UsersAppData usersAppData = usersRegister.toAppData(users, application, assignRole());
+    UsersAppData usersAppData = appDataService.findByUsersEmail(usersRegister.getEmail())
+        .orElseGet(() -> usersRegister.toAppData(users, application, assignRole()));
+
+    // UsersAppData usersAppData = usersRegister.toAppData(users, application,
+    // assignRole());
     UsersAppData userAppDataSaved = appDataService.save(usersAppData);
     return new UsersAppApplicationDto(userAppDataSaved);
   }
@@ -49,6 +50,7 @@ public class UsersService {
   private Users save(Users users) {
     users.setUpdatedAt(LocalDateTime.now());
     users.setCreatedAt(LocalDateTime.now());
+
     return userRepository.save(users);
   }
 
@@ -57,7 +59,6 @@ public class UsersService {
         .orElseThrow(() -> new MessageException("Usuario não encontrado"));
   }
 
-  
   public Users findById(Long id) {
     return userRepository.findById(id)
         .orElseThrow(() -> new MessageException("Usuario não encontrado"));

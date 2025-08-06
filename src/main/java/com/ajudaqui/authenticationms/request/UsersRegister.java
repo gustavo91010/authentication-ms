@@ -59,6 +59,7 @@ public class UsersRegister {
     Users users = new Users();
     users.setName(this.name);
     users.setEmail(this.email);
+    users.setActive(false);
     return users;
   }
 

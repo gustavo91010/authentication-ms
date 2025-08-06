@@ -12,19 +12,17 @@ import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.repository.UsersRepository;
 
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService{
-	
-	@Autowired
-	private UsersRepository usersRepository;
-	
-	
-	@Transactional
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		// Users user = usersRepository.findByEmail(username)
-		// 		.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+public class UserDetailsServiceImpl implements UserDetailsService {
 
-		// return UserDetailsImpl.build(user);
-    return null;
-	}
+  @Autowired
+  private UsersRepository usersRepository;
+
+  @Transactional
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    Users user = usersRepository.findByEmail(username)
+        .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+
+    return UserDetailsImpl.build(user);
+  }
 
 }
