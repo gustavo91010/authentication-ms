@@ -6,10 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.ajudaqui.authenticationms.request.DataUserOAuth2;
-import com.ajudaqui.authenticationms.response.LoginResponse;
 import com.ajudaqui.authenticationms.service.AuthService;
 
-import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -19,6 +17,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.client.RestTemplate;
 
 @Service

@@ -37,7 +37,9 @@ public class JwtUtils {
 
     // return null;
     return Jwts.builder().setSubject(users.getEmail()).setIssuedAt(issuedAtDate)
-        .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+        .setExpiration(expirationDate)
+        .claim("access_token", users.getAccessTokne())
+        .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
   }
 
   public String getEmailFromJwtToken(String token) {

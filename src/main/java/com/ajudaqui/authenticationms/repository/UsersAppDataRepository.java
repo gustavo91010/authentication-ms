@@ -16,6 +16,9 @@ public interface UsersAppDataRepository extends JpaRepository<UsersAppData, Long
   @Query(value = "SELECT * FROM user_app_data WHERE user_id=:usersId", nativeQuery = true)
   Optional<UsersAppData> findByUsersId(Long usersId);
 
+  @Query(value = "SELECT * FROM user_app_data WHERE access_token=:accessToken", nativeQuery = true)
+  Optional<UsersAppData> findByAccessToken(String accessToken);
+
   // Optional<UsersAppData> findByUsersId(Long usersId);
 
 }
