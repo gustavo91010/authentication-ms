@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
-import com.ajudaqui.authenticationms.dto.UsersAppApplicationDto;
 import com.ajudaqui.authenticationms.entity.*;
-import com.ajudaqui.authenticationms.exception.BadRequestException;
 import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.repository.RolesRepository;
 import com.ajudaqui.authenticationms.repository.UsersRepository;
@@ -36,7 +34,7 @@ public class UsersService {
   }
 
   public UsersAppData create(UsersRegister usersRegister, boolean isInternal) {
-    Applcations application = applicationsService.findByName(usersRegister.getAplication());
+    Applications application = applicationsService.findByName(usersRegister.getAplication());
     // Users users = save(usersRegister.toUsers());
     Users users = userRepository.findByEmail(usersRegister.getEmail())
         .orElseGet(() -> save(usersRegister.toUsers(isInternal)));

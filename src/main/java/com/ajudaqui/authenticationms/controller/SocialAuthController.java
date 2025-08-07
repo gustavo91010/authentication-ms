@@ -1,6 +1,5 @@
 package com.ajudaqui.authenticationms.controller;
 
-import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.service.AuthService;
 import com.ajudaqui.authenticationms.service.oauth2.*;

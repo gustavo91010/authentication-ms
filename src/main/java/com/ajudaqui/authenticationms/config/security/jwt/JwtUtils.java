@@ -5,10 +5,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-import com.ajudaqui.authenticationms.dto.UsersAppApplicationDto;
-import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
-import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.service.ApplicationsService;
 
 import org.slf4j.Logger;
@@ -17,12 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 
 @Component
 public class JwtUtils {
@@ -38,12 +30,10 @@ public class JwtUtils {
     Date issuedAtDate = Date.from(issuedAt.atZone(ZoneId.systemDefault()).toInstant());
     LocalDateTime expirationDateTime = issuedAt.plus(jwtExpirationMs, ChronoUnit.MILLIS);
     Date expirationDate = Date.from(expirationDateTime.atZone(ZoneId.systemDefault()).toInstant());
-    System.out.println("clientId: " + usersApp.getApplications().getClientId());
-    System.out.println("secretId usada na assinatura: " + usersApp.getApplications().getSecretId());
     // return null;
     return Jwts.builder().setSubject(usersApp.getUsers().getEmail()).setIssuedAt(issuedAtDate)
         .setExpiration(expirationDate)
-        .claim("clientId", usersApp.getApplications().getClientId())
+        .claim("client_id", usersApp.getApplications().getClientId())
         .claim("access_token", usersApp.getAccessToken())
         .signWith(SignatureAlgorithm.HS512, usersApp.getApplications().getSecretId()).compact();
 
@@ -51,9 +41,8 @@ public class JwtUtils {
 
   public String getEmailFromJwtToken(String token) {
     token = token.replace("Bearer ", "");
-    String clientId = getClaims(token, "clientId");
+    String clientId = getClaims(token, "client_id");
     String jwtSecret = apppaApplicationsService.getByClientId(clientId).getSecretId();
-    System.out.println("secret " + jwtSecret);
 
     if (!validateJwtToken(token, jwtSecret))
       throw new RuntimeException("Token inválido");

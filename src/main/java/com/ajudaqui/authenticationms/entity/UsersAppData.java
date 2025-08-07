@@ -20,7 +20,7 @@ public class UsersAppData {
 
   @JoinColumn(name = "app_id")
   @ManyToOne // um usuair opode rer maus de um app data
-  private Applcations applications;
+  private Applications applications;
 
   @Column(name = "password", length = 255)
   private String password;
@@ -138,11 +138,11 @@ public class UsersAppData {
     this.users = users;
   }
 
-  public Applcations getApplications() {
+  public Applications getApplications() {
     return applications;
   }
 
-  public void setApplications(Applcations applications) {
+  public void setApplications(Applications applications) {
     this.applications = applications;
   }
 

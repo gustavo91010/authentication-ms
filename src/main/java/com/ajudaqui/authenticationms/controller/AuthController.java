@@ -2,7 +2,6 @@ package com.ajudaqui.authenticationms.controller;
 
 import javax.validation.Valid;
 
-import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.request.LoginRequest;
 import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.response.*;
@@ -22,11 +21,9 @@ public class AuthController {
   Logger logger = LoggerFactory.getLogger(AuthController.class);
 
   final private AuthService authService;
-  final private JwtUtils jwtUtils;
 
-  public AuthController(AuthService authService, JwtUtils jwtUtils) {
+  public AuthController(AuthService authService) {
     this.authService = authService;
-    this.jwtUtils = jwtUtils;
   }
 
   @PostMapping("/signin")
@@ -43,7 +40,7 @@ public class AuthController {
       @RequestParam String token) {
     logger.info("[POST] | auth/confirm-token | token: " + token);
     try {
-      Boolean response = authService.confirmByToken(jwtUtils.getEmailFromJwtToken(jwtToken), token);
+      Boolean response = authService.confirmByToken(jwtToken, token);
       return ResponseEntity.ok(new MessageResponse(response.toString()));
     } catch (Exception e) {
       e.printStackTrace();

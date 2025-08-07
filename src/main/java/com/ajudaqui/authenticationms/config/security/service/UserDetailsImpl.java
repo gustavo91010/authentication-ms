@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

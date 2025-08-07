@@ -1,14 +1,14 @@
 package com.ajudaqui.authenticationms.dto;
 
-import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
-import com.ajudaqui.authenticationms.entity.Applcations;
+import com.ajudaqui.authenticationms.entity.Applications;
 
 public class ApplicationDto {
 
-  @NotBlank(message = "Campo nome é obrigatorio")
   private String name;
   private String redirectUrl;
+  private String registerUrl;
   private String secret;
 
   public String getName() {
@@ -27,11 +27,27 @@ public class ApplicationDto {
     this.secret = secret;
   }
 
-  public Applcations toEntity() {
-    Applcations applcations = new Applcations(this.name, this.secret);
-    if (!this.redirectUrl.isEmpty())
+  public Applications toEntity() {
+    Applications applcations = new Applications(this.name, this.secret);
+
+    if (this.registerUrl != null && !this.registerUrl.isEmpty())
+      applcations.setRedirectUrl(redirectUrl);
+
+    if (this.redirectUrl != null && !this.redirectUrl.isEmpty())
       applcations.setRedirectUrl(this.redirectUrl);
     return applcations;
+  }
+
+  public Applications toUpdate(Applications applications) {
+
+    if (this.name != null && !this.name.isEmpty())
+      applications.setName(this.name);
+    if (this.secret != null && !this.secret.isEmpty())
+      applications.setSecretId(this.secret);
+    if (this.redirectUrl != null && !this.redirectUrl.isEmpty())
+      applications.setRedirectUrl(this.redirectUrl);
+    applications.setUpdatedAt(LocalDateTime.now());
+    return applications;
   }
 
   public String getRedirectUrl() {
@@ -40,6 +56,14 @@ public class ApplicationDto {
 
   public void setRedirectUrl(String redirectUrl) {
     this.redirectUrl = redirectUrl;
+  }
+
+  public String getRegisterUrl() {
+    return registerUrl;
+  }
+
+  public void setRegisterUrl(String registerUrl) {
+    this.registerUrl = registerUrl;
   }
 
 }

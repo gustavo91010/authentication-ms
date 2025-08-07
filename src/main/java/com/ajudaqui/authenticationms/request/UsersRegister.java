@@ -8,10 +8,7 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotBlank;
 
-import com.ajudaqui.authenticationms.entity.Applcations;
-import com.ajudaqui.authenticationms.entity.Roles;
-import com.ajudaqui.authenticationms.entity.Users;
-import com.ajudaqui.authenticationms.entity.UsersAppData;
+import com.ajudaqui.authenticationms.entity.*;
 
 public class UsersRegister {
   @NotBlank(message = "Campo nome é obrigatorio")
@@ -63,7 +60,7 @@ public class UsersRegister {
     return users;
   }
 
-  public UsersAppData toAppData(Users users,boolean isInternal, Applcations applications, Set<Roles> roles) {
+  public UsersAppData toAppData(Users users,boolean isInternal, Applications applications, Set<Roles> roles) {
     UsersAppData usersAppData = new UsersAppData();
     usersAppData.setUsers(users);
     usersAppData.setRoles(roles);

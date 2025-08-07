@@ -2,7 +2,7 @@ package com.ajudaqui.authenticationms.dto;
 
 import java.time.LocalDateTime;
 
-import com.ajudaqui.authenticationms.entity.Applcations;
+import com.ajudaqui.authenticationms.entity.Applications;
 
 public class HttpAplications {
   private Long id;
@@ -10,7 +10,7 @@ public class HttpAplications {
   private String redirectUrl;
   private LocalDateTime createdAt;
 
-  public HttpAplications(Applcations applcations) {
+  public HttpAplications(Applications applcations) {
     this.id = applcations.getId();
     this.name = applcations.getName();
     this.createdAt = applcations.getCreatedAt();

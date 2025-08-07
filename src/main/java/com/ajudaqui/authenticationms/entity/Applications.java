@@ -9,7 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "applications")
-public class Applcations {
+public class Applications {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -22,6 +22,8 @@ public class Applcations {
 
   @Column(name = "secret_key")
   private String secretId;
+  @Column(name = "register_url")
+  private String registerUrl;
   @Column(name = "redirect_url")
   private String redirectUrl;
   @Column(name = "created_at")
@@ -32,7 +34,7 @@ public class Applcations {
   @OneToMany(mappedBy = "applications")
   private Set<UsersAppData> usersAppData = new HashSet<>();
 
-  public Applcations(String name, String secretId) {
+  public Applications(String name, String secretId) {
     this.clientId = UUID.randomUUID().toString();
 
     this.secretId = secretId.isEmpty() ? UUID.randomUUID().toString() : secretId;
@@ -41,7 +43,7 @@ public class Applcations {
     this.updatedAt = LocalDateTime.now();
   }
 
-  public Applcations() {
+  public Applications() {
   }
 
   public Long getId() {
@@ -106,5 +108,13 @@ public class Applcations {
 
   public void setUsersAppData(Set<UsersAppData> usersAppData) {
     this.usersAppData = usersAppData;
+  }
+
+  public String getRegisterUrl() {
+    return registerUrl;
+  }
+
+  public void setRegisterUrl(String registerUrl) {
+    this.registerUrl = registerUrl;
   }
 }
