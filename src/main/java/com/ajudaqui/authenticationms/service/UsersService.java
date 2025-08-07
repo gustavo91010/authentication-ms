@@ -35,7 +35,7 @@ public class UsersService {
     this.applicationsService = applicationsService;
   }
 
-  public UsersAppApplicationDto create(UsersRegister usersRegister, boolean isInternal) {
+  public UsersAppData create(UsersRegister usersRegister, boolean isInternal) {
     Applcations application = applicationsService.findByName(usersRegister.getAplication());
     // Users users = save(usersRegister.toUsers());
     Users users = userRepository.findByEmail(usersRegister.getEmail())
@@ -45,9 +45,7 @@ public class UsersService {
     if (usersAppData.getApplications().getName() == null || usersAppData.getApplications().getName() == null) {
       throw new MessageException("sem o aplicatuion name nm da né...");
     }
-
-    UsersAppData userAppDataSaved = appDataService.save(usersAppData);
-    return new UsersAppApplicationDto(userAppDataSaved);
+    return appDataService.save(usersAppData);
   }
 
   private Users save(Users users) {
@@ -79,7 +77,7 @@ public class UsersService {
     return roles;
   }
 
-  public Users findByJwt(String jwtToken) {
+  public Users findByJwt(String jwtToken, String secretKey) {
     return findByEmail(jwtUtils.getEmailFromJwtToken(jwtToken));
   }
 

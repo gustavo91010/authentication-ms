@@ -55,4 +55,9 @@ public class ApplicationsService {
     return this.repository.save(applcations);
   }
 
+  public Applcations getByClientId(String clientId) {
+    return repository.findByClientId(clientId)
+        .orElseThrow(() -> new NotFoundException("Aplicação não registrada"));
+  }
+
 }

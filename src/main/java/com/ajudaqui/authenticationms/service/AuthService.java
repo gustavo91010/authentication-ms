@@ -49,25 +49,25 @@ public class AuthService {
   }
 
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
-    UsersAppData user = usersAppDataService.findByUsersEmail(loginRequest.getEmail())
+    UsersAppData usersApp = usersAppDataService.findByUsersEmail(loginRequest.getEmail())
         .orElseThrow(() -> new MessageException("Usuário não localizado"));
-    if (!user.isActive())
+    System.out.println(usersApp.getApplications().getSecretId());
+    if (!usersApp.isActive())
       throw new MessageException("sua conta esta desativada, por favor, entre em contato...");
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
             loginRequest.getPassword()));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
-    UsersAppApplicationDto userAplication = new UsersAppApplicationDto(user);
-    String jwt = jwtUtils.generatedJwtToken(userAplication);
-    return new LoginResponse(userAplication, jwt);
+    return new LoginResponse(new UsersAppApplicationDto(usersApp),
+        jwtUtils.generatedJwtToken(usersApp));
   }
 
   public LoginResponse authenticateUser(String email) {
     UsersAppData usersApp = usersAppDataService.findByUsersEmail(email)
         .orElseThrow(() -> new MessageException("Usuário não regisrado"));
-    UsersAppApplicationDto userAppDto = new UsersAppApplicationDto(usersApp);
-    return new LoginResponse(userAppDto, jwtUtils.generatedJwtToken(userAppDto));
+    return new LoginResponse(new UsersAppApplicationDto(usersApp),
+        jwtUtils.generatedJwtToken(usersApp));
   }
 
   public String authOrRegister(String email, String name, Model modal) {
@@ -82,27 +82,25 @@ public class AuthService {
 
   public LoginResponse registerUser(UsersRegister usersRegister) {
     boolean isInternal = !ENVIROMENT.equals(enviriment);
-    UsersAppApplicationDto users = usersService.create(usersRegister, isInternal);
+    UsersAppData usersApp = usersService.create(usersRegister, isInternal);
     if (!isInternal) {
       try {
 
-        String token = tokenService.createToken(users.getUserId());
-        emailService.sendEmail(users.getEmail(), "Token de confirmação do registro",
+        String token = tokenService.createToken(usersApp.getUsers().getId());
+        emailService.sendEmail(usersApp.getUsers().getEmail(), "Token de confirmação do registro",
             token);
-        if (users.getUserId() != null && ENVIROMENT.equals(enviriment))
-          messageSqsFactor(users);
+        if (usersApp.getUsers().getId() != null && ENVIROMENT.equals(enviriment))
+          messageSqsFactor(usersApp);
       } catch (Exception e) {
         System.err.println(e.getMessage());
       }
     }
-
-    return new LoginResponse(users, jwtUtils.generatedJwtToken(users));
+    return new LoginResponse(new UsersAppApplicationDto(usersApp), jwtUtils.generatedJwtToken(usersApp));
   }
 
-  public Boolean confirmByToken(String email, String token) {
+  public Boolean confirmByToken(String jwtToken, String token) {
     Token byToken = tokenService.findByToken(token);
-    UsersAppData byEmail = usersAppDataService.findByUsersEmail(email)
-        .orElseThrow(() -> new MessageException("Usuário não localizado"));
+    UsersAppData byEmail = usersAppDataService.findByUsersId(byToken.getId());
     if (byToken.getUserId() == byEmail.getId()) {
       byEmail.setActive(true);
       usersAppDataService.save(byEmail);
@@ -111,10 +109,10 @@ public class AuthService {
     return byEmail.isActive();
   }
 
-  private void messageSqsFactor(UsersAppApplicationDto users) {
-    String application = users.getAppName();
+  private void messageSqsFactor(UsersAppData userApp) {
+    String application = userApp.getUsers().getName();
     JsonObject sqsUsers = new JsonObject();
-    sqsUsers.addProperty("access_token", users.getAccessTokne().toString());
+    sqsUsers.addProperty("access_token", userApp.getAccessToken().toString());
     sqsUsers.addProperty("application", application);
     sqsService.sendMessage(application, sqsUsers.toString());
   }

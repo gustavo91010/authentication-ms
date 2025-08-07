@@ -2,7 +2,6 @@ package com.ajudaqui.authenticationms.entity;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Locale;
 
 import javax.persistence.*;
 
