@@ -22,18 +22,6 @@ public class UsersController {
   @Autowired
   private UsersAppDataService userApp = new UsersAppDataService();
 
-  // TODO só retirar esse depois que o front aprovar
-  // @GetMapping("/authorization")
-  // public ResponseEntity<?> getUsers(@RequestHeader("Authorization") String accessToken) {
-  //   try {
-  //     logger.info("[GET] | /users/authorization");
-  //     return ResponseEntity.ok(userApp.findByAccessToken(accessToken));
-  //   } catch (Exception e) {
-  //     logger.error(e.getMessage());
-  //     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));
-  //   }
-  // }
-
   @GetMapping("/email/{email}")
   public ResponseEntity<?> findById(@PathVariable String email) {
     try {

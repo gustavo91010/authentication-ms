@@ -63,15 +63,4 @@ public class AuthController {
     }
   }
 
-  // TODO só retirar esse depois que o front aprovar
-  // @GetMapping("/permission/{token}")
-  // public ResponseEntity<?> verifyToken(@PathVariable String token) {
-  //   try {
-  //     logger.info("[GET] | /auth/permission/token/{}", token);
-  //     boolean isAccess = authService.verifyToken(token);
-  //     return ResponseEntity.ok(new AccessApi(isAccess));
-  //   } catch (Exception e) {
-  //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseError(e.getMessage()));
-  //   }
-  // }
 }

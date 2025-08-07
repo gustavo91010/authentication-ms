@@ -32,9 +32,10 @@ public class Applcations {
   @OneToMany(mappedBy = "applications")
   private Set<UsersAppData> usersAppData = new HashSet<>();
 
-  public Applcations(String name) {
+  public Applcations(String name, String secretId) {
     this.clientId = UUID.randomUUID().toString();
-    this.secretId = UUID.randomUUID().toString();
+
+    this.secretId = secretId.isEmpty() ? UUID.randomUUID().toString() : secretId;
     this.name = name;
     this.createdAt = LocalDateTime.now();
     this.updatedAt = LocalDateTime.now();

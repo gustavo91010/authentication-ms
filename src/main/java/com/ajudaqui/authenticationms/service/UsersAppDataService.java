@@ -1,7 +1,9 @@
 package com.ajudaqui.authenticationms.service;
 
+import java.util.List;
 import java.util.Optional;
 
+import com.ajudaqui.authenticationms.entity.Applcations;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
 import com.ajudaqui.authenticationms.exception.NotFoundException;
 import com.ajudaqui.authenticationms.repository.UsersAppDataRepository;
@@ -18,13 +20,16 @@ public class UsersAppDataService {
   public UsersAppData findByUsersId(Long usersId) {
     return this.repository.findByUsersId(usersId)
         .orElseThrow(() -> new NotFoundException("Usuário não tem dados registardos"));
+  }
 
+  public List<UsersAppData> findByAppId(Long appId) {
+    return repository.findByAppId(appId);
   }
 
   public UsersAppData getUsersByEmail(String email) {
-    return this.repository.findByUserEmail(email).
-    orElseThrow(()-> new NotFoundException("Usuário nao registrado"));
+    return this.repository.findByUserEmail(email).orElseThrow(() -> new NotFoundException("Usuário nao registrado"));
   }
+
   public Optional<UsersAppData> findByUsersEmail(String email) {
     return this.repository.findByUserEmail(email);
   }

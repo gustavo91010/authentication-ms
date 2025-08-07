@@ -55,7 +55,6 @@ public class StartUpRunner implements CommandLineRunner {
           UsersRegister register = new UsersRegister();
 
           String name = users.getEmail().replaceAll("@.*", "");
-          System.out.println("nome "+name);
           register.setName(name);
           register.setEmail(users.getEmail());
           register.setPassword("123456");

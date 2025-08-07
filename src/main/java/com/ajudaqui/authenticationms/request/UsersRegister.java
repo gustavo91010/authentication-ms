@@ -67,7 +67,7 @@ public class UsersRegister {
     UsersAppData usersAppData = new UsersAppData();
     usersAppData.setUsers(users);
     usersAppData.setRoles(roles);
-    usersAppData.setAccessToken(UUID.randomUUID()); // TODO se quebrar, sei que é aqui
+    usersAppData.setAccessToken(UUID.randomUUID()); 
     usersAppData.setPassword(new BCryptPasswordEncoder().encode(this.password));
     usersAppData.setApplications(applications);
     usersAppData.setCreatedAt(LocalDateTime.now());

@@ -84,12 +84,17 @@ public class AuthService {
     boolean isInternal = !ENVIROMENT.equals(enviriment);
     UsersAppApplicationDto users = usersService.create(usersRegister, isInternal);
     if (!isInternal) {
-      String token = tokenService.createToken(users.getUserId());
-      emailService.sendEmail(users.getEmail(), "Token de confirmação do registro",
-          token);
+      try {
+
+        String token = tokenService.createToken(users.getUserId());
+        emailService.sendEmail(users.getEmail(), "Token de confirmação do registro",
+            token);
+        if (users.getUserId() != null && ENVIROMENT.equals(enviriment))
+          messageSqsFactor(users);
+      } catch (Exception e) {
+        System.err.println(e.getMessage());
+      }
     }
-    if (users.getUserId() != null && ENVIROMENT.equals(enviriment))
-      messageSqsFactor(users);
 
     return new LoginResponse(users, jwtUtils.generatedJwtToken(users));
   }
