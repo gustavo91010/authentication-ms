@@ -31,7 +31,7 @@ public class ApplicationsService {
   }
 
   public Applications regsiter(ApplicationDto appicationDto) {
-    if (appicationDto.getName().isEmpty())
+    if (appicationDto.getName() == null || appicationDto.getName().isEmpty())
       throw new MessageException("O campo name não pode estar vazio.");
     String name = appicationDto.getName().toLowerCase();
     if (repository.findByName(name).isPresent())

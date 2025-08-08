@@ -3,10 +3,13 @@ package com.ajudaqui.authenticationms.config.security.jwt;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Base64;
 import java.util.Date;
 
 import com.ajudaqui.authenticationms.entity.UsersAppData;
 import com.ajudaqui.authenticationms.service.ApplicationsService;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +43,7 @@ public class JwtUtils {
   }
 
   public String getEmailFromJwtToken(String token) {
-    System.out.println("2");
-    System.out.println("token " + token);
-parece qu etem que ter a key d etodo jetio...
     token = token.replace("Bearer ", "");
-    System.out.println("3");
     String clientId = getClaims(token, "client_id");
     String jwtSecret = apppaApplicationsService.getByClientId(clientId).getSecretId();
 
@@ -54,18 +53,18 @@ parece qu etem que ter a key d etodo jetio...
     return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
   }
 
-  private String getClaims(String token, String secret, String claim) {
-    System.out.println("4");
-    if (token == null)
-      throw new RuntimeException("Token inválido");
+  private String getSecretKeyByJwt(String token) {
+    String[] parts = token.split("\\.");
+    String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));
+    JsonObject payload = JsonParser.parseString(payloadJson).getAsJsonObject();
+    String clientId = payload.get("client_id").getAsString();
+    return apppaApplicationsService.getByClientId(clientId).getSecretId();
 
-    System.out.println("5 token " + token);
-    Claims shua = Jwts.parser().parseClaimsJws(token).getBody();
+  }
 
-    System.out.println("claisn " + claim);
-    System.out.println("sua " + shua);
-    shua.get(claim, String.class);
-    return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().get(claim, String.class);
+  private String getClaims(String token, String claim) {
+    return Jwts.parser().setSigningKey(getSecretKeyByJwt(token)).parseClaimsJws(token).getBody().get(claim,
+        String.class);
   }
 
   public boolean validateJwtToken(String authToken, String jwtSecret) {
