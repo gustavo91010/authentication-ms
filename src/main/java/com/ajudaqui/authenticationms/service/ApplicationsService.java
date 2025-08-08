@@ -37,8 +37,8 @@ public class ApplicationsService {
     if (repository.findByName(name).isPresent())
       throw new MessageException("Nome já registrado");
 
-    if (appicationDto.getEmailModerador().isEmpty())
-      throw new MessageException("O campo email do moderador não pode estar vazio.");
+    if (appicationDto.getEmailModerador()== null || appicationDto.getEmailModerador().isEmpty())
+      throw new MessageException("O campo email do emailModerador não pode estar vazio.");
     UsersAppData usersAppData = usersAppDataService.findByUsersEmail(appicationDto.getEmailModerador())
         .orElseThrow(() -> new MessageException("O moderador tem que estar registrado previamente"));
     Roles moderator = usersAppDataService.findByRole(ERoles.ROLE_MODERATOR);

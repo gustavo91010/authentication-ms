@@ -12,6 +12,10 @@ public class ApplicationDto {
   private String registerUrl;
   private String secret;
 
+  public ApplicationDto() {
+    System.out.println("no construtor"+this.name);
+  }
+
   public String getName() {
     return name;
   }
