@@ -18,6 +18,7 @@ public class LoginResponse {
   private List<String> roles = new ArrayList<>();
   private Boolean active;
   private UUID access_token;
+  private String application;
 
   public LoginResponse(UsersAppApplicationDto users, String jwt) {
     this.id = users.getUserId();
@@ -27,6 +28,7 @@ public class LoginResponse {
     this.roles = rolesToList(users.getRoles());
     this.jwt = jwt;
     this.access_token = users.getAccessTokne();
+    this.application= users.getAppName();
   }
 
   private List<String> rolesToList(Set<Roles> roles) {
@@ -93,6 +95,14 @@ public class LoginResponse {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public String getApplication() {
+    return application;
+  }
+
+  public void setApplication(String application) {
+    this.application = application;
   }
 
 }

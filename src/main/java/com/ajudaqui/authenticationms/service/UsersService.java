@@ -38,9 +38,13 @@ public class UsersService {
     // Users users = save(usersRegister.toUsers());
     Users users = userRepository.findByEmail(usersRegister.getEmail())
         .orElseGet(() -> save(usersRegister.toUsers(isInternal)));
-    UsersAppData usersAppData = appDataService.findByUsersEmail(usersRegister.getEmail())
-        .orElseGet(() -> usersRegister.toAppData(users, isInternal, application, assignRole()));
-    if (usersAppData.getApplications().getName() == null || usersAppData.getApplications().getName() == null) {
+
+    if (appDataService.findByUsersEmail(usersRegister.getEmail()).isPresent())
+      throw new MessageException("Email já registrado");
+    UsersAppData usersAppData = usersRegister.toAppData(users, isInternal, application,
+        assignRole());
+    if (usersAppData.getApplications().getName() == null ||
+        usersAppData.getApplications().getName() == null) {
       throw new MessageException("sem o aplicatuion name nm da né...");
     }
     return appDataService.save(usersAppData);

@@ -51,7 +51,7 @@ public class AuthService {
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
     UsersAppData usersApp = usersAppDataService.findByUsersEmail(loginRequest.getEmail())
         .orElseThrow(() -> new MessageException("Usuário não localizado"));
-    System.out.println(usersApp.getApplications().getSecretId());
+    // System.out.println(usersApp.getApplications().getSecretId());
     if (!usersApp.isActive())
       throw new MessageException("sua conta esta desativada, por favor, entre em contato...");
     Authentication authentication = authenticationManager.authenticate(

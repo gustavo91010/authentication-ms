@@ -9,6 +9,7 @@ import java.util.UUID;
 import javax.validation.constraints.NotBlank;
 
 import com.ajudaqui.authenticationms.entity.*;
+import com.ajudaqui.authenticationms.exception.MessageException;
 
 public class UsersRegister {
   @NotBlank(message = "Campo nome é obrigatorio")
@@ -60,15 +61,30 @@ public class UsersRegister {
     return users;
   }
 
-  public UsersAppData toAppData(Users users,boolean isInternal, Applications applications, Set<Roles> roles) {
+  public UsersAppData toAppData(Users users, boolean isInternal, Applications applications, Set<Roles> roles) {
     UsersAppData usersAppData = new UsersAppData();
     usersAppData.setUsers(users);
     usersAppData.setRoles(roles);
-    usersAppData.setAccessToken(UUID.randomUUID()); 
-    usersAppData.setPassword(new BCryptPasswordEncoder().encode(this.password));
+    usersAppData.setAccessToken(UUID.randomUUID());
+    usersAppData.setPassword(checkStrongPassword(this.password));
     usersAppData.setApplications(applications);
     usersAppData.setCreatedAt(LocalDateTime.now());
     usersAppData.setActive(isInternal);
     return usersAppData;
+  }
+
+  private String checkStrongPassword(String password) {
+    if (password.length() < 7)
+      throw new MessageException("A senha deve ter pelo menos 8 caracters");
+
+    boolean isLowAndUpCase = password.matches("^(?=.*[a-z])(?=.*[A-Z]).+$");
+    if (!isLowAndUpCase)
+      throw new MessageException("A senha deve ter pelo menos uma letra maiúscula e uma minuscula");
+
+    boolean isCharacterEpecial = password.matches("^(?=.*[@#$%&*_-]).+$");
+
+    if (!isCharacterEpecial)
+      throw new MessageException("A senha deve ter pelo menos um caracter especial (@,#,$,%,&,*,-,_)");
+    return new BCryptPasswordEncoder().encode(password);
   }
 }

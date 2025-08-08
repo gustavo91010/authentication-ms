@@ -43,7 +43,7 @@ public class StartUpRunner implements CommandLineRunner {
           String name = users.getEmail().replaceAll("@.*", "");
           register.setName(name);
           register.setEmail(users.getEmail());
-          register.setPassword("123456");
+          register.setPassword("1aA%23456");
           register.setAplication(app.getName());
           authService.registerUser(register);
         }
