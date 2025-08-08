@@ -1,14 +1,10 @@
 package com.ajudaqui.authenticationms.service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.entity.*;
 import com.ajudaqui.authenticationms.exception.MessageException;
-import com.ajudaqui.authenticationms.repository.RolesRepository;
 import com.ajudaqui.authenticationms.repository.UsersRepository;
 import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.utils.enuns.ERoles;
@@ -19,15 +15,13 @@ import org.springframework.stereotype.Service;
 public class UsersService {
 
   private UsersRepository userRepository;
-  private RolesRepository rolesRepository;
   private JwtUtils jwtUtils;
   final private ApplicationsService applicationsService;
   final private UsersAppDataService appDataService;
 
-  public UsersService(UsersRepository userRepository, RolesRepository rolesRepository, JwtUtils jwtUtils,
+  public UsersService(UsersRepository userRepository, JwtUtils jwtUtils,
       UsersAppDataService appDataService, ApplicationsService applicationsService) {
     this.userRepository = userRepository;
-    this.rolesRepository = rolesRepository;
     this.jwtUtils = jwtUtils;
     this.appDataService = appDataService;
     this.applicationsService = applicationsService;
@@ -35,17 +29,16 @@ public class UsersService {
 
   public UsersAppData create(UsersRegister usersRegister, boolean isInternal) {
     Applications application = applicationsService.findByName(usersRegister.getAplication());
-    // Users users = save(usersRegister.toUsers());
     Users users = userRepository.findByEmail(usersRegister.getEmail())
         .orElseGet(() -> save(usersRegister.toUsers(isInternal)));
 
     if (appDataService.findByUsersEmail(usersRegister.getEmail()).isPresent())
       throw new MessageException("Email já registrado");
     UsersAppData usersAppData = usersRegister.toAppData(users, isInternal, application,
-        assignRole());
+        appDataService.assignRole(ERoles.ROLE_USER));
     if (usersAppData.getApplications().getName() == null ||
         usersAppData.getApplications().getName() == null) {
-      throw new MessageException("sem o aplicatuion name nm da né...");
+      throw new MessageException("sem passar a aplicação não da né amigo... -_-");
     }
     return appDataService.save(usersAppData);
   }
@@ -69,14 +62,6 @@ public class UsersService {
 
   public List<Users> findAll() {
     return userRepository.findAll();
-  }
-
-  public Set<Roles> assignRole() {
-    Set<Roles> roles = new HashSet<>();
-    Roles user_role = rolesRepository.findByName(ERoles.ROLE_USER)
-        .orElseThrow(() -> new RuntimeException("Erro: Type Roles não encontrado."));
-    roles.add(user_role);
-    return roles;
   }
 
   public Users findByJwt(String jwtToken, String secretKey) {

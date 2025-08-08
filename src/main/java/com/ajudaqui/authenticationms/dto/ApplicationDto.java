@@ -6,6 +6,7 @@ import com.ajudaqui.authenticationms.entity.Applications;
 
 public class ApplicationDto {
 
+  private String emailModerador;
   private String name;
   private String redirectUrl;
   private String registerUrl;
@@ -64,6 +65,14 @@ public class ApplicationDto {
 
   public void setRegisterUrl(String registerUrl) {
     this.registerUrl = registerUrl;
+  }
+
+  public String getEmailModerador() {
+    return emailModerador;
+  }
+
+  public void setEmailModerador(String emailModerador) {
+    this.emailModerador = emailModerador;
   }
 
 }

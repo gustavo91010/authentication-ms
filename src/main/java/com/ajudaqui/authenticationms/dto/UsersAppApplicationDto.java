@@ -9,7 +9,7 @@ import com.ajudaqui.authenticationms.entity.UsersAppData;
 
 public class UsersAppApplicationDto {
 
-  private Long userId;
+  private Long userDataId;
   private String appName;
   private String name;
   private String email;
@@ -20,7 +20,7 @@ public class UsersAppApplicationDto {
   private Set<Roles> roles;
 
   public UsersAppApplicationDto(UsersAppData usersAppData) {
-    this.userId = usersAppData.getUsers().getId();
+    this.userDataId = usersAppData.getId();
     this.appName = usersAppData.getApplications().getName();
     this.name = usersAppData.getUsers().getName();
     this.email = usersAppData.getUsers().getEmail();
@@ -32,12 +32,12 @@ public class UsersAppApplicationDto {
       this.lastLogin = usersAppData.getLastLogin();
   }
 
-  public Long getUserId() {
-    return userId;
+  public Long getUserDataId() {
+    return userDataId;
   }
 
-  public void setUserId(Long userId) {
-    this.userId = userId;
+  public void setUserDataId(Long userId) {
+    this.userDataId = userId;
   }
 
   public String getAppName() {

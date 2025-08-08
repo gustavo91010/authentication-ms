@@ -21,7 +21,8 @@ public class LoginResponse {
   private String application;
 
   public LoginResponse(UsersAppApplicationDto users, String jwt) {
-    this.id = users.getUserId();
+    // this.id = users.getUserId();
+    this.id = users.getUserDataId();
     this.name = users.getName();
     this.email = users.getEmail();
     this.active = users.isActive();

@@ -49,9 +49,12 @@ public class StartUpRunner implements CommandLineRunner {
         }
         usersAppDataService.findByUsersEmail(users.getEmail())
             .ifPresent(u -> {
+              if (users.getPassword() != null &&
+                  !users.getPassword().isEmpty()) {
 
-              u.setPassword(users.getPassword());
-              usersAppDataService.save(u);
+                u.setPassword(users.getPassword());
+                usersAppDataService.save(u);
+              }
             });
 
       } catch (Exception e) {

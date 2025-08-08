@@ -6,10 +6,12 @@ import java.util.stream.Collectors;
 import com.ajudaqui.authenticationms.dto.ApplicationDto;
 import com.ajudaqui.authenticationms.dto.HttpUsersAppData;
 import com.ajudaqui.authenticationms.entity.Applications;
+import com.ajudaqui.authenticationms.entity.Roles;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
 import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.exception.NotFoundException;
 import com.ajudaqui.authenticationms.repository.ApplicationsRepository;
+import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,13 @@ public class ApplicationsService {
     String name = appicationDto.getName().toLowerCase();
     if (repository.findByName(name).isPresent())
       throw new MessageException("Nome já registrado");
+
+    if (appicationDto.getEmailModerador().isEmpty())
+      throw new MessageException("O campo email do moderador não pode estar vazio.");
+    UsersAppData usersAppData = usersAppDataService.findByUsersEmail(appicationDto.getEmailModerador())
+        .orElseThrow(() -> new MessageException("O moderador tem que estar registrado previamente"));
+    Roles moderator = usersAppDataService.findByRole(ERoles.ROLE_MODERATOR);
+    usersAppData.getRoles().add(moderator);
     return save(appicationDto.toEntity());
   }
 

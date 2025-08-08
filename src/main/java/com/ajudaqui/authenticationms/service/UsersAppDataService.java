@@ -1,11 +1,13 @@
 package com.ajudaqui.authenticationms.service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import com.ajudaqui.authenticationms.entity.Roles;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
 import com.ajudaqui.authenticationms.exception.NotFoundException;
+import com.ajudaqui.authenticationms.repository.RolesRepository;
 import com.ajudaqui.authenticationms.repository.UsersAppDataRepository;
+import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ public class UsersAppDataService {
 
   @Autowired
   private UsersAppDataRepository repository;
+
+  @Autowired
+  private RolesRepository rolesRepository;
 
   public UsersAppData findByUsersId(Long usersId) {
     return this.repository.findByUsersId(usersId)
@@ -43,4 +48,16 @@ public class UsersAppDataService {
         .orElseThrow(() -> new NotFoundException("Usuário não tem dados registardos"));
 
   }
+
+  public Roles findByRole(ERoles role) {
+    return rolesRepository.findByName(role)
+        .orElseThrow(() -> new RuntimeException("Erro: Type Roles não encontrado."));
+  }
+
+  public Set<Roles> assignRole(ERoles role) {
+    Set<Roles> roles = new HashSet<>();
+    roles.add(findByRole(role));
+    return roles;
+  }
+
 }

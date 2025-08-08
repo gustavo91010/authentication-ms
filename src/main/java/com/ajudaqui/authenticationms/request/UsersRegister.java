@@ -74,6 +74,7 @@ public class UsersRegister {
   }
 
   private String checkStrongPassword(String password) {
+    System.out.println("password "+password);
     if (password.length() < 7)
       throw new MessageException("A senha deve ter pelo menos 8 caracters");
 

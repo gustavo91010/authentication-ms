@@ -40,7 +40,11 @@ public class JwtUtils {
   }
 
   public String getEmailFromJwtToken(String token) {
+    System.out.println("2");
+    System.out.println("token " + token);
+parece qu etem que ter a key d etodo jetio...
     token = token.replace("Bearer ", "");
+    System.out.println("3");
     String clientId = getClaims(token, "client_id");
     String jwtSecret = apppaApplicationsService.getByClientId(clientId).getSecretId();
 
@@ -50,10 +54,18 @@ public class JwtUtils {
     return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
   }
 
-  private String getClaims(String token, String claim) {
+  private String getClaims(String token, String secret, String claim) {
+    System.out.println("4");
+    if (token == null)
+      throw new RuntimeException("Token inválido");
 
-    token = token.replace("Bearer ", "");
-    return Jwts.parser().parseClaimsJws(token).getBody().get(claim, String.class);
+    System.out.println("5 token " + token);
+    Claims shua = Jwts.parser().parseClaimsJws(token).getBody();
+
+    System.out.println("claisn " + claim);
+    System.out.println("sua " + shua);
+    shua.get(claim, String.class);
+    return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().get(claim, String.class);
   }
 
   public boolean validateJwtToken(String authToken, String jwtSecret) {

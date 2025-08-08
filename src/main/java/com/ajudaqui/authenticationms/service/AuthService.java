@@ -51,12 +51,12 @@ public class AuthService {
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
     UsersAppData usersApp = usersAppDataService.findByUsersEmail(loginRequest.getEmail())
         .orElseThrow(() -> new MessageException("Usuário não localizado"));
-    // System.out.println(usersApp.getApplications().getSecretId());
     if (!usersApp.isActive())
       throw new MessageException("sua conta esta desativada, por favor, entre em contato...");
-    Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
-            loginRequest.getPassword()));
+    UsernamePasswordAuthenticationToken hum = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
+        loginRequest.getPassword());
+
+    Authentication authentication = authenticationManager.authenticate(hum);
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
     return new LoginResponse(new UsersAppApplicationDto(usersApp),
@@ -92,7 +92,6 @@ public class AuthService {
         if (usersApp.getUsers().getId() != null && ENVIROMENT.equals(enviriment))
           messageSqsFactor(usersApp);
       } catch (Exception e) {
-        System.err.println(e.getMessage());
       }
     }
     return new LoginResponse(new UsersAppApplicationDto(usersApp), jwtUtils.generatedJwtToken(usersApp));
