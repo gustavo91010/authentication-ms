@@ -5,7 +5,10 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.ajudaqui.authenticationms.entity.Applications;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
 import com.ajudaqui.authenticationms.service.ApplicationsService;
 import com.google.gson.JsonObject;
@@ -28,6 +31,8 @@ public class JwtUtils {
   @Value("${bezkoder.app.jwtExpirationMs}")
   private int jwtExpirationMs;
 
+  private Map<String, String> secretKeys = new HashMap<>();
+
   public String generatedJwtToken(UsersAppData usersApp) {
     LocalDateTime issuedAt = LocalDateTime.now(ZoneId.systemDefault());
     Date issuedAtDate = Date.from(issuedAt.atZone(ZoneId.systemDefault()).toInstant());
@@ -44,9 +49,7 @@ public class JwtUtils {
 
   public String getEmailFromJwtToken(String token) {
     token = token.replace("Bearer ", "");
-    String clientId = getClaims(token, "client_id");
-    String jwtSecret = apppaApplicationsService.getByClientId(clientId).getSecretId();
-
+    String jwtSecret = getSecretKeyByJwt(token);
     if (!validateJwtToken(token, jwtSecret))
       throw new RuntimeException("Token inválido");
 
@@ -58,8 +61,11 @@ public class JwtUtils {
     String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));
     JsonObject payload = JsonParser.parseString(payloadJson).getAsJsonObject();
     String clientId = payload.get("client_id").getAsString();
-    return apppaApplicationsService.getByClientId(clientId).getSecretId();
-
+    if (!secretKeys.keySet().contains(clientId)) {
+      Applications application = apppaApplicationsService.getByClientId(clientId);
+      secretKeys.put(clientId, application.getSecretId());
+    }
+    return this.secretKeys.get(clientId);
   }
 
   private String getClaims(String token, String claim) {

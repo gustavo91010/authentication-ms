@@ -1,25 +1,27 @@
 package com.ajudaqui.authenticationms.controller;
 
-import com.ajudaqui.authenticationms.dto.ApplicationDto;
-import com.ajudaqui.authenticationms.dto.HttpAplications;
+import java.util.List;
+
+import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
+import com.ajudaqui.authenticationms.dto.*;
 import com.ajudaqui.authenticationms.entity.Applications;
 import com.ajudaqui.authenticationms.service.ApplicationsService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/app")
 public class ApplicationController {
 
-  @Autowired
-  private ApplicationsService applicationsService;
+  final private ApplicationsService applicationsService;
+  final private JwtUtils jwtUtils;
+
+  public ApplicationController(ApplicationsService applicationsService, JwtUtils jwtUtils) {
+    this.applicationsService = applicationsService;
+    this.jwtUtils = jwtUtils;
+  }
 
   @PostMapping("")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -28,4 +30,25 @@ public class ApplicationController {
     return ResponseEntity.ok(new HttpAplications(regsiter));
   }
 
+  @GetMapping("/name/{appNAme}")
+  @PreAuthorize("hasRole('ROLE_MODERATOR')")
+  public ResponseEntity<List<HttpUsersAppData>> getUsersByApp(@RequestHeader("Authorization") String jwtToken,
+      @PathVariable String appNAme) {
+    String email = jwtUtils.getEmailFromJwtToken(jwtToken);
+    return ResponseEntity.ok(applicationsService.userByApp(email, appNAme));
+  }
+
+  @GetMapping("/all")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  public ResponseEntity<?> allApplications() {
+    return ResponseEntity.ok(applicationsService.findAll());
+  }
+
+  @GetMapping("/id/{applicationId}")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  public ResponseEntity<Applications> getById(@RequestHeader("Authorization") String jwtToken,
+      @PathVariable Long applicationId) {
+    String email = jwtUtils.getEmailFromJwtToken(jwtToken);
+    return ResponseEntity.ok(applicationsService.findById(email, applicationId));
+  }
 }

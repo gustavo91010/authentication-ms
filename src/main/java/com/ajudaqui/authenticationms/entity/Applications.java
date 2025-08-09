@@ -7,6 +7,8 @@ import java.util.UUID;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "applications")
 public class Applications {
@@ -32,12 +34,14 @@ public class Applications {
   private LocalDateTime updatedAt;
 
   @OneToMany(mappedBy = "applications")
+  @JsonIgnore
   private Set<UsersAppData> usersAppData = new HashSet<>();
 
   public Applications(String name, String secretId) {
     this.clientId = UUID.randomUUID().toString();
 
-    this.secretId = secretId.isEmpty() ? UUID.randomUUID().toString() : secretId;
+    this.secretId = (secretId == null || secretId.isEmpty()) ?
+    UUID.randomUUID().toString() : secretId;
     this.name = name;
     this.createdAt = LocalDateTime.now();
     this.updatedAt = LocalDateTime.now();

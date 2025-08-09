@@ -43,7 +43,6 @@ public class AuthController {
       Boolean response = authService.confirmByToken(jwtToken, token);
       return ResponseEntity.ok(new MessageResponse(response.toString()));
     } catch (Exception e) {
-      e.printStackTrace();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e.getMessage()));
     }
   }

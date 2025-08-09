@@ -13,7 +13,6 @@ public class ApplicationDto {
   private String secret;
 
   public ApplicationDto() {
-    System.out.println("no construtor"+this.name);
   }
 
   public String getName() {
