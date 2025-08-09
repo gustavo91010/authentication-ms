@@ -1,12 +1,21 @@
 package com.ajudaqui.authenticationms.entity;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Entity
+@Table(name = "users")
 public class Users {
 
   @Id
@@ -16,47 +25,27 @@ public class Users {
   @NotBlank(message = "Campo nome não pode estar vazio")
   @Size(max = 100)
   private String name;
+
+  @Column(name = "created_at")
+  private LocalDateTime createdAt;
+
+  @Column(name = "update_at")
+  private LocalDateTime updatedAt;
+
   @NotBlank(message = "Campo email não pode estar vazio")
   @Size(max = 50)
   private String email;
-  @NotBlank(message = "Campo password não pode estar vazio")
-  @Size(max = 120)
-  private String password;
-  @NotNull
-  private Boolean active;
-  private LocalDateTime created_at;
-  private LocalDateTime update_at;
-  private String access_token;
-  private String aplication;
-  private String secret;
-  private Boolean a2fActive;
+  @OneToMany(mappedBy = "users")
+  private Set<UsersAppData> usersAppData = new HashSet<>();
 
   public Users() {
   }
 
-  public Users(String name, String email, String password, String aplication) {
+  public Users(String name) {
     this.name = name;
-    this.email = email;
-    this.password = password;
-    this.aplication = aplication;
-    this.active = false;
-    this.created_at = LocalDateTime.now();
-    this.update_at = LocalDateTime.now();
-    this.secret = UUID.randomUUID().toString();
-    this.a2fActive = false;
-    this.access_token = UUID.randomUUID().toString();
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = LocalDateTime.now();
   }
-
-  public String getAplication() {
-    return aplication;
-  }
-
-  public void setAplication(String aplication) {
-    this.aplication = aplication;
-  }
-
-  @ManyToMany(fetch = FetchType.EAGER)
-  private Set<Roles> roles = new HashSet<>();
 
   public Long getId() {
     return id;
@@ -64,69 +53,6 @@ public class Users {
 
   public void setId(Long id) {
     this.id = id;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public Set<Roles> getRoles() {
-    return roles;
-  }
-
-  public void setRoles(Set<Roles> roles) {
-    this.roles = roles;
-  }
-
-  public Boolean getActive() {
-    return active;
-  }
-
-  public void setActive(Boolean active) {
-    this.active = active;
-  }
-
-  public LocalDateTime getCreated_at() {
-    return created_at;
-  }
-
-  public void setCreated_at(LocalDateTime created_at) {
-    this.created_at = created_at;
-  }
-
-  public LocalDateTime getUpdate_at() {
-    return update_at;
-  }
-
-  public void setUpdate_at(LocalDateTime update_at) {
-    this.update_at = update_at;
-  }
-
-  public String getAccess_token() {
-    return access_token;
-  }
-
-  public void setAccess_token(String access_token) {
-    this.access_token = access_token;
-  }
-
-  @Override
-  public String toString() {
-    return "Users [id=" + id + ", email=" + email + ", password=" + password + ", active=" + active
-        + ", created_at=" + created_at + ", update_at=" + update_at + ", access_token=" + access_token
-        + ", aplication=" + aplication + ", roles=" + roles + "]";
   }
 
   public String getName() {
@@ -137,20 +63,57 @@ public class Users {
     this.name = name;
   }
 
-  public String getSecret() {
-    return secret;
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
   }
 
-  public void setSecret(String secret) {
-    this.secret = secret;
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 
-  public Boolean getA2fActive() {
-    return a2fActive;
+  public LocalDateTime getUpdatedAt() {
+    return updatedAt;
   }
 
-  public void setA2fActive(Boolean a2fActive) {
-    this.a2fActive = a2fActive;
+  public void setUpdatedAt(LocalDateTime updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public Set<UsersAppData> getUsersAppData() {
+    return usersAppData;
+  }
+
+  public void setUsersAppData(Set<UsersAppData> usersAppData) {
+    this.usersAppData = usersAppData;
+  }
+
+  //TODO retirar o password depois da corercao dos registros
+  private String password;
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+  //TODO retirar o password depois da corercao dos registros
+  private Boolean active;
+
+  public Boolean getActive() {
+    return active;
+  }
+
+  public void setActive(Boolean active) {
+    this.active = active;
   }
 
 }

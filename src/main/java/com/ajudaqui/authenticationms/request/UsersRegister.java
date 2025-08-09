@@ -2,9 +2,14 @@ package com.ajudaqui.authenticationms.request;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.UUID;
+
 import javax.validation.constraints.NotBlank;
 
-import com.ajudaqui.authenticationms.entity.Users;
+import com.ajudaqui.authenticationms.entity.*;
+import com.ajudaqui.authenticationms.exception.MessageException;
 
 public class UsersRegister {
   @NotBlank(message = "Campo nome é obrigatorio")
@@ -15,11 +20,6 @@ public class UsersRegister {
   private String password;
   @NotBlank(message = "Campo aplication é obrigatorio")
   private String aplication;
-
-  public Users toDate() {
-    String password = new BCryptPasswordEncoder().encode(this.password);
-    return new Users(this.name, this.email, password, this.aplication);
-  }
 
   public String getEmail() {
     return email;
@@ -53,4 +53,38 @@ public class UsersRegister {
     this.aplication = aplication;
   }
 
+  public Users toUsers(boolean isInternal) {
+    Users users = new Users();
+    users.setName(this.name);
+    users.setEmail(this.email);
+    users.setActive(isInternal);
+    return users;
+  }
+
+  public UsersAppData toAppData(Users users, boolean isInternal, Applications applications, Set<Roles> roles) {
+    UsersAppData usersAppData = new UsersAppData();
+    usersAppData.setUsers(users);
+    usersAppData.setRoles(roles);
+    usersAppData.setAccessToken(UUID.randomUUID());
+    usersAppData.setPassword(checkStrongPassword(this.password));
+    usersAppData.setApplications(applications);
+    usersAppData.setCreatedAt(LocalDateTime.now());
+    usersAppData.setActive(isInternal);
+    return usersAppData;
+  }
+
+  private String checkStrongPassword(String password) {
+    if (password.length() < 7)
+      throw new MessageException("A senha deve ter pelo menos 8 caracters");
+
+    boolean isLowAndUpCase = password.matches("^(?=.*[a-z])(?=.*[A-Z]).+$");
+    if (!isLowAndUpCase)
+      throw new MessageException("A senha deve ter pelo menos uma letra maiúscula e uma minuscula");
+
+    boolean isCharacterEpecial = password.matches("^(?=.*[@#$%&*_-]).+$");
+
+    if (!isCharacterEpecial)
+      throw new MessageException("A senha deve ter pelo menos um caracter especial (@,#,$,%,&,*,-,_)");
+    return new BCryptPasswordEncoder().encode(password);
+  }
 }

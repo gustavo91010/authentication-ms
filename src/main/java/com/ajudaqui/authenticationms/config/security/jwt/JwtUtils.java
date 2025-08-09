@@ -3,47 +3,77 @@ package com.ajudaqui.authenticationms.config.security.jwt;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.ajudaqui.authenticationms.entity.Users;
+import com.ajudaqui.authenticationms.entity.Applications;
+import com.ajudaqui.authenticationms.entity.UsersAppData;
+import com.ajudaqui.authenticationms.service.ApplicationsService;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 
 @Component
 public class JwtUtils {
   private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-  @Value("${bezkoder.app.jwtSecret}")
-  private String jwtSecret;
-
+  @Autowired
+  private ApplicationsService apppaApplicationsService;
   @Value("${bezkoder.app.jwtExpirationMs}")
   private int jwtExpirationMs;
 
-  public String generatedJwtToken(Users users) {
+  private Map<String, String> secretKeys = new HashMap<>();
+
+  public String generatedJwtToken(UsersAppData usersApp) {
     LocalDateTime issuedAt = LocalDateTime.now(ZoneId.systemDefault());
     Date issuedAtDate = Date.from(issuedAt.atZone(ZoneId.systemDefault()).toInstant());
     LocalDateTime expirationDateTime = issuedAt.plus(jwtExpirationMs, ChronoUnit.MILLIS);
     Date expirationDate = Date.from(expirationDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    // return null;
+    return Jwts.builder().setSubject(usersApp.getUsers().getEmail()).setIssuedAt(issuedAtDate)
+        .setExpiration(expirationDate)
+        .claim("client_id", usersApp.getApplications().getClientId())
+        .claim("access_token", usersApp.getAccessToken())
+        .signWith(SignatureAlgorithm.HS512, usersApp.getApplications().getSecretId()).compact();
 
-    return Jwts.builder().setSubject(users.getEmail()).setIssuedAt(issuedAtDate)
-        .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
   }
 
   public String getEmailFromJwtToken(String token) {
     token = token.replace("Bearer ", "");
+    String jwtSecret = getSecretKeyByJwt(token);
+    if (!validateJwtToken(token, jwtSecret))
+      throw new RuntimeException("Token inválido");
+
     return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
   }
 
-  public boolean validateJwtToken(String authToken) {
+  private String getSecretKeyByJwt(String token) {
+    String[] parts = token.split("\\.");
+    String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));
+    JsonObject payload = JsonParser.parseString(payloadJson).getAsJsonObject();
+    String clientId = payload.get("client_id").getAsString();
+    if (!secretKeys.keySet().contains(clientId)) {
+      Applications application = apppaApplicationsService.getByClientId(clientId);
+      secretKeys.put(clientId, application.getSecretId());
+    }
+    return this.secretKeys.get(clientId);
+  }
+
+  private String getClaims(String token, String claim) {
+    return Jwts.parser().setSigningKey(getSecretKeyByJwt(token)).parseClaimsJws(token).getBody().get(claim,
+        String.class);
+  }
+
+  public boolean validateJwtToken(String authToken, String jwtSecret) {
     try {
       Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
       return true;
