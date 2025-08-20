@@ -37,11 +37,16 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
       String methodName = method.getMethod().getName();
       String path = request.getRequestURI();
       String httpMethod = request.getMethod();
-      String ip = request.getRemoteAddr();
-      logger.info("{} | {} | {} : [{}] {} {}", ip, methodName, httpMethod, path, authHeader);
+      logger.info("{} | {} | {} : [{}] {} {}", getClientIp(request), methodName, httpMethod, path, authHeader);
     }
-
-    return true;
+return true;
   }
 
+  private String getClientIp(HttpServletRequest request) {
+    // Se tiver um prox no front, ele X-Forwarded-For que pega o Ip real do clente
+    String header = request.getHeader("X-Forwarded-For");
+    if (header != null && !header.isEmpty())
+      return header.split(",")[0].trim();
+    return request.getRemoteAddr();
+  }
 }

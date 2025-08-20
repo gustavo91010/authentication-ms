@@ -44,7 +44,6 @@ public class JwtUtils {
         .claim("client_id", usersApp.getApplications().getClientId())
         .claim("access_token", usersApp.getAccessToken())
         .signWith(SignatureAlgorithm.HS512, usersApp.getApplications().getSecretId()).compact();
-
   }
 
   public String getEmailFromJwtToken(String token) {
