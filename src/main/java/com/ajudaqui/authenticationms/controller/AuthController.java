@@ -27,7 +27,7 @@ public class AuthController {
   }
 
   @PostMapping("/signin")
-  public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+  public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
     LoginResponse userAuthenticated = authService.authenticateUser(loginRequest);
     logger.info("[POST] | auth/signin | email: " + loginRequest.getEmail());
     return ResponseEntity.ok(userAuthenticated);

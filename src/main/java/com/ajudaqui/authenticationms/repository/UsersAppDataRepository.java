@@ -2,6 +2,7 @@ package com.ajudaqui.authenticationms.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.ajudaqui.authenticationms.entity.UsersAppData;
 
@@ -18,7 +19,7 @@ public interface UsersAppDataRepository extends JpaRepository<UsersAppData, Long
   Optional<UsersAppData> findByUsersId(Long usersId);
 
   @Query(value = "SELECT * FROM user_app_data WHERE access_token=:accessToken", nativeQuery = true)
-  Optional<UsersAppData> findByAccessToken(String accessToken);
+  Optional<UsersAppData> findByAccessToken(UUID accessToken);
 
   @Query(value = "SELECT * FROM user_app_data WHERE app_id= :appId", nativeQuery = true)
   List<UsersAppData> findByAppId(Long appId);

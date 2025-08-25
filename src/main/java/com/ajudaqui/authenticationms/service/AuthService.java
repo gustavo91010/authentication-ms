@@ -1,5 +1,7 @@
 package com.ajudaqui.authenticationms.service;
 
+import java.util.UUID;
+
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.dto.UsersAppApplicationDto;
 import com.ajudaqui.authenticationms.entity.Token;
@@ -87,8 +89,9 @@ public class AuthService {
       try {
 
         String token = tokenService.createToken(usersApp.getUsers().getId());
-        emailService.sendEmail(usersApp.getUsers().getEmail(), "Token de confirmação do registro",
-            token);
+        // TODO esperar a implementação do front
+        // emailService.sendEmail(usersApp.getUsers().getEmail(), "Token de confirmação do registro",
+        //     token);
         if (usersApp.getUsers().getId() != null && ENVIROMENT.equals(enviriment))
           messageSqsFactor(usersApp);
       } catch (Exception e) {
@@ -117,6 +120,6 @@ public class AuthService {
   }
 
   public boolean verifyToken(String accessToken) {
-    return usersAppDataService.findByAccessToken(accessToken).isActive();
+    return usersAppDataService.findByAccessToken(UUID.fromString(accessToken)).isActive();
   }
 }

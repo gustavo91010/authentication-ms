@@ -47,8 +47,8 @@ public class ApplicationsService {
     return save(appicationDto.toEntity());
   }
 
-  public List<HttpUsersAppData> userByApp(String email, String name) {
-    Applications byName = findByName(name);
+  public List<HttpUsersAppData> userByApp(String email, String appName) {
+    Applications byName = findByName(appName);
     checkPermission(email, byName.getClientId());
 
     List<UsersAppData> byAppId = usersAppDataService.findByAppId(byName.getId());

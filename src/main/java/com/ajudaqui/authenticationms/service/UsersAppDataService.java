@@ -43,7 +43,22 @@ public class UsersAppDataService {
     return repository.save(usersAppData);
   }
 
-  public UsersAppData findByAccessToken(String accessToken) {
+  public Map<String, String> getData(String accessToken) {
+    UsersAppData userApp = findByAccessToken(UUID.fromString(accessToken));
+
+    Map<String, String> data = new HashMap<>();
+    data.put("access_token", userApp.getAccessToken().toString());
+    String name = userApp.getUsers().getEmail();
+    if (userApp.getUsers().getName() != null)
+      name = userApp.getUsers().getName();
+    data.put("name", name);
+
+    data.put("email", userApp.getUsers().getEmail());
+    data.put("aplication", userApp.getApplications().getName());
+    return data;
+  }
+
+  public UsersAppData findByAccessToken(UUID accessToken) {
     return repository.findByAccessToken(accessToken)
         .orElseThrow(() -> new NotFoundException("Usuário não tem dados registardos"));
 
