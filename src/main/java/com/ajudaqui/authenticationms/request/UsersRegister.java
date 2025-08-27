@@ -57,9 +57,7 @@ public class UsersRegister {
     Users users = new Users();
     users.setName(this.name);
     users.setEmail(this.email);
-    // TODO esperara  implementacão do front
-    // users.setActive(isInternal);
-    users.setActive(true);
+    users.setActive(isInternal);
     return users;
   }
 

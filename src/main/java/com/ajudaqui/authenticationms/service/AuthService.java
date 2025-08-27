@@ -85,19 +85,23 @@ public class AuthService {
   public LoginResponse registerUser(UsersRegister usersRegister) {
     boolean isInternal = !ENVIROMENT.equals(enviriment);
     UsersAppData usersApp = usersService.create(usersRegister, isInternal);
+    String tokenTemporario = "";
     if (!isInternal) {
       try {
 
         String token = tokenService.createToken(usersApp.getUsers().getId());
-        // TODO esperar a implementação do front
-        // emailService.sendEmail(usersApp.getUsers().getEmail(), "Token de confirmação do registro",
-        //     token);
-        if (usersApp.getUsers().getId() != null && ENVIROMENT.equals(enviriment))
+        emailService.sendEmail(usersApp.getUsers().getEmail(), "Token de confirmação do registro",
+            token);
+        System.out
+        if (usersApp.getId() != null && ENVIROMENT.equals(enviriment))
           messageSqsFactor(usersApp);
       } catch (Exception e) {
       }
     }
-    return new LoginResponse(new UsersAppApplicationDto(usersApp), jwtUtils.generatedJwtToken(usersApp));
+    LoginResponse login = new LoginResponse(new UsersAppApplicationDto(usersApp), jwtUtils.generatedJwtToken(usersApp));
+    if (!isInternal)
+      confirmByToken(login.getJwt(), tokenTemporario);
+    return login;
   }
 
   public Boolean confirmByToken(String jwtToken, String token) {
@@ -112,7 +116,7 @@ public class AuthService {
   }
 
   private void messageSqsFactor(UsersAppData userApp) {
-    String application = userApp.getUsers().getName();
+    String application = userApp.getApplications().getName();
     JsonObject sqsUsers = new JsonObject();
     sqsUsers.addProperty("access_token", userApp.getAccessToken().toString());
     sqsUsers.addProperty("application", application);
