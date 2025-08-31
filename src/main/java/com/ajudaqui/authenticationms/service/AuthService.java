@@ -92,7 +92,6 @@ public class AuthService {
         String token = tokenService.createToken(usersApp.getUsers().getId());
         emailService.sendEmail(usersApp.getUsers().getEmail(), "Token de confirmação do registro",
             token);
-        System.out
         if (usersApp.getId() != null && ENVIROMENT.equals(enviriment))
           messageSqsFactor(usersApp);
       } catch (Exception e) {
