@@ -54,11 +54,11 @@ public class AuthService {
     UsersAppData usersApp = usersAppDataService.findByUsersEmail(loginRequest.getEmail())
         .orElseThrow(() -> new MessageException("Usuário não localizado"));
     if (!usersApp.isActive())
-      throw new MessageException("sua conta esta desativada, por favor, entre em contato...");
-    UsernamePasswordAuthenticationToken hum = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
+      throw new MessageException("sua conta esta desativada, verifique seu email");
+    UsernamePasswordAuthenticationToken userAutheticator = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
         loginRequest.getPassword());
 
-    Authentication authentication = authenticationManager.authenticate(hum);
+    Authentication authentication = authenticationManager.authenticate(userAutheticator);
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
     return new LoginResponse(new UsersAppApplicationDto(usersApp),
@@ -90,6 +90,7 @@ public class AuthService {
       try {
 
         String token = tokenService.createToken(usersApp.getUsers().getId());
+        System.out.println("token de regsitro: "+token);
         emailService.sendEmail(usersApp.getUsers().getEmail(), "Token de confirmação do registro",
             token);
         if (usersApp.getId() != null && ENVIROMENT.equals(enviriment))
@@ -97,10 +98,10 @@ public class AuthService {
       } catch (Exception e) {
       }
     }
-    LoginResponse login = new LoginResponse(new UsersAppApplicationDto(usersApp), jwtUtils.generatedJwtToken(usersApp));
-    if (!isInternal)
-      confirmByToken(login.getJwt(), tokenTemporario);
-    return login;
+    // LoginResponse login = new LoginResponse(new UsersAppApplicationDto(usersApp), jwtUtils.generatedJwtToken(usersApp));
+    // if (!isInternal)
+    //   confirmByToken(login.getJwt(), tokenTemporario);
+    return new LoginResponse(new UsersAppApplicationDto(usersApp), jwtUtils.generatedJwtToken(usersApp));
   }
 
   public Boolean confirmByToken(String jwtToken, String token) {

@@ -57,7 +57,9 @@ public class UsersRegister {
     Users users = new Users();
     users.setName(this.name);
     users.setEmail(this.email);
-    users.setActive(isInternal);
+    // TODO retirar o cmenatri quando chegar a nova versão do front
+    // users.setActive(isInternal);
+    users.setActive(true);
     return users;
   }
 
