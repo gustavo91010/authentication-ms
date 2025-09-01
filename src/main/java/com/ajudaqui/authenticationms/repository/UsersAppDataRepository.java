@@ -13,7 +13,7 @@ import org.springframework.data.repository.query.Param;
 public interface UsersAppDataRepository extends JpaRepository<UsersAppData, Long> {
 
   @Query(value = "SELECT uap.* FROM users u LEFT JOIN user_app_data uap ON u.id = uap.user_id WHERE u.email = :email", nativeQuery = true)
-  Optional<UsersAppData> findByUserEmail(@Param("email") String email);
+  List<UsersAppData> findByUserEmail(@Param("email") String email);
 
   @Query(value = "SELECT * FROM user_app_data WHERE user_id=:usersId", nativeQuery = true)
   Optional<UsersAppData> findByUsersId(Long usersId);

@@ -34,7 +34,7 @@ public class UsersAppDataService {
     return this.repository.findByUserEmail(email).orElseThrow(() -> new NotFoundException("Usuário nao registrado"));
   }
 
-  public Optional<UsersAppData> findByUsersEmail(String email) {
+  public List<UsersAppData> findByUsersEmail(String email) {
     return this.repository.findByUserEmail(email);
   }
 

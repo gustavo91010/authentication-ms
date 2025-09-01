@@ -71,7 +71,9 @@ public class UsersRegister {
     usersAppData.setPassword(checkStrongPassword(this.password));
     usersAppData.setApplications(applications);
     usersAppData.setCreatedAt(LocalDateTime.now());
-    usersAppData.setActive(isInternal);
+    // TODO retirar o cmenatri quando chegar a nova versão do front
+    // usersAppData.setActive(isInternal);
+    usersAppData.setActive(true);
     return usersAppData;
   }
 

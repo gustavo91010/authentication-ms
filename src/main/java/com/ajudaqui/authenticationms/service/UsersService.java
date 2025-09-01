@@ -2,6 +2,8 @@ package com.ajudaqui.authenticationms.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.entity.*;
 import com.ajudaqui.authenticationms.exception.MessageException;
@@ -27,13 +29,18 @@ public class UsersService {
     this.applicationsService = applicationsService;
   }
 
+
   public UsersAppData create(UsersRegister usersRegister, boolean isInternal) {
     Applications application = applicationsService.findByName(usersRegister.getAplication());
     Users users = userRepository.findByEmail(usersRegister.getEmail())
         .orElseGet(() -> save(usersRegister.toUsers(isInternal)));
 
-    if (appDataService.findByUsersEmail(usersRegister.getEmail()).isPresent())
-      throw new MessageException("Email já registrado");
+    appDataService.findByUsersEmail(usersRegister.getEmail())
+        .filter(app -> usersRegister.getAplication().equals(app.getApplications().getName()))
+        .ifPresent(app -> {
+          throw new MessageException("Email já registrado");
+        });
+
     UsersAppData usersAppData = usersRegister.toAppData(users, isInternal, application,
         appDataService.assignRole(ERoles.ROLE_USER));
     if (usersAppData.getApplications().getName() == null ||
