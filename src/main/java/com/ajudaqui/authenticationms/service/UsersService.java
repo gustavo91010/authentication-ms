@@ -34,7 +34,6 @@ public class UsersService {
     Applications application = applicationsService.findByName(usersRegister.getAplication());
     Users users = userRepository.findByEmail(usersRegister.getEmail())
         .orElseGet(() -> save(usersRegister.toUsers(isInternal)));
-
     appDataService.findByUsersEmail(usersRegister.getEmail(), usersRegister.getAplication())
         .filter(app -> usersRegister.getAplication().equals(app.getApplications().getName()))
         .ifPresent(app -> {

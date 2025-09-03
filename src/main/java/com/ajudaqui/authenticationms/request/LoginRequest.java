@@ -10,13 +10,6 @@ public class LoginRequest {
 
   private String application;
 
-  public LoginRequest(@NotEmpty(message = "O campo email não pode ser vazio") String email,
-      @NotEmpty(message = "O campo password não pode ser vazio") String password) {
-    this.email = email;
-    this.password = password;
-    this.application = "bill-manager";
-  }
-
   public String getEmail() {
     return email;
   }
@@ -35,7 +28,7 @@ public class LoginRequest {
 
   @Override
   public String toString() {
-    return "LoginRequest [email=" + email + ", password=" + password + "]";
+    return "LoginRequest{email=" + email + ", password=" + password + ", application=" + application + "}";
   }
 
   public String getApplication() {
@@ -45,6 +38,5 @@ public class LoginRequest {
   public void setApplication(String application) {
     this.application = application;
   }
-
 
 }

@@ -31,7 +31,6 @@ public class StartUpRunner implements CommandLineRunner {
     Applications app = applicationService.getOrRegister("bill-manager");
 
     List<Users> all = usersServices.findAll();
-    System.out.println("Quantos temos ma base? " + all.size());
     String application = "bill-manager";
     for (Users users : all) {
       try {

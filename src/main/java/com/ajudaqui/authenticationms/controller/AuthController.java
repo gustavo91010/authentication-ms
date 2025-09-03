@@ -50,13 +50,13 @@ public class AuthController {
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(
       @Valid @RequestBody UsersRegister usersRegister) {
-    try {
+    // try {
       logger.info(String.format("[POST] | auth/signup | email: " + usersRegister.getEmail()));
       return ResponseEntity.ok(authService.registerUser(usersRegister));
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(
-          String.format("Problema ao registrar o email %s, %s", usersRegister.getEmail(), e.getMessage())));
-    }
+    // } catch (Exception e) {
+    //   return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(
+    //       String.format("Problema ao registrar o email %s, %s", usersRegister.getEmail(), e.getMessage())));
+    // }
   }
 
 }

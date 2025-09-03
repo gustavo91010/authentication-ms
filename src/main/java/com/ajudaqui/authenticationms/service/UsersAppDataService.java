@@ -38,7 +38,12 @@ public class UsersAppDataService {
   }
 
   public Optional<UsersAppData> findByUsersEmail(String email, String application) {
-    return this.repository.findByUserEmail(email).stream()
+    List<UsersAppData> byUserEmail = this.repository.findByUserEmail(email);
+    if (!byUserEmail.isEmpty()) {
+    }
+    if (byUserEmail.isEmpty())
+      return Optional.empty();
+    return byUserEmail.stream()
         .filter(u -> application.equals(u.getApplications().getName()))
         .findFirst();
   }

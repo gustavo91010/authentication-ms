@@ -51,6 +51,9 @@ public class AuthService {
   }
 
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
+    if (loginRequest.getApplication() == null)
+      loginRequest.setApplication("bill-manager");
+
     UsersAppData usersApp = usersAppDataService.getUsersByEmail(loginRequest.getEmail(), loginRequest.getApplication());
     if (!usersApp.isActive())
       throw new MessageException("sua conta esta desativada, verifique seu email");
@@ -89,7 +92,6 @@ public class AuthService {
       try {
 
         String token = tokenService.createToken(usersApp.getUsers().getId());
-        System.out.println("token de regsitro: " + token);
         emailService.sendEmail(usersApp.getUsers().getEmail(), "Token de confirmação do registro",
             token);
         if (usersApp.getId() != null && ENVIROMENT.equals(enviriment))

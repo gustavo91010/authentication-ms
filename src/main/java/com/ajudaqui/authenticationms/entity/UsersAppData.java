@@ -146,4 +146,11 @@ public class UsersAppData {
     this.applications = applications;
   }
 
+  @Override
+  public String toString() {
+    return "UsersAppData{id=" + id + ", users=" + users.getName() + ", applications=" + applications.getName() + ", password=" + password
+        + "}";
+  }
+
+
 }

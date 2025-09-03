@@ -21,6 +21,11 @@ public class UsersRegister {
   @NotBlank(message = "Campo aplication é obrigatorio")
   private String aplication;
 
+  @Override
+  public String toString() {
+    return "UsersRegister{name=" + name + ", email=" + email + ", aplication=" + aplication + "}";
+  }
+
   public String getEmail() {
     return email;
   }
