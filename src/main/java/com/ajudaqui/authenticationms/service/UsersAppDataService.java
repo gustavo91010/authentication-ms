@@ -30,16 +30,20 @@ public class UsersAppDataService {
     return repository.findByAppId(appId);
   }
 
-  public UsersAppData getUsersByEmail(String email) {
-    return this.repository.findByUserEmail(email).orElseThrow(() -> new NotFoundException("Usuário nao registrado"));
+  public UsersAppData getUsersByEmail(String email, String application) {
+    return this.repository.findByUserEmail(email).stream()
+        .filter(u -> application.equals(u.getApplications().getName()))
+        .findFirst()
+        .orElseThrow(() -> new NotFoundException("Usuário nao registrado"));
   }
 
-  public List<UsersAppData> findByUsersEmail(String email) {
-    return this.repository.findByUserEmail(email);
+  public Optional<UsersAppData> findByUsersEmail(String email, String application) {
+    return this.repository.findByUserEmail(email).stream()
+        .filter(u -> application.equals(u.getApplications().getName()))
+        .findFirst();
   }
 
   public UsersAppData save(UsersAppData usersAppData) {
-
     return repository.save(usersAppData);
   }
 

@@ -19,7 +19,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
   @Transactional
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    UsersAppData user = usersRepository.findByUserEmail(username)
+    UsersAppData user = usersRepository.findByUserEmail(username).stream()
+        .filter(u -> "bill-manager".equals(u.getApplications().getName()))
+        .findFirst()
         .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
     return UserDetailsImpl.build(user);

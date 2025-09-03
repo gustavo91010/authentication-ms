@@ -77,7 +77,7 @@ public class GithubService {
     String urlLogin = "redirect:http://localhost:3000/?token=";
     String application = "bill-manager";
     try {
-      LoginResponse login = authService.authenticateUser(data.get("email"));
+      LoginResponse login = authService.authenticateUser(data.get("email"), application);
       return urlLogin + login.getAccess_token();
     } catch (Exception e) {
       return pageService.showRegisterForm(application, urlLogin, urlRegister, data.get("email"), data.get("name"),

@@ -51,11 +51,11 @@ public class AuthService {
   }
 
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
-    UsersAppData usersApp = usersAppDataService.findByUsersEmail(loginRequest.getEmail())
-        .orElseThrow(() -> new MessageException("Usuário não localizado"));
+    UsersAppData usersApp = usersAppDataService.getUsersByEmail(loginRequest.getEmail(), loginRequest.getApplication());
     if (!usersApp.isActive())
       throw new MessageException("sua conta esta desativada, verifique seu email");
-    UsernamePasswordAuthenticationToken userAutheticator = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
+    UsernamePasswordAuthenticationToken userAutheticator = new UsernamePasswordAuthenticationToken(
+        loginRequest.getEmail(),
         loginRequest.getPassword());
 
     Authentication authentication = authenticationManager.authenticate(userAutheticator);
@@ -65,9 +65,8 @@ public class AuthService {
         jwtUtils.generatedJwtToken(usersApp));
   }
 
-  public LoginResponse authenticateUser(String email) {
-    UsersAppData usersApp = usersAppDataService.findByUsersEmail(email)
-        .orElseThrow(() -> new MessageException("Usuário não regisrado"));
+  public LoginResponse authenticateUser(String email, String application) {
+    UsersAppData usersApp = usersAppDataService.getUsersByEmail(email, application);
     return new LoginResponse(new UsersAppApplicationDto(usersApp),
         jwtUtils.generatedJwtToken(usersApp));
   }
@@ -76,8 +75,8 @@ public class AuthService {
     String urlRegister = "http://localhost:8082/login/register-auth2";
     String urlLogin = "redirect:http://localhost:3000/?token=";
     String application = "bill-manager";
-    if (usersAppDataService.findByUsersEmail(email).isPresent())
-      return urlLogin + authenticateUser(email).getAccess_token();
+    if (usersAppDataService.findByUsersEmail(email, application).isPresent())
+      return urlLogin + authenticateUser(email, application).getAccess_token();
     return pageService.showRegisterForm(application, urlLogin, urlRegister, email, name,
         modal);
   }
@@ -90,7 +89,7 @@ public class AuthService {
       try {
 
         String token = tokenService.createToken(usersApp.getUsers().getId());
-        System.out.println("token de regsitro: "+token);
+        System.out.println("token de regsitro: " + token);
         emailService.sendEmail(usersApp.getUsers().getEmail(), "Token de confirmação do registro",
             token);
         if (usersApp.getId() != null && ENVIROMENT.equals(enviriment))
@@ -98,9 +97,10 @@ public class AuthService {
       } catch (Exception e) {
       }
     }
-    // LoginResponse login = new LoginResponse(new UsersAppApplicationDto(usersApp), jwtUtils.generatedJwtToken(usersApp));
+    // LoginResponse login = new LoginResponse(new UsersAppApplicationDto(usersApp),
+    // jwtUtils.generatedJwtToken(usersApp));
     // if (!isInternal)
-    //   confirmByToken(login.getJwt(), tokenTemporario);
+    // confirmByToken(login.getJwt(), tokenTemporario);
     return new LoginResponse(new UsersAppApplicationDto(usersApp), jwtUtils.generatedJwtToken(usersApp));
   }
 

@@ -32,11 +32,11 @@ public class StartUpRunner implements CommandLineRunner {
 
     List<Users> all = usersServices.findAll();
     System.out.println("Quantos temos ma base? " + all.size());
-
+    String application = "bill-manager";
     for (Users users : all) {
       try {
 
-        if (!usersAppDataService.findByUsersEmail(users.getEmail()).isPresent()) {
+        if (!usersAppDataService.findByUsersEmail(users.getEmail(), application).isPresent()) {
           System.out.println("Tratando o email: " + users.getEmail());
           UsersRegister register = new UsersRegister();
 
@@ -47,7 +47,7 @@ public class StartUpRunner implements CommandLineRunner {
           register.setAplication(app.getName());
           authService.registerUser(register);
         }
-        usersAppDataService.findByUsersEmail(users.getEmail())
+        usersAppDataService.findByUsersEmail(users.getEmail(), application)
             .ifPresent(u -> {
               if (users.getPassword() != null &&
                   !users.getPassword().isEmpty()) {

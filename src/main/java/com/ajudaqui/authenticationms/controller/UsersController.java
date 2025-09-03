@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,10 +24,11 @@ public class UsersController {
   private UsersAppDataService userApp = new UsersAppDataService();
 
   @GetMapping("/email/{email}")
-  public ResponseEntity<?> findById(@PathVariable String email) {
+  public ResponseEntity<?> findById(@PathVariable String email,
+      @RequestParam(required = false, defaultValue = "bill-manager") String application) {
     try {
       logger.info("[GET] | /users/email/{email}", email);
-      return ResponseEntity.ok(userApp.getUsersByEmail(email));
+      return ResponseEntity.ok(userApp.getUsersByEmail(email, application));
     } catch (Exception e) {
       logger.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));

@@ -40,7 +40,7 @@ public class ApplicationsService {
 
     if (appicationDto.getEmailModerador() == null || appicationDto.getEmailModerador().isEmpty())
       throw new MessageException("O campo email do emailModerador não pode estar vazio.");
-    UsersAppData usersAppData = usersAppDataService.findByUsersEmail(appicationDto.getEmailModerador())
+    UsersAppData usersAppData = usersAppDataService.findByUsersEmail(appicationDto.getEmailModerador(), appicationDto.getName())
         .orElseThrow(() -> new MessageException("O moderador tem que estar registrado previamente"));
     Roles moderator = usersAppDataService.findByRole(ERoles.ROLE_MODERATOR);
     usersAppData.getRoles().add(moderator);
@@ -49,15 +49,15 @@ public class ApplicationsService {
 
   public List<HttpUsersAppData> userByApp(String email, String appName) {
     Applications byName = findByName(appName);
-    checkPermission(email, byName.getClientId());
+    checkPermission(email, byName.getClientId(), appName);
 
     List<UsersAppData> byAppId = usersAppDataService.findByAppId(byName.getId());
     return byAppId.stream().map(HttpUsersAppData::new)
         .collect(Collectors.toList());
   }
 
-  private void checkPermission(String email, String clientId) {
-    UsersAppData user = usersAppDataService.getUsersByEmail(email);
+  private void checkPermission(String email,String application, String clientId) {
+    UsersAppData user = usersAppDataService.getUsersByEmail(email, application);
     boolean isAdm = user.getRoles().stream()
         .map(Roles::getName)
         .anyMatch(r -> ERoles.ROLE_MODERATOR.equals(r));
@@ -84,7 +84,7 @@ public class ApplicationsService {
   public Applications findById(String email, Long applicationId) {
     return repository.findById(applicationId)
         .map(a -> {
-          checkPermission(email, a.getClientId());
+          checkPermission(email, a.getClientId(), a.getName());
           return a;
         })
         .orElseThrow(() -> new NotFoundException("Aplicação não registrada"));
