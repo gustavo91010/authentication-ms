@@ -1,5 +1,6 @@
 package com.ajudaqui.authenticationms.service.oauth2;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -39,6 +40,10 @@ public class GithubService {
 
   @Value("${oauth.github.redirect-uri}")
   private String redirectUri;
+
+  @Value("${app.url}")
+  private String url;
+
   @Autowired
   private PageService pageService;
   private final RestTemplate restTemplate;
@@ -73,8 +78,8 @@ public class GithubService {
 
   public String authorized(String code, Model model) {
     Map<String, String> data = getUserData(code);
-    String urlRegister = "http://localhost:8082/login/register-auth2";
-    String urlLogin = "redirect:http://localhost:3000/?token=";
+    String urlRegister = format("http://%s:8082/login/register-auth2", url);
+    String urlLogin = format("redirect:http://%s:3000/?token=", url);
     String application = "bill-manager";
     try {
       LoginResponse login = authService.authenticateUser(data.get("email"), application);

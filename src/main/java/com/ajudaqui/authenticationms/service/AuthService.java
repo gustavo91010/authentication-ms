@@ -1,5 +1,7 @@
 package com.ajudaqui.authenticationms.service;
 
+import static java.lang.String.format;
+
 import java.util.UUID;
 
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
@@ -30,6 +32,10 @@ public class AuthService {
   private PageService pageService;
   @Value("${app.info.enviroment}")
   private String enviriment;
+
+  @Value("${app.url}")
+  private String url;
+
   private AuthenticationManager authenticationManager;
   private UsersAppDataService usersAppDataService;
   private EmailService emailService;
@@ -75,8 +81,8 @@ public class AuthService {
   }
 
   public String authOrRegister(String email, String name, Model modal) {
-    String urlRegister = "http://localhost:8082/login/register-auth2";
-    String urlLogin = "redirect:http://localhost:3000/?token=";
+    String urlRegister = format("http://%s:8082/login/register-auth2", url);
+    String urlLogin = format("redirect:http://%s:3000/?token=", url);
     String application = "bill-manager";
     if (usersAppDataService.findByUsersEmail(email, application).isPresent())
       return urlLogin + authenticateUser(email, application).getAccess_token();
@@ -122,6 +128,7 @@ public class AuthService {
     JsonObject sqsUsers = new JsonObject();
     sqsUsers.addProperty("access_token", userApp.getAccessToken().toString());
     sqsUsers.addProperty("application", application);
+    sqsUsers.addProperty("email", userApp.getUsers().getEmail());
     sqsService.sendMessage(application, sqsUsers.toString());
   }
 
