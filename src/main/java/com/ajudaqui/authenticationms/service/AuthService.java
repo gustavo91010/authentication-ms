@@ -17,6 +17,7 @@ import com.google.gson.JsonObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Retry;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -81,13 +82,28 @@ public class AuthService {
   }
 
   public String authOrRegister(String email, String name, Model modal) {
-    String urlRegister = format("http://%s:8082/login/register-auth2", url);
     String urlLogin = format("redirect:http://%s:3000/?token=", url);
     String application = "bill-manager";
-    if (usersAppDataService.findByUsersEmail(email, application).isPresent())
-      return urlLogin + authenticateUser(email, application).getAccess_token();
+    // http://localhost:3000/api/auth/callback?token=JWT_AQUI&name=Sr-lalala&email=email-test@lalala.com
+
+    if (usersAppDataService.findByUsersEmail(email, application).isPresent()) {
+      LoginResponse login = authenticateUser(email, application);
+      return autoLogin(login.getJwt(), login.getName(), login.getEmail());
+      // return
+      // String.format("http://localhost:3000/api/auth/callback?token=%s&name=%s&email=%s",
+      // login.getJwt(), login.getName(), login.getEmail());
+
+      // return urlLogin + authenticateUser(email, application).getAccess_token();
+    }
+    String urlRegister = format("http://%s:8082/login/register-auth2", url);
     return pageService.showRegisterForm(application, urlLogin, urlRegister, email, name,
         modal);
+  }
+
+  public String autoLogin(String jwt, String name, String email) {
+
+    return String.format("http://%s:3000/api/auth/callback?token=%s&name=%s&email=%s",
+        url, jwt, name, email);
   }
 
   public LoginResponse registerUser(UsersRegister usersRegister) {

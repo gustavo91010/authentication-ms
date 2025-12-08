@@ -1,6 +1,9 @@
 package com.ajudaqui.authenticationms.controller;
 
+import java.util.UUID;
+
 import com.ajudaqui.authenticationms.request.UsersRegister;
+import com.ajudaqui.authenticationms.response.LoginResponse;
 import com.ajudaqui.authenticationms.service.AuthService;
 import com.ajudaqui.authenticationms.service.oauth2.*;
 
@@ -61,6 +64,7 @@ public class SocialAuthController {
     usersRegister.setEmail(email);
     usersRegister.setPassword(password);
     usersRegister.setAplication(appName);
-    return urlLogin + authService.registerUser(usersRegister).getAccess_token();
+    LoginResponse login = authService.registerUser(usersRegister);
+    return authService.autoLogin(login.getJwt(), login.getName(), login.getEmail());
   }
 }
