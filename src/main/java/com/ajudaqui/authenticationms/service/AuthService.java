@@ -36,6 +36,7 @@ public class AuthService {
 
   @Value("${app.url}")
   private String url;
+  private String ipFront = "3.229.225.73";
 
   private AuthenticationManager authenticationManager;
   private UsersAppDataService usersAppDataService;
@@ -82,7 +83,7 @@ public class AuthService {
   }
 
   public String authOrRegister(String email, String name, Model modal) {
-    String urlLogin = format("redirect:http://%s:3000/?token=", url);
+    String urlLogin = format("redirect:http://%s:3000/?token=", ipFront);
     String application = "bill-manager";
     // http://localhost:3000/api/auth/callback?token=JWT_AQUI&name=Sr-lalala&email=email-test@lalala.com
 
@@ -102,8 +103,12 @@ public class AuthService {
 
   public String autoLogin(String jwt, String name, String email) {
 
-    return String.format("http://%s:3000/api/auth/callback?token=%s&name=%s&email=%s",
-        url, jwt, name, email);
+    String lalala = String.format("redirect:http://%s:3000/api/auth/callback?token=%s&name=%s&email=%s",
+        ipFront, jwt, name, email);
+
+    System.out.println("Bora ve pra onde t aindo...");
+    System.out.println(lalala);
+    return lalala;
   }
 
   public LoginResponse registerUser(UsersRegister usersRegister) {
