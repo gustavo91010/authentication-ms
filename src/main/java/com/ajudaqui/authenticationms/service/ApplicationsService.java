@@ -34,15 +34,24 @@ public class ApplicationsService {
   public Applications regsiter(ApplicationDto appicationDto) {
     if (appicationDto.getName() == null || appicationDto.getName().isEmpty())
       throw new MessageException("O campo name não pode estar vazio.");
-    String name = appicationDto.getName().toLowerCase();
-    if (repository.findByName(name).isPresent())
-      throw new MessageException("Nome já registrado");
+
+    if (appicationDto.getApplicationOfModerador() == null || appicationDto.getApplicationOfModerador().isEmpty())
+      throw new MessageException("O campo aplicação do moderador não pode estar vazio.");
 
     if (appicationDto.getEmailModerador() == null || appicationDto.getEmailModerador().isEmpty())
       throw new MessageException("O campo email do emailModerador não pode estar vazio.");
-    UsersAppData usersAppData = usersAppDataService.findByUsersEmail(appicationDto.getEmailModerador(), appicationDto.getName())
+
+    String name = appicationDto.getName().toLowerCase();
+
+    if (repository.findByName(name).isPresent())
+      throw new MessageException("Nome já registrado");
+
+    UsersAppData usersAppData = usersAppDataService
+        .findByUsersEmail(appicationDto.getEmailModerador(), appicationDto.getApplicationOfModerador())
         .orElseThrow(() -> new MessageException("O moderador tem que estar registrado previamente"));
+
     Roles moderator = usersAppDataService.findByRole(ERoles.ROLE_MODERATOR);
+
     usersAppData.getRoles().add(moderator);
     return save(appicationDto.toEntity());
   }
@@ -56,7 +65,7 @@ public class ApplicationsService {
         .collect(Collectors.toList());
   }
 
-  private void checkPermission(String email,String application, String clientId) {
+  private void checkPermission(String email, String application, String clientId) {
     UsersAppData user = usersAppDataService.getUsersByEmail(email, application);
     boolean isAdm = user.getRoles().stream()
         .map(Roles::getName)
@@ -102,8 +111,8 @@ public class ApplicationsService {
 
   public List<HttpAplications> findAll() {
     return repository.findAll().stream()
-      .map(HttpAplications::new)
-      .collect(Collectors.toList());
+        .map(HttpAplications::new)
+        .collect(Collectors.toList());
   }
 
 }

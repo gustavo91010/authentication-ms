@@ -7,6 +7,7 @@ import com.ajudaqui.authenticationms.entity.Applications;
 public class ApplicationDto {
 
   private String emailModerador;
+  private String applicationOfModerador;
   private String name;
   private String redirectUrl;
   private String registerUrl;
@@ -76,6 +77,14 @@ public class ApplicationDto {
 
   public void setEmailModerador(String emailModerador) {
     this.emailModerador = emailModerador;
+  }
+
+  public String getApplicationOfModerador() {
+    return applicationOfModerador;
+  }
+
+  public void setApplicationOfModerador(String applicationOfModerador) {
+    this.applicationOfModerador = applicationOfModerador;
   }
 
 }
