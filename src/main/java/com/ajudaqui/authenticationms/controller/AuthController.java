@@ -2,6 +2,7 @@ package com.ajudaqui.authenticationms.controller;
 
 import javax.validation.Valid;
 
+import com.ajudaqui.authenticationms.controller.doc.AuthControllerDoc;
 import com.ajudaqui.authenticationms.request.LoginRequest;
 import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.response.*;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class AuthController implements AuthControllerDoc{
   Logger logger = LoggerFactory.getLogger(AuthController.class);
 
   final private AuthService authService;
@@ -48,15 +49,10 @@ public class AuthController {
   }
 
   @PostMapping("/signup")
-  public ResponseEntity<?> registerUser(
+  public ResponseEntity<LoginResponse> registerUser(
       @Valid @RequestBody UsersRegister usersRegister) {
-    // try {
-      logger.info(String.format("[POST] | auth/signup | email: " + usersRegister.getEmail()));
-      return ResponseEntity.ok(authService.registerUser(usersRegister));
-    // } catch (Exception e) {
-    //   return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(
-    //       String.format("Problema ao registrar o email %s, %s", usersRegister.getEmail(), e.getMessage())));
-    // }
+    logger.info(String.format("[POST] | auth/signup | email: " + usersRegister.getEmail()));
+    return ResponseEntity.ok(authService.registerUser(usersRegister));
   }
 
 }

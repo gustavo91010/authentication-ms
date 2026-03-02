@@ -9,15 +9,33 @@ import java.util.stream.Collectors;
 import com.ajudaqui.authenticationms.dto.UsersAppApplicationDto;
 import com.ajudaqui.authenticationms.entity.Roles;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Resposta retornada após autenticação bem-sucedida")
 public class LoginResponse {
 
+  @Schema(example = "1", description = "ID do usuário")
   private Long id;
+
+  @Schema(example = "João Silva", description = "Nome do usuário")
   private String name;
+
+  @Schema(example = "usuario@email.com", description = "Email do usuário")
   private String email;
+
+  @Schema(example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", description = "Token JWT para autenticação")
   private String jwt;
+
+  @Schema(example = "[\"ROLE_USER\", \"ROLE_ADMIN\"]", description = "Perfis de acesso do usuário")
   private List<String> roles = new ArrayList<>();
+
+  @Schema(example = "true", description = "Indica se o usuário está ativo")
   private Boolean active;
+
+  @Schema(example = "550e8400-e29b-41d4-a716-446655440000", description = "Token de acesso da aplicação")
   private UUID access_token;
+
+  @Schema(example = "aplicacao-name", description = "Nome da aplicação vinculada")
   private String application;
 
   public LoginResponse(UsersAppApplicationDto users, String jwt) {
