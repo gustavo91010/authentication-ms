@@ -4,12 +4,27 @@ import java.time.LocalDateTime;
 
 import com.ajudaqui.authenticationms.entity.Applications;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Resposta da aplicação")
 public class HttpAplications {
+
+  @Schema(example = "1")
   private Long id;
+
+  @Schema(example = "aplication-name")
   private String name;
+
+  @Schema(example = "https://app.com/register")
   private String registertUrl;
+
+  @Schema(example = "https://app.com/redirect")
   private String redirectUrl;
+
+  @Schema(example = "150")
   private int totalUsers;
+
+  @Schema(example = "2026-02-27T22:30:00")
   private LocalDateTime createdAt;
 
   public HttpAplications(Applications applcations) {

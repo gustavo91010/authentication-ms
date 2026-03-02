@@ -3,6 +3,7 @@ package com.ajudaqui.authenticationms.controller;
 import java.util.List;
 
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
+import com.ajudaqui.authenticationms.controller.doc.ApplicationsControllerDoc;
 import com.ajudaqui.authenticationms.dto.*;
 import com.ajudaqui.authenticationms.entity.Applications;
 import com.ajudaqui.authenticationms.service.ApplicationsService;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/app")
-public class ApplicationController {
+public class ApplicationController implements ApplicationsControllerDoc {
 
   final private ApplicationsService applicationsService;
   final private JwtUtils jwtUtils;
@@ -23,32 +24,33 @@ public class ApplicationController {
     this.jwtUtils = jwtUtils;
   }
 
-  @PostMapping("")
+  @Override
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   public ResponseEntity<HttpAplications> regsiter(@RequestBody ApplicationDto appicationDto) {
     Applications regsiter = applicationsService.regsiter(appicationDto);
     return ResponseEntity.ok(new HttpAplications(regsiter));
   }
 
-  @GetMapping("/name/{appNAme}")
+  @Override
   @PreAuthorize("hasRole('ROLE_MODERATOR')")
   public ResponseEntity<List<HttpUsersAppData>> getUsersByApp(@RequestHeader("Authorization") String jwtToken,
-      @PathVariable String appNAme) {
+      @PathVariable String appName) {
     String email = jwtUtils.getEmailFromJwtToken(jwtToken);
-    return ResponseEntity.ok(applicationsService.userByApp(email, appNAme));
+    return ResponseEntity.ok(applicationsService.userByApp(email, appName));
   }
 
-  @GetMapping("/all")
+  @Override
   @PreAuthorize("hasRole('ROLE_ADMIN')")
-  public ResponseEntity<?> allApplications() {
+  public ResponseEntity<List<HttpAplications>> allApplications() {
     return ResponseEntity.ok(applicationsService.findAll());
   }
 
-  @GetMapping("/id/{applicationId}")
+  @Override
   @PreAuthorize("hasRole('ROLE_ADMIN')")
-  public ResponseEntity<Applications> getById(@RequestHeader("Authorization") String jwtToken,
+  public ResponseEntity<HttpAplications> getById(@RequestHeader("Authorization") String jwtToken,
       @PathVariable Long applicationId) {
     String email = jwtUtils.getEmailFromJwtToken(jwtToken);
-    return ResponseEntity.ok(applicationsService.findById(email, applicationId));
+    Applications aplicaiton = applicationsService.findById(email, applicationId);
+    return ResponseEntity.ok(new HttpAplications(aplicaiton));
   }
 }

@@ -2,12 +2,19 @@ package com.ajudaqui.authenticationms.dto;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
 import com.ajudaqui.authenticationms.entity.Applications;
 
 public class ApplicationDto {
 
+  @Email
+  @NotBlank(message = "Email é obrigatório")
   private String emailModerador;
+  @NotBlank(message = "Aplicação do moderador é obrigatória")
   private String applicationOfModerador;
+  @NotBlank(message = "Nome é obrigatório")
   private String name;
   private String redirectUrl;
   private String registerUrl;
