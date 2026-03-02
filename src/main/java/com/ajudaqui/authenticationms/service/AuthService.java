@@ -2,17 +2,21 @@ package com.ajudaqui.authenticationms.service;
 
 import static java.lang.String.format;
 
+import java.util.Map;
 import java.util.UUID;
 
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.dto.UsersAppApplicationDto;
 import com.ajudaqui.authenticationms.entity.Token;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
+import com.ajudaqui.authenticationms.exception.BadRequestException;
 import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.request.LoginRequest;
 import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.response.LoginResponse;
 import com.ajudaqui.authenticationms.service.sqs.SqsService;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,25 +96,31 @@ public class AuthService {
 
   public LoginResponse registerUser(UsersRegister usersRegister) {
     boolean isProd = ENVIROMENT_PROD.equals(enviroment_current);
-    UsersAppData usersApp = usersService.create(usersRegister, !isProd);
+    UsersAppData userApp = usersService.create(usersRegister, !isProd);
+    String urlApp = userApp.getApplications().getRegisterUrl();
+
+    if (isProd && (urlApp == null || urlApp.isBlank()))
+      throw new BadRequestException("A Aplicação não tem URL de registro cadastrada");
 
     try {
 
-      String token = tokenService.createToken(usersApp.getUsers().getId());
-      emailService.sendEmail(usersApp.getUsers().getEmail(),
+      String token = tokenService.createToken(userApp.getUsers().getId());
+      emailService.sendEmail(userApp.getUsers().getEmail(),
           "Token de confirmação do registro", token);
 
       if (!isProd)
-        confirmByToken(jwtUtils.generatedJwtToken(usersApp), token);
+        confirmByToken(jwtUtils.generatedJwtToken(userApp), token);
 
-      if (usersApp.getId() != null && isProd)
-        messageSqsFactor(usersApp);
+      if (userApp.getId() != null && isProd) {
+
+        messageSqsFactor(userApp, usersRegister.getOtherFields());
+      }
 
     } catch (Exception e) {
       e.printStackTrace();
     }
 
-    return new LoginResponse(new UsersAppApplicationDto(usersApp), jwtUtils.generatedJwtToken(usersApp));
+    return new LoginResponse(new UsersAppApplicationDto(userApp), jwtUtils.generatedJwtToken(userApp));
   }
 
   public Boolean confirmByToken(String jwtToken, String token) {
@@ -124,12 +134,18 @@ public class AuthService {
     return byEmail.isActive();
   }
 
-  private void messageSqsFactor(UsersAppData userApp) {
+  private void messageSqsFactor(UsersAppData userApp, Map<String, Object> otherFields) {
     String application = userApp.getApplications().getName();
     JsonObject sqsUsers = new JsonObject();
+
+    String urlApp = userApp.getApplications().getRegisterUrl();
+
     sqsUsers.addProperty("access_token", userApp.getAccessToken().toString());
+    sqsUsers.addProperty("url", urlApp);
     sqsUsers.addProperty("application", application);
     sqsUsers.addProperty("email", userApp.getUsers().getEmail());
+    sqsUsers.add("otherFields", new Gson().toJsonTree(otherFields));
+
     sqsService.sendMessage(application, sqsUsers.toString());
   }
 
