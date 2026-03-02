@@ -3,6 +3,7 @@ package com.ajudaqui.authenticationms.request;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -20,6 +21,15 @@ public class UsersRegister {
   private String password;
   @NotBlank(message = "Campo aplication é obrigatorio")
   private String aplication;
+  private Map<String, Object> otherFields;
+
+  public Map<String, Object> getOtherFields() {
+    return otherFields;
+  }
+
+  public void setOtherFields(Map<String, Object> otherFields) {
+    this.otherFields = otherFields;
+  }
 
   @Override
   public String toString() {

@@ -7,6 +7,8 @@ import javax.validation.constraints.NotBlank;
 
 import com.ajudaqui.authenticationms.entity.Applications;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class ApplicationDto {
 
   @Email
@@ -16,8 +18,11 @@ public class ApplicationDto {
   private String applicationOfModerador;
   @NotBlank(message = "Nome é obrigatório")
   private String name;
+  @Schema(description = "A campo redirectUrl é utilizado para o redirecionamento no caso de auth2")
   private String redirectUrl;
+  @Schema(description = "A campo registerUrl(IP da aplicação) é utilizado para o envio dos dados no registro")
   private String registerUrl;
+  @Schema(description = "Campo para fazer a decodificação do jwt")
   private String secret;
 
   public ApplicationDto() {
@@ -58,6 +63,9 @@ public class ApplicationDto {
       applications.setSecretId(this.secret);
     if (this.redirectUrl != null && !this.redirectUrl.isEmpty())
       applications.setRedirectUrl(this.redirectUrl);
+    if (this.registerUrl != null && !this.registerUrl.isEmpty())
+      applications.setRegisterUrl(this.registerUrl);
+
     applications.setUpdatedAt(LocalDateTime.now());
     return applications;
   }

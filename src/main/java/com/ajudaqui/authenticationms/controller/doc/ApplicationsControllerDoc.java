@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,8 +31,7 @@ public interface ApplicationsControllerDoc {
   @PostMapping("")
   ResponseEntity<HttpAplications> regsiter(ApplicationDto appicationDto);
 
-  @Operation(summary = "Listar usuários por aplicação", description = "Retorna todos os usuários vinculados a uma aplicação específica. "
-      + "Acesso permitido apenas para MODERATOR.")
+  @Operation(summary = "Listar usuários por aplicação", description = "Retorna todos os usuários vinculados a uma aplicação específica. Acesso permitido apenas para MODERATOR.")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso"),
       @ApiResponse(responseCode = "403", description = "Acesso negado"),
@@ -58,11 +58,15 @@ public interface ApplicationsControllerDoc {
       @ApiResponse(responseCode = "403", description = "Acesso negado"),
       @ApiResponse(responseCode = "404", description = "Aplicação não encontrada")
   })
+
   @GetMapping("/id/{applicationId}")
   ResponseEntity<HttpAplications> getById(
-
       @Parameter(description = "Token JWT no formato Bearer") @RequestHeader("Authorization") String jwtToken,
-
       @Parameter(description = "ID da aplicação", example = "1") @PathVariable Long applicationId);
+
+  @PutMapping("/id/{applicationId}")
+  ResponseEntity<HttpAplications> update(
+      @Parameter(description = "Token JWT no formato Bearer do ADMIN da aplicação") @RequestHeader("Authorization") String jwtToken,
+      @Parameter(description = "ID da aplicação", example = "1") @PathVariable Long applicationId, ApplicationDto dto);
 
 }

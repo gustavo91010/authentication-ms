@@ -27,11 +27,11 @@ import org.springframework.ui.Model;
 @Service
 public class AuthService {
 
-  final private String ENVIROMENT = "prod";
+  final private String ENVIROMENT_PROD = "prod";
   @Autowired
   private PageService pageService;
   @Value("${app.info.enviroment}")
-  private String enviriment;
+  private String enviroment_current;
 
   @Value("${app.url}")
   private String url;
@@ -91,24 +91,25 @@ public class AuthService {
   }
 
   public LoginResponse registerUser(UsersRegister usersRegister) {
-    boolean isInternal = !ENVIROMENT.equals(enviriment);
-    UsersAppData usersApp = usersService.create(usersRegister, isInternal);
-    String tokenTemporario = "";
-    if (!isInternal) {
-      try {
+    boolean isProd = ENVIROMENT_PROD.equals(enviroment_current);
+    UsersAppData usersApp = usersService.create(usersRegister, !isProd);
 
-        String token = tokenService.createToken(usersApp.getUsers().getId());
-        emailService.sendEmail(usersApp.getUsers().getEmail(), "Token de confirmação do registro",
-            token);
-        if (usersApp.getId() != null && ENVIROMENT.equals(enviriment))
-          messageSqsFactor(usersApp);
-      } catch (Exception e) {
-      }
+    try {
+
+      String token = tokenService.createToken(usersApp.getUsers().getId());
+      emailService.sendEmail(usersApp.getUsers().getEmail(),
+          "Token de confirmação do registro", token);
+
+      if (!isProd)
+        confirmByToken(jwtUtils.generatedJwtToken(usersApp), token);
+
+      if (usersApp.getId() != null && isProd)
+        messageSqsFactor(usersApp);
+
+    } catch (Exception e) {
+      e.printStackTrace();
     }
-    // LoginResponse login = new LoginResponse(new UsersAppApplicationDto(usersApp),
-    // jwtUtils.generatedJwtToken(usersApp));
-    // if (!isInternal)
-    // confirmByToken(login.getJwt(), tokenTemporario);
+
     return new LoginResponse(new UsersAppApplicationDto(usersApp), jwtUtils.generatedJwtToken(usersApp));
   }
 

@@ -53,4 +53,16 @@ public class ApplicationController implements ApplicationsControllerDoc {
     Applications aplicaiton = applicationsService.findById(email, applicationId);
     return ResponseEntity.ok(new HttpAplications(aplicaiton));
   }
+
+  @Override
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  public ResponseEntity<HttpAplications> update(
+      @RequestHeader("Authorization") String jwtToken,
+      @PathVariable Long applicationId,
+      @RequestBody ApplicationDto dto) {
+
+    String email = jwtUtils.getEmailFromJwtToken(jwtToken);
+    Applications aplicaiton = applicationsService.update(email, applicationId, dto);
+    return ResponseEntity.ok(new HttpAplications(aplicaiton));
+  }
 }
