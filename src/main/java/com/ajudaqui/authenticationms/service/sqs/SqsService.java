@@ -1,6 +1,7 @@
 package com.ajudaqui.authenticationms.service.sqs;
 
-import com.ajudaqui.authenticationms.entity.Applications;
+import com.ajudaqui.authenticationms.dto.ApplicationSqsMessage;
+import com.google.gson.JsonObject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +32,13 @@ public class SqsService {
     this.queueService = queueService;
   }
 
-  public void sendMessage(Applications application, String payload) {
-
-    String applicationFilaName = queueService.getNameFileByApplication(application.getName());
+  public void sendMessage(ApplicationSqsMessage application) {
+    JsonObject sqsMessage = application.fromJson();
+    String applicationFilaName = queueService.getNameFileByApplication(sqsMessage.get("name").getAsString());
     String queueUrl = queueService.checkinfFile(applicationFilaName);
     SendMessageRequest request = SendMessageRequest.builder()
         .queueUrl(queueUrl)
-        .messageBody(payload)
+        .messageBody(sqsMessage.get("payload").toString())
         .build();
 
     sqsClient.sendMessage(request);

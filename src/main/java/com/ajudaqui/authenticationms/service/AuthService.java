@@ -2,25 +2,19 @@ package com.ajudaqui.authenticationms.service;
 
 import static java.lang.String.format;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
+import com.ajudaqui.authenticationms.dto.ApplicationSqsMessage;
 import com.ajudaqui.authenticationms.dto.UsersAppApplicationDto;
-import com.ajudaqui.authenticationms.entity.Applications;
-import com.ajudaqui.authenticationms.entity.Token;
-import com.ajudaqui.authenticationms.entity.UsersAppData;
+import com.ajudaqui.authenticationms.entity.*;
 import com.ajudaqui.authenticationms.exception.BadRequestException;
 import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.request.LoginRequest;
 import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.response.LoginResponse;
 import com.ajudaqui.authenticationms.service.sqs.SqsService;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -62,19 +56,21 @@ public class AuthService {
     this.tokenService = tokenService;
   }
 
-/**
- * Realiza a autenticação do usuário com base no e-mail, senha e aplicação.
- *
- * <p>Caso a aplicação não seja informada, define "bill-manager" como padrão.
- * Valida se o usuário está ativo, executa o processo de autenticação
- * pelo {@link AuthenticationManager} e, se bem-sucedido, armazena o
- * contexto de segurança e retorna o JWT correspondente.</p>
- *
- * @param loginRequest dados de login contendo e-mail, senha e aplicação
- * @return {@link LoginResponse} com os dados do usuário na aplicação
- *         e o token JWT gerado
- * @throws MessageException caso a conta esteja desativada
- */
+  /**
+   * Realiza a autenticação do usuário com base no e-mail, senha e aplicação.
+   *
+   * <p>
+   * Caso a aplicação não seja informada, define "bill-manager" como padrão.
+   * Valida se o usuário está ativo, executa o processo de autenticação
+   * pelo {@link AuthenticationManager} e, se bem-sucedido, armazena o
+   * contexto de segurança e retorna o JWT correspondente.
+   * </p>
+   *
+   * @param loginRequest dados de login contendo e-mail, senha e aplicação
+   * @return {@link LoginResponse} com os dados do usuário na aplicação
+   *         e o token JWT gerado
+   * @throws MessageException caso a conta esteja desativada
+   */
 
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
     // TODO depois retirar essa validação
@@ -111,23 +107,31 @@ public class AuthService {
         modal);
   }
 
-/**
- * Realiza o registro de um novo usuário na aplicação.
- *
- * <p>Cria o usuário, gera um token de confirmação e envia por e-mail.
- * Em ambiente de desenvolvimento, ele vai como ativo automaticamente, 
- * em produção, deve chamar o endpont confirmByToken passando o token para ativar o usuario
- * Em produção, valida se a aplicação possui URL de registro configurada e,
- * caso o registro seja concluído, envia mensagem para fila (SQS) com os dados adicionais.</p>
- *
- * @param usersRegister objeto contendo os dados necessários para registro do usuário,
- *                      incluindo campos adicionais utilizados na integração.
- * @return LoginResponse contendo os dados da aplicação do usuário e o JWT gerado para autenticação.
- * @throws BadRequestException caso esteja em produção e a aplicação não possua URL de registro configurada.
- */
+  /**
+   * Realiza o registro de um novo usuário na aplicação.
+   *
+   * <p>
+   * Cria o usuário, gera um token de confirmação e envia por e-mail.
+   * Em ambiente de desenvolvimento, ele vai como ativo automaticamente,
+   * em produção, deve chamar o endpont confirmByToken passando o token para
+   * ativar o usuario
+   * Em produção, valida se a aplicação possui URL de registro configurada e,
+   * caso o registro seja concluído, envia mensagem para fila (SQS) com os dados
+   * adicionais.
+   * </p>
+   *
+   * @param usersRegister objeto contendo os dados necessários para registro do
+   *                      usuário,
+   *                      incluindo campos adicionais utilizados na integração.
+   * @return LoginResponse contendo os dados da aplicação do usuário e o JWT
+   *         gerado para autenticação.
+   * @throws BadRequestException caso esteja em produção e a aplicação não possua
+   *                             URL de registro configurada.
+   */
   public LoginResponse registerUser(UsersRegister usersRegister) {
     boolean isProd = ENVIROMENT_PROD.equals(enviroment_current);
     UsersAppData userApp = usersService.create(usersRegister, !isProd);
+    Applications application = userApp.getApplications();
     String urlApp = userApp.getApplications().getRegisterUrl();
 
     if (isProd && (urlApp == null || urlApp.isBlank()))
@@ -143,9 +147,15 @@ public class AuthService {
         confirmByToken(jwtUtils.generatedJwtToken(userApp), token);
 
       if (userApp.getId() != null && isProd) {
+
         Map<String, Object> payload = usersRegister.getOtherFields();
         payload.put("access_token", userApp.getAccessToken());
-        messageSqsFactor(userApp.getApplications(), usersRegister.getOtherFields());
+        ApplicationSqsMessage sqsMessage = new ApplicationSqsMessage(
+            application.getRegisterUrl(),
+            application.getName(),
+            application.getSecretId(),
+            payload);
+        messageSqsFactor(sqsMessage);
       }
 
     } catch (Exception e) {
@@ -155,18 +165,22 @@ public class AuthService {
     return new LoginResponse(new UsersAppApplicationDto(userApp), jwtUtils.generatedJwtToken(userApp));
   }
 
-/**
- * Confirma o registro de um usuário a partir do token informado. que é recebido pelo email registrado
- *
- * <p>Valida o token, localiza o usuário associado e,
- * caso o identificador corresponda, ativa o registro,
- * persiste a alteração e remove o token utilizado.</p>
- *
- * @param jwtToken token JWT gerado para o usuário (não utilizado na validação atual)
- * @param token token de confirmação enviado ao usuário via email
- * @return {@code true} se o usuário estiver ativo após o processo,
- *         {@code false} caso contrário
- */
+  /**
+   * Confirma o registro de um usuário a partir do token informado. que é recebido
+   * pelo email registrado
+   *
+   * <p>
+   * Valida o token, localiza o usuário associado e,
+   * caso o identificador corresponda, ativa o registro,
+   * persiste a alteração e remove o token utilizado.
+   * </p>
+   *
+   * @param jwtToken token JWT gerado para o usuário (não utilizado na validação
+   *                 atual)
+   * @param token    token de confirmação enviado ao usuário via email
+   * @return {@code true} se o usuário estiver ativo após o processo,
+   *         {@code false} caso contrário
+   */
   public Boolean confirmByToken(String jwtToken, String token) {
     Token byToken = tokenService.findByToken(token);
     UsersAppData byEmail = usersAppDataService.findByUsersId(byToken.getId());
@@ -178,29 +192,39 @@ public class AuthService {
     return byEmail.isActive();
   }
 
-  private void messageSqsFactor(Applications application, Map<String, Object> payload) {
-    JsonObject sqsUsers = new JsonObject();
+  private void messageSqsFactor(ApplicationSqsMessage application) {
+    // // ApplicationSqsMessage lalala= new ApplicationSqsMessage(
+    // // application.getRegisterUrl(),
+    // // application.getName(),
+    // // application.getSecretId(),
+    // // payload
+    // // );
+    // JsonObject sqsUsers = new JsonObject();
 
-    sqsUsers.addProperty("url", application.getRegisterUrl());
-    sqsUsers.addProperty("authorization", application.getSecretId());
-    sqsUsers.addProperty("application", application.getName());
+    // sqsUsers.addProperty("url", application.getRegisterUrl());
+    // sqsUsers.addProperty("authorization", application.getSecretId());
+    // sqsUsers.addProperty("application", application.getName());
 
-    sqsUsers.add("payload", new Gson().toJsonTree(payload));
+    // sqsUsers.add("payload", new Gson().toJsonTree(payload));
 
-    sqsService.sendMessage(application, sqsUsers.toString());
+    // sqsService.sendMessage(application, sqsUsers.toString());
+    sqsService.sendMessage(application);
   }
 
-/**
- * Verifica se o token de acesso informado pertence a um usuário ativo.
- *
- * <p>Converte o {@code accessToken} para {@link UUID}, busca o registro
- * correspondente e retorna o status de ativação.</p>
- *
- * @param accessToken token de acesso no formato String
- * @return {@code true} se o usuário associado estiver ativo,
- *         {@code false} caso contrário
- * @throws IllegalArgumentException caso o token não esteja em formato UUID válido
- */
+  /**
+   * Verifica se o token de acesso informado pertence a um usuário ativo.
+   *
+   * <p>
+   * Converte o {@code accessToken} para {@link UUID}, busca o registro
+   * correspondente e retorna o status de ativação.
+   * </p>
+   *
+   * @param accessToken token de acesso no formato String
+   * @return {@code true} se o usuário associado estiver ativo,
+   *         {@code false} caso contrário
+   * @throws IllegalArgumentException caso o token não esteja em formato UUID
+   *                                  válido
+   */
   public boolean verifyToken(String accessToken) {
     return usersAppDataService.findByAccessToken(UUID.fromString(accessToken)).isActive();
   }

@@ -2,6 +2,7 @@ package com.ajudaqui.authenticationms.controller;
 
 import java.util.List;
 
+import com.ajudaqui.authenticationms.dto.ApplicationSqsMessage;
 import com.ajudaqui.authenticationms.response.ApiResponseList;
 import com.ajudaqui.authenticationms.response.MessageResponse;
 import com.ajudaqui.authenticationms.service.sqs.QueueService;
@@ -21,8 +22,8 @@ public class SqsController {
   private QueueService queueService;
 
   @PostMapping("/send-message/{fila}")
-  public MessageResponse senMessage(@PathVariable(required = true) String fila, @RequestBody String message) {
-    sqsProducerService.sendMessage(fila, message);
+  public MessageResponse senMessage(@RequestBody ApplicationSqsMessage sqsMessage) {
+    sqsProducerService.sendMessage(sqsMessage);
     return new MessageResponse("Messagem enviada com sucesso!");
   }
 
