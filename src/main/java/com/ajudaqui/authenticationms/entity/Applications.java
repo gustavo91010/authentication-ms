@@ -24,12 +24,16 @@ public class Applications {
 
   @Column(name = "secret_key")
   private String secretId;
+
   @Column(name = "register_url")
   private String registerUrl;
+
   @Column(name = "redirect_url")
   private String redirectUrl;
+
   @Column(name = "created_at")
   private LocalDateTime createdAt;
+
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 

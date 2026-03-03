@@ -1,5 +1,7 @@
 package com.ajudaqui.authenticationms.service.sqs;
 
+import com.ajudaqui.authenticationms.entity.Applications;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,13 +31,13 @@ public class SqsService {
     this.queueService = queueService;
   }
 
-  public void sendMessage(String aplpicationName, String messageBody) {
+  public void sendMessage(Applications application, String payload) {
 
-    String applicationFilaName = queueService.getNameFileByApplication(aplpicationName);
+    String applicationFilaName = queueService.getNameFileByApplication(application.getName());
     String queueUrl = queueService.checkinfFile(applicationFilaName);
     SendMessageRequest request = SendMessageRequest.builder()
         .queueUrl(queueUrl)
-        .messageBody(messageBody)
+        .messageBody(payload)
         .build();
 
     sqsClient.sendMessage(request);

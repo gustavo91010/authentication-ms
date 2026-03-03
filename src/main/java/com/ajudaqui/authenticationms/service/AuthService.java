@@ -2,11 +2,13 @@ package com.ajudaqui.authenticationms.service;
 
 import static java.lang.String.format;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.dto.UsersAppApplicationDto;
+import com.ajudaqui.authenticationms.entity.Applications;
 import com.ajudaqui.authenticationms.entity.Token;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
 import com.ajudaqui.authenticationms.exception.BadRequestException;
@@ -112,8 +114,9 @@ public class AuthService {
         confirmByToken(jwtUtils.generatedJwtToken(userApp), token);
 
       if (userApp.getId() != null && isProd) {
-
-        messageSqsFactor(userApp, usersRegister.getOtherFields());
+        Map<String, Object> payload = usersRegister.getOtherFields();
+        payload.put("access_token", userApp.getAccessToken());
+        messageSqsFactor(userApp.getApplications(), usersRegister.getOtherFields());
       }
 
     } catch (Exception e) {
@@ -134,17 +137,14 @@ public class AuthService {
     return byEmail.isActive();
   }
 
-  private void messageSqsFactor(UsersAppData userApp, Map<String, Object> otherFields) {
-    String application = userApp.getApplications().getName();
+  private void messageSqsFactor(Applications application, Map<String, Object> payload) {
     JsonObject sqsUsers = new JsonObject();
 
-    String urlApp = userApp.getApplications().getRegisterUrl();
+    sqsUsers.addProperty("url", application.getRegisterUrl());
+    sqsUsers.addProperty("authorization", application.getSecretId());
+    sqsUsers.addProperty("application", application.getName());
 
-    sqsUsers.addProperty("access_token", userApp.getAccessToken().toString());
-    sqsUsers.addProperty("url", urlApp);
-    sqsUsers.addProperty("application", application);
-    sqsUsers.addProperty("email", userApp.getUsers().getEmail());
-    sqsUsers.add("otherFields", new Gson().toJsonTree(otherFields));
+    sqsUsers.add("payload", new Gson().toJsonTree(payload));
 
     sqsService.sendMessage(application, sqsUsers.toString());
   }
