@@ -18,12 +18,13 @@ def lambda_handler(event, context):
 
 def registrar_usuario(url, body):
 
-    authorization = body['authorization']
-    access_token = body['access_token']
+    application = body.get('application')
+    authorization = body['authorization'] # referente a permissao de registrar na aplicação
+    access_token = body['access_token'] # referente a descoberta do usuario
 
-    url = f"http://{url}/users/save/{access_token}"
+    url = f"http://{url}/{application}/users/register/{access_token}"
 
-    json_data = json.dumps(body).encode("utf-8")
+    json_data = json.dumps(body.get('payload')).encode("utf-8")
 
     headers = {
         "Authorization": authorization,
