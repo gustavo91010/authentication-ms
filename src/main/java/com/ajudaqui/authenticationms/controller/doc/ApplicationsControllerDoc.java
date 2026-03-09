@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Applications", description = "Gerenciamento de aplicações")
 public interface ApplicationsControllerDoc {
 
-  @Operation(summary = "Registrar nova aplicação")
+  @Operation(summary = "Registra uma aplicação e torna o usuário Moderador")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Aplicação criada"),
       @ApiResponse(responseCode = "400", description = "Erro de validação")

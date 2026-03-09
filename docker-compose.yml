@@ -1,15 +1,40 @@
 services:
+  postgres:
+    image: postgres:15
+    container_name: auth_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: auth
+    ports:
+      - "5432:5432"
+
   authentication-api:
     build: .
+    container_name: auth-api
+    env_file:
+      - .env
     ports:
-      - "8181:8181"
-    container_name: authentication-api
-    environment:
-      - SPRING_CLOUD_CONFIG_URI=http://3.95.53.198:8888
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://database-2.c3o6kq6w84an.us-east-2.rds.amazonaws.com:5432/authentication_ms
+      - "${PORTS}:${PORTS}"
+    depends_on:
+      - postgres
     volumes:
       - volume_authentication:/data
 
 volumes:
   volume_authentication:
+# services:
+#   authentication-api:
+#     build: .
+#     ports:
+#       - "8181:8181"
+#     container_name: authentication-api
+#     environment:
+#       - SPRING_CLOUD_CONFIG_URI=http://3.95.53.198:8888
+#       - SPRING_DATASOURCE_URL=jdbc:postgresql://database-2.c3o6kq6w84an.us-east-2.rds.amazonaws.com:5432/authentication_ms
+#     volumes:
+#       - volume_authentication:/data
+
+# volumes:
+#   volume_authentication:
 

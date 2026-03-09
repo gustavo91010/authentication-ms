@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.entity.*;
+import com.ajudaqui.authenticationms.exception.BadRequestException;
 import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.repository.UsersRepository;
 import com.ajudaqui.authenticationms.request.UsersRegister;
@@ -29,23 +30,29 @@ public class UsersService {
     this.applicationsService = applicationsService;
   }
 
-
   public UsersAppData create(UsersRegister usersRegister, boolean isInternal) {
     Applications application = applicationsService.findByName(usersRegister.getAplication());
-    Users users = userRepository.findByEmail(usersRegister.getEmail())
-        .orElseGet(() -> save(usersRegister.toUsers(isInternal)));
+
+    String urlRegister = application.getRegisterUrl();
+    if (urlRegister == null || urlRegister.isBlank())
+      throw new BadRequestException("A Aplicação não tem URL de registro cadastrada");
+
     appDataService.findByUsersEmail(usersRegister.getEmail(), usersRegister.getAplication())
         .filter(app -> usersRegister.getAplication().equals(app.getApplications().getName()))
         .ifPresent(app -> {
           throw new MessageException("Email já registrado");
         });
 
+    Users users = userRepository.findByEmail(usersRegister.getEmail())
+        .orElseGet(() -> save(usersRegister.toUsers(isInternal)));
+
     UsersAppData usersAppData = usersRegister.toAppData(users, isInternal, application,
         appDataService.assignRole(ERoles.ROLE_USER));
-    if (usersAppData.getApplications().getName() == null ||
-        usersAppData.getApplications().getName() == null) {
-      throw new MessageException("sem passar a aplicação não da né amigo... -_-");
-    }
+    System.out.println("senha: " + usersAppData.getPassword());
+    // if (usersAppData.getApplications().getName() == null ||
+    // usersAppData.getApplications().getName() == null) {
+    // throw new MessageException("sem passar a aplicação não da né amigo... -_-");
+    // }
     return appDataService.save(usersAppData);
   }
 

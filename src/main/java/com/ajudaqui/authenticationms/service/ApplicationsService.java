@@ -28,7 +28,7 @@ public class ApplicationsService {
 
   public Applications findByName(String name) {
     return repository.findByName(name)
-        .orElseThrow(() -> new NotFoundException("Aplicação não registrada"));
+        .orElseThrow(() -> new NotFoundException("Aplicação não " + name + " registrada."));
   }
 
   public Applications regsiter(ApplicationDto appicationDto) {

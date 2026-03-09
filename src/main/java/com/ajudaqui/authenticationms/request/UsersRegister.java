@@ -3,6 +3,7 @@ package com.ajudaqui.authenticationms.request;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -24,7 +25,9 @@ public class UsersRegister {
   private Map<String, Object> otherFields;
 
   public Map<String, Object> getOtherFields() {
-    return otherFields;
+    return otherFields == null
+        ? new HashMap<String, Object>()
+        : otherFields;
   }
 
   public void setOtherFields(Map<String, Object> otherFields) {

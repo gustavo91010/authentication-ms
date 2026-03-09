@@ -132,10 +132,6 @@ public class AuthService {
     boolean isProd = ENVIROMENT_PROD.equals(enviroment_current);
     UsersAppData userApp = usersService.create(usersRegister, !isProd);
     Applications application = userApp.getApplications();
-    String urlApp = userApp.getApplications().getRegisterUrl();
-
-    if (isProd && (urlApp == null || urlApp.isBlank()))
-      throw new BadRequestException("A Aplicação não tem URL de registro cadastrada");
 
     try {
 

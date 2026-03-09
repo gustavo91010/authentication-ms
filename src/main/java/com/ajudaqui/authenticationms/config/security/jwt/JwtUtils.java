@@ -57,6 +57,9 @@ public class JwtUtils {
 
   private String getSecretKeyByJwt(String token) {
     String[] parts = token.split("\\.");
+    if(parts.length < 2)
+      throw new RuntimeException("Token inválido");
+
     String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));
     JsonObject payload = JsonParser.parseString(payloadJson).getAsJsonObject();
     String clientId = payload.get("client_id").getAsString();
