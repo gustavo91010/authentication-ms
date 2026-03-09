@@ -14,6 +14,7 @@ import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.request.LoginRequest;
 import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.response.LoginResponse;
+import com.ajudaqui.authenticationms.service.doc.AuthServiceDoc;
 import com.ajudaqui.authenticationms.service.sqs.SqsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 @Service
-public class AuthService {
+public class AuthService implements AuthServiceDoc{
 
   final private String ENVIROMENT_PROD = "prod";
   @Autowired
@@ -56,26 +57,9 @@ public class AuthService {
     this.tokenService = tokenService;
   }
 
-  /**
-   * Realiza a autenticação do usuário com base no e-mail, senha e aplicação.
-   *
-   * <p>
-   * Caso a aplicação não seja informada, define "bill-manager" como padrão.
-   * Valida se o usuário está ativo, executa o processo de autenticação
-   * pelo {@link AuthenticationManager} e, se bem-sucedido, armazena o
-   * contexto de segurança e retorna o JWT correspondente.
-   * </p>
-   *
-   * @param loginRequest dados de login contendo e-mail, senha e aplicação
-   * @return {@link LoginResponse} com os dados do usuário na aplicação
-   *         e o token JWT gerado
-   * @throws MessageException caso a conta esteja desativada
-   */
 
+  @Override
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
-    // TODO depois retirar essa validação
-    if (loginRequest.getApplication() == null)
-      loginRequest.setApplication("bill-manager");
 
     UsersAppData usersApp = usersAppDataService.getUsersByEmail(loginRequest.getEmail(), loginRequest.getApplication());
     if (!usersApp.isActive())
@@ -107,27 +91,7 @@ public class AuthService {
         modal);
   }
 
-  /**
-   * Realiza o registro de um novo usuário na aplicação.
-   *
-   * <p>
-   * Cria o usuário, gera um token de confirmação e envia por e-mail.
-   * Em ambiente de desenvolvimento, ele vai como ativo automaticamente,
-   * em produção, deve chamar o endpont confirmByToken passando o token para
-   * ativar o usuario
-   * Em produção, valida se a aplicação possui URL de registro configurada e,
-   * caso o registro seja concluído, envia mensagem para fila (SQS) com os dados
-   * adicionais.
-   * </p>
-   *
-   * @param usersRegister objeto contendo os dados necessários para registro do
-   *                      usuário,
-   *                      incluindo campos adicionais utilizados na integração.
-   * @return LoginResponse contendo os dados da aplicação do usuário e o JWT
-   *         gerado para autenticação.
-   * @throws BadRequestException caso esteja em produção e a aplicação não possua
-   *                             URL de registro configurada.
-   */
+  @Override
   public LoginResponse registerUser(UsersRegister usersRegister) {
     boolean isProd = ENVIROMENT_PROD.equals(enviroment_current);
     UsersAppData userApp = usersService.create(usersRegister, !isProd);
@@ -189,21 +153,7 @@ public class AuthService {
   }
 
   private void messageSqsFactor(ApplicationSqsMessage application) {
-    // // ApplicationSqsMessage lalala= new ApplicationSqsMessage(
-    // // application.getRegisterUrl(),
-    // // application.getName(),
-    // // application.getSecretId(),
-    // // payload
-    // // );
-    // JsonObject sqsUsers = new JsonObject();
-
-    // sqsUsers.addProperty("url", application.getRegisterUrl());
-    // sqsUsers.addProperty("authorization", application.getSecretId());
-    // sqsUsers.addProperty("application", application.getName());
-
-    // sqsUsers.add("payload", new Gson().toJsonTree(payload));
-
-    // sqsService.sendMessage(application, sqsUsers.toString());
+    System.out.println(application.toString());
     sqsService.sendMessage(application);
   }
 

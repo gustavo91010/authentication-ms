@@ -2,6 +2,7 @@ package com.ajudaqui.authenticationms.response;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,6 +39,9 @@ public class LoginResponse {
   @Schema(example = "aplicacao-name", description = "Nome da aplicação vinculada")
   private String application;
 
+  @Schema(example = "{\"cpf\":\"123.345.568.90\", \"sexo\":\"m\"}", description = "Campos variavel dependendo da aplicação")
+  private Map<String, Object> otherFields;
+
   public LoginResponse(UsersAppApplicationDto users, String jwt) {
     // this.id = users.getUserId();
     this.id = users.getUserDataId();
@@ -48,6 +52,7 @@ public class LoginResponse {
     this.jwt = jwt;
     this.access_token = users.getAccessTokne();
     this.application= users.getAppName();
+    this.otherFields= users.getOtherFields();
   }
 
   private List<String> rolesToList(Set<Roles> roles) {
@@ -122,6 +127,14 @@ public class LoginResponse {
 
   public void setApplication(String application) {
     this.application = application;
+  }
+
+  public Map<String, Object> getOtherFields() {
+    return otherFields;
+  }
+
+  public void setOtherFields(Map<String, Object> otherFields) {
+    this.otherFields = otherFields;
   }
 
 }

@@ -2,13 +2,19 @@ package com.ajudaqui.authenticationms.entity;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.Type;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import org.hibernate.annotations.TypeDef;
+
 @Entity
 @Table(name = "user_app_data")
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class UsersAppData {
 
   @Id
@@ -49,6 +55,10 @@ public class UsersAppData {
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "user_app_data_roles", joinColumns = @JoinColumn(name = "user_app_data_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
   private Set<Roles> roles = new HashSet<>();
+
+  @Type(type = "jsonb")
+  @Column(columnDefinition = "jsonb")
+  private Map<String, Object> otherFields;
 
   public String getPassword() {
     return password;
@@ -148,9 +158,17 @@ public class UsersAppData {
 
   @Override
   public String toString() {
-    return "UsersAppData{id=" + id + ", users=" + users.getName() + ", applications=" + applications.getName() + ", password=" + password
+    return "UsersAppData{id=" + id + ", users=" + users.getName() + ", applications=" + applications.getName()
+        + ", password=" + password
         + "}";
   }
 
+  public Map<String, Object> getOtherFields() {
+    return otherFields;
+  }
+
+  public void setOtherFields(Map<String, Object> otherFields) {
+    this.otherFields = otherFields;
+  }
 
 }

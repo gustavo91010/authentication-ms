@@ -1,6 +1,7 @@
 package com.ajudaqui.authenticationms.dto;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -18,6 +19,15 @@ public class UsersAppApplicationDto {
   private LocalDateTime createdAt;
   private LocalDateTime lastLogin;
   private Set<Roles> roles;
+  private Map<String, Object> otherFields;
+
+  public Map<String, Object> getOtherFields() {
+    return otherFields;
+  }
+
+  public void setOtherFields(Map<String, Object> otherFields) {
+    this.otherFields = otherFields;
+  }
 
   public UsersAppApplicationDto(UsersAppData usersAppData) {
     this.userDataId = usersAppData.getId();
@@ -27,9 +37,10 @@ public class UsersAppApplicationDto {
     this.createdAt = usersAppData.getCreatedAt();
     this.isActive = usersAppData.isActive();
     this.accessTokne = usersAppData.getAccessToken();
-    this. roles = usersAppData.getRoles();
+    this.roles = usersAppData.getRoles();
     if (usersAppData.getLastLogin() != null)
       this.lastLogin = usersAppData.getLastLogin();
+    this.otherFields = usersAppData.getOtherFields();
   }
 
   public Long getUserDataId() {

@@ -62,4 +62,10 @@ public class ApplicationSqsMessage {
     this.payload = payload;
   }
 
+  @Override
+  public String toString() {
+    return "ApplicationSqsMessage{registerUrl=" + registerUrl + ", name=" + name + ", authorization=" + authorization
+        + ", payload=" + payload + "}";
+  }
+
 }

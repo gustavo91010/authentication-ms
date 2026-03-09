@@ -1,6 +1,7 @@
 package com.ajudaqui.authenticationms.request;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 public class LoginRequest {
   @NotEmpty(message = "O campo email não pode ser vazio")
@@ -8,6 +9,7 @@ public class LoginRequest {
   @NotEmpty(message = "O campo password não pode ser vazio")
   private String password;
 
+  @NotNull(message = "O campo application deve esta presente")
   private String application;
 
   public String getEmail() {

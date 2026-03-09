@@ -48,11 +48,8 @@ public class UsersService {
 
     UsersAppData usersAppData = usersRegister.toAppData(users, isInternal, application,
         appDataService.assignRole(ERoles.ROLE_USER));
-    System.out.println("senha: " + usersAppData.getPassword());
-    // if (usersAppData.getApplications().getName() == null ||
-    // usersAppData.getApplications().getName() == null) {
-    // throw new MessageException("sem passar a aplicação não da né amigo... -_-");
-    // }
+    usersAppData.setOtherFields(usersRegister.getOtherFields());
+
     return appDataService.save(usersAppData);
   }
 
