@@ -9,7 +9,6 @@ import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.dto.ApplicationSqsMessage;
 import com.ajudaqui.authenticationms.dto.UsersAppApplicationDto;
 import com.ajudaqui.authenticationms.entity.*;
-import com.ajudaqui.authenticationms.exception.BadRequestException;
 import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.request.LoginRequest;
 import com.ajudaqui.authenticationms.request.UsersRegister;
@@ -26,7 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 @Service
-public class AuthService implements AuthServiceDoc{
+public class AuthService implements AuthServiceDoc {
 
   final private String ENVIROMENT_PROD = "prod";
   @Autowired
@@ -36,6 +35,9 @@ public class AuthService implements AuthServiceDoc{
 
   @Value("${app.url}")
   private String url;
+
+  @Value("${app.auth.master}")
+  private String auth_master;
 
   private AuthenticationManager authenticationManager;
   private UsersAppDataService usersAppDataService;
@@ -56,7 +58,6 @@ public class AuthService implements AuthServiceDoc{
     this.jwtUtils = jwtUtils;
     this.tokenService = tokenService;
   }
-
 
   @Override
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
@@ -154,7 +155,7 @@ public class AuthService implements AuthServiceDoc{
 
   private void messageSqsFactor(ApplicationSqsMessage application) {
     System.out.println(application.toString());
-    sqsService.sendMessage(application);
+    sqsService.sendMessage(auth_master, application);
   }
 
   /**

@@ -1,13 +1,9 @@
 package com.ajudaqui.authenticationms.service.sqs;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.ajudaqui.authenticationms.exception.BadRequestException;
 import com.ajudaqui.authenticationms.exception.MessageException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +23,12 @@ public class QueueService {
   @Value("${aws.fila.names}")
   private String queueNames;
 
-  public String createQueue(String queueName) {
+  @Value("${app.auth.master}")
+  private String auth_master;
+
+  public String createQueue(String authorization, String queueName) {
+    checkingPermission(authorization);
+
     if (queueName == null || queueName.isEmpty()) {
       return "Erro: Nome da fila está vazio.";
     }
@@ -44,15 +45,18 @@ public class QueueService {
     return sqsClient.createQueue(createStandardQueueRequest).queueUrl();
   }
 
-  public String checkinfFile(String fileName) {
-    return queueList().stream()
+  public String checkinfFile(String authorization, String fileName) {
+
+    return queueList(authorization).stream()
         .filter(queleName -> queleName.equals(fileName))
         .findFirst()
-        .orElse(createQueue(fileName));
+        .orElse(createQueue(authorization, fileName));
   }
 
   @SuppressWarnings("unchecked")
-  public List<String> queueList() {
+  public List<String> queueList(String authorization) {
+
+    checkingPermission(authorization);
     List<String> response = new ArrayList<>();
 
     ListQueuesResponse listQueues = sqsClient.listQueues();
@@ -63,8 +67,8 @@ public class QueueService {
     return response;
   }
 
-  public String deleteQueue(String queueName) {
-    List<String> queueList = queueList();
+  public String deleteQueue(String authorization, String queueName) {
+    List<String> queueList = queueList(authorization);
     for (String urlSqs : queueList) {
       if (nameFile(urlSqs).equals(queueName)) {
         DeleteQueueRequest deleteQueueRequest = DeleteQueueRequest.builder().queueUrl(urlSqs).build();
@@ -76,8 +80,8 @@ public class QueueService {
     return String.format("Lista de nome: %s não localizada", queueName);
   }
 
-  public Set<String> queueNameList() {
-    return queueList().stream()
+  public Set<String> queueNameList(String authorization) {
+    return queueList(authorization).stream()
         .map(url -> nameFile(url))
         .collect(Collectors.toSet());
   }
@@ -88,10 +92,7 @@ public class QueueService {
   }
 
   public String getNameFileByApplication(String awsFila) {
-    if (awsFila.isEmpty()) {
-      throw new MessageException("O campo fila é obrigatorio");
-
-    }
+    checkingPermission(authorization);
     return queueLisApplication().stream()
         .filter(queueName -> queueName.contains(awsFila))
         .findFirst()
@@ -101,5 +102,12 @@ public class QueueService {
   private String nameFile(String urlSqs) {
     String[] split = urlSqs.split("/");
     return split[4];
+  }
+
+  private void checkingPermission(String authorization) {
+    System.out.println("auth_master " + auth_master);
+    System.out.println("authorization " + authorization);
+    if (!auth_master.equals(authorization))
+      throw new BadRequestException("Solicitação não autorizada!");
   }
 }
