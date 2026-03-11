@@ -27,7 +27,7 @@ public interface ApplicationsControllerDoc {
       @ApiResponse(responseCode = "400", description = "Erro de validação")
   })
   @PostMapping("")
-  ResponseEntity<HttpAplications> regsiter(ApplicationDto appicationDto);
+  ResponseEntity<HttpAplications> regsiter(String authorization, ApplicationDto appicationDto);
 
   @Operation(summary = "Listar usuários por aplicação", description = "Retorna todos os usuários vinculados a uma aplicação específica. Acesso permitido apenas para MODERATOR.")
   @ApiResponses({
@@ -47,7 +47,7 @@ public interface ApplicationsControllerDoc {
       @ApiResponse(responseCode = "403", description = "Acesso negado")
   })
   @GetMapping("/all")
-  ResponseEntity<List<HttpAplications>> allApplications();
+  ResponseEntity<List<HttpAplications>> allApplications(String authorization);
 
   @Operation(summary = "Buscar aplicação por ID", description = "Retorna os dados de uma aplicação específica pelo ID. "
       + "Acesso permitido apenas para ADMIN.")

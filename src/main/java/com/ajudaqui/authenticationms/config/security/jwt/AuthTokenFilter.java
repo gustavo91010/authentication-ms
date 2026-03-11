@@ -31,7 +31,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       String jwt = parseJwt(request);
       if (jwt != null) {
         String email = jwtUtils.getEmailFromJwtToken(jwt);
-        UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(email);
+        String app = jwtUtils.getAppFromJwtToken(jwt);
+        String auth_login=  email+"|"+app;
+        // new UsernamePasswordAuthenticationToken(
+        // loginRequest.getEmail() + "|" + loginRequest.getApplication(),
+        // loginRequest.getPassword());
+
+        UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(auth_login);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
             userDetails, null, userDetails.getAuthorities());
 
@@ -46,7 +52,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
   public String parseJwt(HttpServletRequest request) {
     String headerAuth = request.getHeader("Authorization");
-    
+
     if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer "))
       return headerAuth.substring(7, headerAuth.length());
     return null;

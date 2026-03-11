@@ -9,17 +9,22 @@ import com.ajudaqui.authenticationms.dto.HttpUsersAppData;
 import com.ajudaqui.authenticationms.entity.Applications;
 import com.ajudaqui.authenticationms.entity.Roles;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
+import com.ajudaqui.authenticationms.exception.BadRequestException;
 import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.exception.NotFoundException;
 import com.ajudaqui.authenticationms.repository.ApplicationsRepository;
 import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ApplicationsService {
   final private ApplicationsRepository repository;
   final private UsersAppDataService usersAppDataService;
+
+  @Value("${app.auth.master}")
+  private String auth_master;
 
   public ApplicationsService(ApplicationsRepository applicationsRepository, UsersAppDataService usersAppDataService) {
     this.repository = applicationsRepository;
@@ -31,7 +36,10 @@ public class ApplicationsService {
         .orElseThrow(() -> new NotFoundException("Aplicação não " + name + " registrada."));
   }
 
-  public Applications regsiter(ApplicationDto appicationDto) {
+  public Applications regsiter(String authorization, ApplicationDto appicationDto) {
+
+    checkingPermission(authorization);
+
     if (appicationDto.getName() == null || appicationDto.getName().isEmpty())
       throw new MessageException("O campo name não pode estar vazio.");
 
@@ -109,10 +117,15 @@ public class ApplicationsService {
         .orElseThrow(() -> new NotFoundException("Aplicação não registrada"));
   }
 
-  public List<HttpAplications> findAll() {
+  public List<HttpAplications> findAll(String authorization) {
+    checkingPermission(authorization);
     return repository.findAll().stream()
         .map(HttpAplications::new)
         .collect(Collectors.toList());
   }
 
+  private void checkingPermission(String authorization) {
+    if (!auth_master.equals(authorization))
+      throw new BadRequestException("Solicitação não autorizada!");
+  }
 }

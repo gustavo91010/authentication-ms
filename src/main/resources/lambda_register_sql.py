@@ -20,9 +20,9 @@ def registrar_usuario(url, body):
 
     application = body.get('application')
     authorization = body['authorization'] # referente a permissao de registrar na aplicação
-    access_token = body['access_token'] # referente a descoberta do usuario
+    # access_token = body['access_token'] # referente a descoberta do usuario
 
-    url = f"http://{url}/{application}/users/register/{access_token}"
+    url = f"http://{url}/users/register"
 
     json_data = json.dumps(body.get('payload')).encode("utf-8")
 

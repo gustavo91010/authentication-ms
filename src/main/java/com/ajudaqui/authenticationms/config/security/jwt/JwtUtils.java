@@ -42,8 +42,21 @@ public class JwtUtils {
     return Jwts.builder().setSubject(usersApp.getUsers().getEmail()).setIssuedAt(issuedAtDate)
         .setExpiration(expirationDate)
         .claim("client_id", usersApp.getApplications().getClientId())
+        .claim("application", usersApp.getApplications().getName())
         .claim("access_token", usersApp.getAccessToken())
         .signWith(SignatureAlgorithm.HS512, usersApp.getApplications().getSecretId()).compact();
+  }
+
+  public String getAppFromJwtToken(String token) {
+    token = token.replace("Bearer ", "");
+    String jwtSecret = getSecretKeyByJwt(token);
+    if (!validateJwtToken(token, jwtSecret))
+      throw new RuntimeException("Token inválido");
+
+    return Jwts.parser().setSigningKey(jwtSecret)
+        .parseClaimsJws(token)
+        .getBody()
+        .getSubject(); // isso retorna o email
   }
 
   public String getEmailFromJwtToken(String token) {
@@ -57,7 +70,7 @@ public class JwtUtils {
 
   private String getSecretKeyByJwt(String token) {
     String[] parts = token.split("\\.");
-    if(parts.length < 2)
+    if (parts.length < 2)
       throw new RuntimeException("Token inválido");
 
     String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));

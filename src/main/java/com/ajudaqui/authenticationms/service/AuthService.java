@@ -65,8 +65,9 @@ public class AuthService implements AuthServiceDoc {
     UsersAppData usersApp = usersAppDataService.getUsersByEmail(loginRequest.getEmail(), loginRequest.getApplication());
     if (!usersApp.isActive())
       throw new MessageException("sua conta esta desativada, verifique seu email");
+
     UsernamePasswordAuthenticationToken userAutheticator = new UsernamePasswordAuthenticationToken(
-        loginRequest.getEmail(),
+        loginRequest.getEmail() + "|" + usersApp.getApplications().getName(),
         loginRequest.getPassword());
 
     Authentication authentication = authenticationManager.authenticate(userAutheticator);

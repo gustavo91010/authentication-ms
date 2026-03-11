@@ -4,13 +4,19 @@ import java.util.List;
 
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.controller.doc.ApplicationsControllerDoc;
-import com.ajudaqui.authenticationms.dto.*;
+import com.ajudaqui.authenticationms.dto.ApplicationDto;
+import com.ajudaqui.authenticationms.dto.HttpAplications;
+import com.ajudaqui.authenticationms.dto.HttpUsersAppData;
 import com.ajudaqui.authenticationms.entity.Applications;
 import com.ajudaqui.authenticationms.service.ApplicationsService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/app")
@@ -25,9 +31,10 @@ public class ApplicationController implements ApplicationsControllerDoc {
   }
 
   @Override
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
-  public ResponseEntity<HttpAplications> regsiter(@RequestBody ApplicationDto appicationDto) {
-    Applications regsiter = applicationsService.regsiter(appicationDto);
+  public ResponseEntity<HttpAplications> regsiter(
+      @RequestHeader("Authorization") String authorization,
+      @RequestBody ApplicationDto appicationDto) {
+    Applications regsiter = applicationsService.regsiter(authorization, appicationDto);
     return ResponseEntity.ok(new HttpAplications(regsiter));
   }
 
@@ -40,9 +47,10 @@ public class ApplicationController implements ApplicationsControllerDoc {
   }
 
   @Override
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
-  public ResponseEntity<List<HttpAplications>> allApplications() {
-    return ResponseEntity.ok(applicationsService.findAll());
+  // @PreAuthorize("hasRole('ROLE_ADMIN')")
+  public ResponseEntity<List<HttpAplications>> allApplications(
+      @RequestHeader("Authorization") String authorization) {
+    return ResponseEntity.ok(applicationsService.findAll(authorization));
   }
 
   @Override
