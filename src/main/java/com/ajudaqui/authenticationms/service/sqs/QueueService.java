@@ -92,7 +92,7 @@ public class QueueService {
   }
 
   public String getNameFileByApplication(String awsFila) {
-    checkingPermission(authorization);
+    checkingPermission(auth_master);
     return queueLisApplication().stream()
         .filter(queueName -> queueName.contains(awsFila))
         .findFirst()
@@ -105,8 +105,6 @@ public class QueueService {
   }
 
   private void checkingPermission(String authorization) {
-    System.out.println("auth_master " + auth_master);
-    System.out.println("authorization " + authorization);
     if (!auth_master.equals(authorization))
       throw new BadRequestException("Solicitação não autorizada!");
   }
