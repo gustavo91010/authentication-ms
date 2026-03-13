@@ -36,7 +36,7 @@ public interface ApplicationsControllerDoc {
       @ApiResponse(responseCode = "404", description = "Aplicação não encontrada")
   })
   @GetMapping("/name/{appName}")
-  ResponseEntity<List<HttpUsersAppData>> getUsersByApp(
+  ResponseEntity<List<HttpUsersAppData>> getByAppName(
       @Parameter(description = "Token JWT no formato Bearer") @RequestHeader("Authorization") String jwtToken,
       @Parameter(description = "Nome da aplicação", example = "vem-pro-culto") @PathVariable String appName);
 

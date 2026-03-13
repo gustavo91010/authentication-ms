@@ -121,6 +121,7 @@ public class AuthService implements AuthServiceDoc {
       }
 
     } catch (Exception e) {
+      System.err.println("Erro no envio da mensagem para fila sqs");
       e.printStackTrace();
     }
 
@@ -155,7 +156,6 @@ public class AuthService implements AuthServiceDoc {
   }
 
   private void messageSqsFactor(ApplicationSqsMessage application) {
-    System.out.println(application.toString());
     sqsService.sendMessage(auth_master, application);
   }
 

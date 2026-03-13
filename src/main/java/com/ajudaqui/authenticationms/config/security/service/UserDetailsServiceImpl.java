@@ -19,7 +19,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
   @Transactional
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
+System.out.println("no loadUserByUsername");
+System.out.println(username);
     String[] parts = username.split("\\|");
     String email = parts[0];
     String application = parts[1];

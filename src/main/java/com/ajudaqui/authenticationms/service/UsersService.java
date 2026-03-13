@@ -32,7 +32,8 @@ public class UsersService {
 
   public UsersAppData create(UsersRegister usersRegister, boolean isInternal) {
     Applications application = applicationsService.findByName(usersRegister.getAplication());
-
+System.out.println("nome "+application.getName());
+System.out.println("url "+application.getRegisterUrl());
     String urlRegister = application.getRegisterUrl();
     if (urlRegister == null || urlRegister.isBlank())
       throw new BadRequestException("A Aplicação não tem URL de registro cadastrada");

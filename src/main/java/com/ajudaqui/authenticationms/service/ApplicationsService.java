@@ -66,7 +66,7 @@ public class ApplicationsService {
 
   public List<HttpUsersAppData> userByApp(String email, String appName) {
     Applications byName = findByName(appName);
-    checkPermission(email, byName.getClientId(), appName);
+    checkPermission(email, appName, byName.getClientId());
 
     List<UsersAppData> byAppId = usersAppDataService.findByAppId(byName.getId());
     return byAppId.stream().map(HttpUsersAppData::new)
@@ -84,6 +84,20 @@ public class ApplicationsService {
     boolean rolesPermission = user.getRoles().stream()
         .map(Roles::getName)
         .anyMatch(r -> ERoles.ROLE_MODERATOR.equals(r));
+
+    System.out.println();
+    System.out.println("o app data dele "+user.getId());
+    System.out.println("email "+user.getUsers().getEmail());
+    System.out.println("application "+user.getApplications().getName());
+    System.out.println("toles dele: "+user.getRoles().size());
+ user.getRoles().stream()
+  .map(Roles::getName)
+  .collect(Collectors.toList())
+  .forEach(System.out::println);;
+
+System.out.println("tem ermissao? "+appPermission);
+System.out.println("é moderador? "+rolesPermission);
+
     if (!appPermission || !rolesPermission)
       throw new MessageException("Solicitação não autorizada");
 
@@ -101,7 +115,7 @@ public class ApplicationsService {
   public Applications findById(String email, Long applicationId) {
     return repository.findById(applicationId)
         .map(a -> {
-          checkPermission(email, a.getClientId(), a.getName());
+          checkPermission(email, a.getName(), a.getClientId());
           return a;
         })
         .orElseThrow(() -> new NotFoundException("Aplicação não registrada"));
@@ -125,6 +139,8 @@ public class ApplicationsService {
   }
 
   private void checkingPermission(String authorization) {
+    System.out.println("authorization " + authorization);
+    System.out.println("auth_master " + auth_master);
     if (!auth_master.equals(authorization))
       throw new BadRequestException("Solicitação não autorizada!");
   }

@@ -6,11 +6,15 @@ import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.ajudaqui.authenticationms.entity.Applications;
+import com.ajudaqui.authenticationms.entity.Roles;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
 import com.ajudaqui.authenticationms.service.ApplicationsService;
+import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -38,12 +42,17 @@ public class JwtUtils {
     Date issuedAtDate = Date.from(issuedAt.atZone(ZoneId.systemDefault()).toInstant());
     LocalDateTime expirationDateTime = issuedAt.plus(jwtExpirationMs, ChronoUnit.MILLIS);
     Date expirationDate = Date.from(expirationDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    List<ERoles> roles = usersApp.getRoles().stream()
+      .map(Roles::getName)
+      .collect(Collectors.toList());
     // return null;
     return Jwts.builder().setSubject(usersApp.getUsers().getEmail()).setIssuedAt(issuedAtDate)
         .setExpiration(expirationDate)
         .claim("client_id", usersApp.getApplications().getClientId())
+        .claim("roles", roles)
         .claim("application", usersApp.getApplications().getName())
         .claim("access_token", usersApp.getAccessToken())
+
         .signWith(SignatureAlgorithm.HS512, usersApp.getApplications().getSecretId()).compact();
   }
 
@@ -56,7 +65,7 @@ public class JwtUtils {
     return Jwts.parser().setSigningKey(jwtSecret)
         .parseClaimsJws(token)
         .getBody()
-        .getSubject(); // isso retorna o email
+        .get("application").toString(); // isso retorna o email
   }
 
   public String getEmailFromJwtToken(String token) {

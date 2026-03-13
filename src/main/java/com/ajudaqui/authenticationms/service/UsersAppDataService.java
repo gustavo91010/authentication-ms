@@ -31,6 +31,9 @@ public class UsersAppDataService {
   }
 
   public UsersAppData getUsersByEmail(String email, String application) {
+    System.out.println("isso no getUsersByEmail");
+    System.out.println("email "+email);
+    System.out.println("application "+application);
     return this.repository.findByUserEmail(email).stream()
         .filter(u -> application.equals(u.getApplications().getName()))
         .findFirst()

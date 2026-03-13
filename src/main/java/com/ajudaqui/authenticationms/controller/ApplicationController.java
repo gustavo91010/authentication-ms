@@ -40,7 +40,7 @@ public class ApplicationController implements ApplicationsControllerDoc {
 
   @Override
   @PreAuthorize("hasRole('ROLE_MODERATOR')")
-  public ResponseEntity<List<HttpUsersAppData>> getUsersByApp(@RequestHeader("Authorization") String jwtToken,
+  public ResponseEntity<List<HttpUsersAppData>> getByAppName(@RequestHeader("Authorization") String jwtToken,
       @PathVariable String appName) {
     String email = jwtUtils.getEmailFromJwtToken(jwtToken);
     return ResponseEntity.ok(applicationsService.userByApp(email, appName));
@@ -63,7 +63,7 @@ public class ApplicationController implements ApplicationsControllerDoc {
   }
 
   @Override
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  // @PreAuthorize("hasRole('ROLE_ADMIN')")
   public ResponseEntity<HttpAplications> update(
       @RequestHeader("Authorization") String jwtToken,
       @PathVariable Long applicationId,

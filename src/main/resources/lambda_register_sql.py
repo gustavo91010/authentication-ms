@@ -1,30 +1,39 @@
 import urllib.request
+import urllib.error
 import json
+
 
 def lambda_handler(event, context):
     print(f"event: {event}")
 
-    for record in event['Records']:
-        body_json = record['body']
-        body = json.loads(body_json)
+    for record in event.get("Records", []):
+        body = json.loads(record["body"])
 
-        url = body.get('url')
+        url = body.get("registerUrl")
 
-        if url is not None:
+        if url:
             registrar_usuario(url, body)
         else:
-            application = body.get('application')
+            application = body.get("name")
             print(f"Aplicação desconhecida: {application}")
+
+    return {"statusCode": 200}
+
 
 def registrar_usuario(url, body):
 
-    application = body.get('application')
-    authorization = body['authorization'] # referente a permissao de registrar na aplicação
-    # access_token = body['access_token'] # referente a descoberta do usuario
+    application = body.get("name")
+    authorization = body["authorization"]
 
-    url = f"http://{url}/users/register"
+    url = f"{url}/users/register"
 
-    json_data = json.dumps(body.get('payload')).encode("utf-8")
+    payload = body.get("payload")
+
+    if not payload:
+        print("Payload vazio")
+        return
+
+    json_data = json.dumps(payload).encode("utf-8")
 
     headers = {
         "Authorization": authorization,
@@ -43,7 +52,8 @@ def registrar_usuario(url, body):
             resp_body = response.read()
             resp_json = json.loads(resp_body)
             print(f"Registrado: {resp_json}")
+
     except urllib.error.HTTPError as e:
         error_body = e.read().decode()
-        print(f"Err {e.code}: {error_body}")
+        print(f"Erro {e.code}: {error_body}")
         raise Exception("Falha ao registrar mantendo na fila")
