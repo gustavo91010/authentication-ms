@@ -1,6 +1,9 @@
 package com.ajudaqui.authenticationms.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.ajudaqui.authenticationms.dto.ApplicationDto;
@@ -54,53 +57,69 @@ public class ApplicationsService {
     if (repository.findByName(name).isPresent())
       throw new MessageException("Nome já registrado");
 
-    UsersAppData usersAppData = usersAppDataService
+    UsersAppData moderatorOldApp = usersAppDataService
         .findByUsersEmail(appicationDto.getEmailModerador(), appicationDto.getApplicationOfModerador())
         .orElseThrow(() -> new MessageException("O moderador tem que estar registrado previamente"));
 
-    Roles moderator = usersAppDataService.findByRole(ERoles.ROLE_MODERATOR);
+    Applications newApp = save(appicationDto.toEntity());
 
-    usersAppData.getRoles().add(moderator);
-    return save(appicationDto.toEntity());
+    Set<Roles> roles = usersAppDataService.assignRole(ERoles.ROLE_USER);
+    roles.add(usersAppDataService.findByRole(ERoles.ROLE_MODERATOR));
+
+    UsersAppData moderatorNewApp = new UsersAppData();
+    moderatorNewApp.setUsers(moderatorOldApp.getUsers());
+    moderatorNewApp.setApplications(newApp);
+    moderatorNewApp.setPassword(moderatorOldApp.getPassword());
+    moderatorNewApp.setActive(true);
+    moderatorNewApp.setRoles(roles);
+    moderatorNewApp.setAccessToken(UUID.randomUUID());
+    moderatorNewApp.setCreatedAt(LocalDateTime.now());
+    moderatorNewApp.setUpdatedAt(LocalDateTime.now());
+    usersAppDataService.save(moderatorNewApp);
+
+    return newApp;
   }
 
   public List<HttpUsersAppData> userByApp(String email, String appName) {
     Applications byName = findByName(appName);
-    checkPermission(email, appName, byName.getClientId());
+    checkPermission(email, appName, ERoles.ROLE_MODERATOR, ERoles.ROLE_ADMIN);
 
     List<UsersAppData> byAppId = usersAppDataService.findByAppId(byName.getId());
     return byAppId.stream().map(HttpUsersAppData::new)
         .collect(Collectors.toList());
   }
 
-  private void checkPermission(String email, String application, String clientId) {
+  private void checkPermission(String email, String application, ERoles... allowedRoles) {
     UsersAppData user = usersAppDataService.getUsersByEmail(email, application);
-    boolean isAdm = user.getRoles().stream()
+    boolean hasPermission = user.getRoles().stream()
         .map(Roles::getName)
-        .anyMatch(r -> ERoles.ROLE_MODERATOR.equals(r));
-    if (isAdm)
-      return;
-    boolean appPermission = user.getApplications().getClientId().equals(clientId);
-    boolean rolesPermission = user.getRoles().stream()
-        .map(Roles::getName)
-        .anyMatch(r -> ERoles.ROLE_MODERATOR.equals(r));
+        .anyMatch(r -> {
+          for (ERoles allowed : allowedRoles) {
+            if (allowed.equals(r)) return true;
+          }
+          return false;
+        });
 
-    System.out.println();
-    System.out.println("o app data dele "+user.getId());
-    System.out.println("email "+user.getUsers().getEmail());
-    System.out.println("application "+user.getApplications().getName());
-    System.out.println("toles dele: "+user.getRoles().size());
- user.getRoles().stream()
-  .map(Roles::getName)
-  .collect(Collectors.toList())
-  .forEach(System.out::println);;
-
-System.out.println("tem ermissao? "+appPermission);
-System.out.println("é moderador? "+rolesPermission);
-
-    if (!appPermission || !rolesPermission)
+    if (!hasPermission)
       throw new MessageException("Solicitação não autorizada");
+  }
 
+  public UsersAppData assignAdmin(String moderatorEmail, String appName, String userEmail) {
+    Applications app = findByName(appName);
+    checkPermission(moderatorEmail, appName, ERoles.ROLE_MODERATOR);
+
+    UsersAppData userAppData = usersAppDataService.getUsersByEmail(userEmail, appName);
+
+    boolean alreadyAdmin = userAppData.getRoles().stream()
+        .map(Roles::getName)
+        .anyMatch(ERoles.ROLE_ADMIN::equals);
+
+    if (alreadyAdmin)
+      throw new MessageException("Usuário já é ADMIN nesta aplicação");
+
+    Roles adminRole = usersAppDataService.findByRole(ERoles.ROLE_ADMIN);
+    userAppData.getRoles().add(adminRole);
+    return usersAppDataService.save(userAppData);
   }
 
   public Applications getOrRegister(String name) {
@@ -115,11 +134,10 @@ System.out.println("é moderador? "+rolesPermission);
   public Applications findById(String email, Long applicationId) {
     return repository.findById(applicationId)
         .map(a -> {
-          checkPermission(email, a.getName(), a.getClientId());
+          checkPermission(email, a.getName(), ERoles.ROLE_MODERATOR);
           return a;
         })
         .orElseThrow(() -> new NotFoundException("Aplicação não registrada"));
-
   }
 
   private Applications save(Applications applications) {
@@ -139,8 +157,6 @@ System.out.println("é moderador? "+rolesPermission);
   }
 
   private void checkingPermission(String authorization) {
-    System.out.println("authorization " + authorization);
-    System.out.println("auth_master " + auth_master);
     if (!auth_master.equals(authorization))
       throw new BadRequestException("Solicitação não autorizada!");
   }

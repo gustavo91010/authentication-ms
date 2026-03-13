@@ -48,7 +48,7 @@ public class ApplicationDto {
     Applications applcations = new Applications(this.name, this.secret);
 
     if (this.registerUrl != null && !this.registerUrl.isEmpty())
-      applcations.setRedirectUrl(redirectUrl);
+      applcations.setRegisterUrl(this.registerUrl);
 
     if (this.redirectUrl != null && !this.redirectUrl.isEmpty())
       applcations.setRedirectUrl(this.redirectUrl);

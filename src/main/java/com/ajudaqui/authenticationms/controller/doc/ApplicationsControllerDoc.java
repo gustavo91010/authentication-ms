@@ -41,7 +41,7 @@ public interface ApplicationsControllerDoc {
       @Parameter(description = "Nome da aplicação", example = "vem-pro-culto") @PathVariable String appName);
 
   @Operation(summary = "Listar todas as aplicações", description = "Retorna a lista de todas as aplicações cadastradas no sistema. "
-      + "Acesso permitido apenas para ADMIN.")
+      + "Acesso permitido apenas para MODERATOR.")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso"),
       @ApiResponse(responseCode = "403", description = "Acesso negado")
@@ -50,7 +50,7 @@ public interface ApplicationsControllerDoc {
   ResponseEntity<List<HttpAplications>> allApplications(String authorization);
 
   @Operation(summary = "Buscar aplicação por ID", description = "Retorna os dados de uma aplicação específica pelo ID. "
-      + "Acesso permitido apenas para ADMIN.")
+      + "Acesso permitido apenas para MODERATOR.")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Aplicação encontrada"),
       @ApiResponse(responseCode = "403", description = "Acesso negado"),
@@ -64,7 +64,7 @@ public interface ApplicationsControllerDoc {
 
   @PutMapping("/id/{applicationId}")
   ResponseEntity<HttpAplications> update(
-      @Parameter(description = "Token JWT no formato Bearer do ADMIN da aplicação") @RequestHeader("Authorization") String jwtToken,
+      @Parameter(description = "Token JWT no formato Bearer do MODERATOR da aplicação") @RequestHeader("Authorization") String jwtToken,
       @Parameter(description = "ID da aplicação", example = "1") @PathVariable Long applicationId, ApplicationDto dto);
 
 }

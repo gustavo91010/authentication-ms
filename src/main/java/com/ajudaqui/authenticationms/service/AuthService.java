@@ -15,6 +15,8 @@ import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.response.LoginResponse;
 import com.ajudaqui.authenticationms.service.doc.AuthServiceDoc;
 import com.ajudaqui.authenticationms.service.sqs.SqsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +29,7 @@ import org.springframework.ui.Model;
 @Service
 public class AuthService implements AuthServiceDoc {
 
+  private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
   final private String ENVIROMENT_PROD = "prod";
   @Autowired
   private PageService pageService;
@@ -121,8 +124,7 @@ public class AuthService implements AuthServiceDoc {
       }
 
     } catch (Exception e) {
-      System.err.println("Erro no envio da mensagem para fila sqs");
-      e.printStackTrace();
+      logger.error("Erro no envio da mensagem para fila sqs", e);
     }
 
     return new LoginResponse(new UsersAppApplicationDto(userApp), jwtUtils.generatedJwtToken(userApp));
@@ -146,13 +148,16 @@ public class AuthService implements AuthServiceDoc {
    */
   public Boolean confirmByToken(String jwtToken, String token) {
     Token byToken = tokenService.findByToken(token);
-    UsersAppData byEmail = usersAppDataService.findByUsersId(byToken.getId());
-    if (byToken.getUserId() == byEmail.getId()) {
-      byEmail.setActive(true);
-      usersAppDataService.save(byEmail);
+    String email = jwtUtils.getEmailFromJwtToken(jwtToken);
+    String application = jwtUtils.getAppFromJwtToken(jwtToken);
+    UsersAppData usersAppData = usersAppDataService.getUsersByEmail(email, application);
+
+    if (byToken.getUserId().equals(usersAppData.getUsers().getId())) {
+      usersAppData.setActive(true);
+      usersAppDataService.save(usersAppData);
       tokenService.delete(token);
     }
-    return byEmail.isActive();
+    return usersAppData.isActive();
   }
 
   private void messageSqsFactor(ApplicationSqsMessage application) {
