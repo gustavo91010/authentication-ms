@@ -43,7 +43,6 @@ public class LoginResponse {
   private Map<String, Object> otherFields;
 
   public LoginResponse(UsersAppApplicationDto users, String jwt) {
-    // this.id = users.getUserId();
     this.id = users.getUserDataId();
     this.name = users.getName();
     this.email = users.getEmail();
@@ -57,7 +56,6 @@ public class LoginResponse {
 
   private List<String> rolesToList(Set<Roles> roles) {
     return roles.stream()
-        // .map(role -> "ROLE_" + role.getName())
         .map(role -> role.getName().name())
         .collect(Collectors.toList());
   }

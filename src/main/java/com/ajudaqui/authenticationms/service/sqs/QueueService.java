@@ -47,6 +47,8 @@ public class QueueService {
 
   public String checkinfFile(String authorization, String fileName) {
 
+    System.out.println("sqs authorization "+authorization);
+    System.out.println("sql fileName "+fileName);
     return queueList(authorization).stream()
         .filter(queleName -> queleName.equals(fileName))
         .findFirst()

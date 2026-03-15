@@ -4,25 +4,16 @@ import java.util.List;
 
 import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.controller.doc.ApplicationsControllerDoc;
-import com.ajudaqui.authenticationms.dto.ApplicationDto;
-import com.ajudaqui.authenticationms.dto.HttpAplications;
-import com.ajudaqui.authenticationms.dto.HttpUsersAppData;
+import com.ajudaqui.authenticationms.dto.*;
 import com.ajudaqui.authenticationms.entity.Applications;
 import com.ajudaqui.authenticationms.service.ApplicationsService;
 
-import com.ajudaqui.authenticationms.dto.HttpUsersAppData;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
-import com.ajudaqui.authenticationms.response.MessageResponse;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/app")
@@ -45,15 +36,15 @@ public class ApplicationController implements ApplicationsControllerDoc {
   }
 
   @Override
-  @PreAuthorize("hasRole('ROLE_MODERATOR')")
-  public ResponseEntity<List<HttpUsersAppData>> getByAppName(@RequestHeader("Authorization") String jwtToken,
+  // @PreAuthorize("hasRole('ROLE_MODERATOR')")
+  public ResponseEntity<HttpAplications> getByAppName(@RequestHeader("Authorization") String jwtToken,
       @PathVariable String appName) {
-    String email = jwtUtils.getEmailFromJwtToken(jwtToken);
-    return ResponseEntity.ok(applicationsService.userByApp(email, appName));
+    Applications aplicaiton = applicationsService.findByName( appName);
+    return ResponseEntity.ok(new HttpAplications(aplicaiton));
   }
 
   @Override
-  @PreAuthorize("hasRole('ROLE_MODERATOR')")
+  // @PreAuthorize("hasRole('ROLE_MODERATOR')")
   public ResponseEntity<List<HttpAplications>> allApplications(
       @RequestHeader("Authorization") String authorization) {
     return ResponseEntity.ok(applicationsService.findAll(authorization));

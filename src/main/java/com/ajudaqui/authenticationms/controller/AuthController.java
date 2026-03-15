@@ -27,6 +27,12 @@ public class AuthController implements AuthControllerDoc{
     this.authService = authService;
   }
 
+  @PostMapping("/signup")
+  public ResponseEntity<LoginResponse> registerUser(
+      @Valid @RequestBody UsersRegister usersRegister) {
+    logger.info(String.format("[POST] | auth/signup | email: " + usersRegister.getEmail()));
+    return ResponseEntity.ok(authService.registerUser(usersRegister));
+  }
   @PostMapping("/signin")
   public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
     LoginResponse userAuthenticated = authService.authenticateUser(loginRequest);
@@ -48,11 +54,5 @@ public class AuthController implements AuthControllerDoc{
     }
   }
 
-  @PostMapping("/signup")
-  public ResponseEntity<LoginResponse> registerUser(
-      @Valid @RequestBody UsersRegister usersRegister) {
-    logger.info(String.format("[POST] | auth/signup | email: " + usersRegister.getEmail()));
-    return ResponseEntity.ok(authService.registerUser(usersRegister));
-  }
 
 }

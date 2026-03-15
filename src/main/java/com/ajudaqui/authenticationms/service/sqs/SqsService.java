@@ -33,9 +33,15 @@ public class SqsService {
   }
 
   public void sendMessage(String authorization, ApplicationSqsMessage message) {
+    System.out.println("authorization "+authorization);
     JsonObject sqsMessage = message.fromJson();
     String applicationFilaName = queueService.getNameFileByApplication(sqsMessage.get("name").getAsString());
+    System.out.println();
+    System.out.println("applicationFilaName "+applicationFilaName);
+    System.out.println();
     String queueUrl = queueService.checkinfFile(authorization, applicationFilaName);
+    System.out.println("payload");
+    System.out.println(sqsMessage.toString());
     SendMessageRequest request = SendMessageRequest.builder()
         .queueUrl(queueUrl)
         // .messageBody(sqsMessage.get("payload").toString())

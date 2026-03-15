@@ -37,6 +37,7 @@ public class UsersAppApplicationDto {
     this.createdAt = usersAppData.getCreatedAt();
     this.isActive = usersAppData.isActive();
     this.accessTokne = usersAppData.getAccessToken();
+
     this.roles = usersAppData.getRoles();
     if (usersAppData.getLastLogin() != null)
       this.lastLogin = usersAppData.getLastLogin();

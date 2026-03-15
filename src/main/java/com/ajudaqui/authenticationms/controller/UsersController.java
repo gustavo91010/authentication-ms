@@ -1,5 +1,9 @@
 package com.ajudaqui.authenticationms.controller;
 
+import java.util.List;
+
+import com.ajudaqui.authenticationms.entity.UsersAppData;
+import com.ajudaqui.authenticationms.response.UsersAppResponse;
 import com.ajudaqui.authenticationms.response.error.ResponseError;
 import com.ajudaqui.authenticationms.service.UsersAppDataService;
 
@@ -8,12 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -28,7 +27,9 @@ public class UsersController {
       @RequestParam(required = false, defaultValue = "bill-manager") String application) {
     try {
       logger.info("[GET] | /users/email/{email}", email);
-      return ResponseEntity.ok(userApp.getUsersByEmail(email, application));
+      List<UsersAppData> user = userApp.getAllUsersByEmail(email);
+      return ResponseEntity.ok(user.stream()
+          .map(UsersAppResponse::new));
     } catch (Exception e) {
       logger.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));
@@ -39,7 +40,8 @@ public class UsersController {
   public ResponseEntity<?> findById(@PathVariable Long userAppId) {
     try {
       logger.info("[GET] | /users/{userAppId}", userAppId);
-      return ResponseEntity.ok(userApp.findByUsersId(userAppId));
+      UsersAppData user = userApp.findByUsersId(userAppId);
+      return ResponseEntity.ok(new UsersAppResponse(user));
     } catch (Exception e) {
       logger.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));

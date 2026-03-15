@@ -24,18 +24,17 @@ public class HttpAplications {
   @Schema(example = "150")
   private int totalUsers;
 
-  @Schema(example = "2026-02-27T22:30:00")
-  private LocalDateTime createdAt;
+  private String nao_era_pra_ta_aqui;
 
   public HttpAplications(Applications applcations) {
     this.id = applcations.getId();
     this.name = applcations.getName();
-    this.createdAt = applcations.getCreatedAt().withNano(0);
     if (applcations.getRegisterUrl() != null)
       this.registertUrl = applcations.getRegisterUrl();
     if (applcations.getRedirectUrl() != null)
       this.redirectUrl = applcations.getRedirectUrl();
     this.totalUsers = applcations.getUsersAppData().size();
+    this.nao_era_pra_ta_aqui = applcations.getSecretId();
   }
 
   public HttpAplications() {
@@ -65,14 +64,6 @@ public class HttpAplications {
     this.redirectUrl = redirectUrl;
   }
 
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(LocalDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
-
   public String getRegistertUrl() {
     return registertUrl;
   }
@@ -87,6 +78,14 @@ public class HttpAplications {
 
   public void setTotalUsers(int totalUsers) {
     this.totalUsers = totalUsers;
+  }
+
+  public String getNao_era_pra_ta_aqui() {
+    return nao_era_pra_ta_aqui;
+  }
+
+  public void setNao_era_pra_ta_aqui(String nao_era_pra_ta_aqui) {
+    this.nao_era_pra_ta_aqui = nao_era_pra_ta_aqui;
   }
 
 }

@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Applications", description = "Gerenciamento de aplicações")
 public interface ApplicationsControllerDoc {
 
-  @Operation(summary = "Registra uma aplicação e torna o usuário Moderador")
+  @Operation(summary = "Registra uma aplicação e torna o usuário Moderador, permitido a quem tem acesso master")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Aplicação criada"),
       @ApiResponse(responseCode = "400", description = "Erro de validação")
@@ -36,12 +36,12 @@ public interface ApplicationsControllerDoc {
       @ApiResponse(responseCode = "404", description = "Aplicação não encontrada")
   })
   @GetMapping("/name/{appName}")
-  ResponseEntity<List<HttpUsersAppData>> getByAppName(
+  ResponseEntity<HttpAplications> getByAppName(
       @Parameter(description = "Token JWT no formato Bearer") @RequestHeader("Authorization") String jwtToken,
       @Parameter(description = "Nome da aplicação", example = "vem-pro-culto") @PathVariable String appName);
 
   @Operation(summary = "Listar todas as aplicações", description = "Retorna a lista de todas as aplicações cadastradas no sistema. "
-      + "Acesso permitido apenas para MODERATOR.")
+      + "Permitido a qyem tem o acesso master")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso"),
       @ApiResponse(responseCode = "403", description = "Acesso negado")

@@ -68,7 +68,6 @@ public class AuthService implements AuthServiceDoc {
     UsersAppData usersApp = usersAppDataService.getUsersByEmail(loginRequest.getEmail(), loginRequest.getApplication());
     if (!usersApp.isActive())
       throw new MessageException("sua conta esta desativada, verifique seu email");
-
     UsernamePasswordAuthenticationToken userAutheticator = new UsernamePasswordAuthenticationToken(
         loginRequest.getEmail() + "|" + usersApp.getApplications().getName(),
         loginRequest.getPassword());
@@ -76,6 +75,7 @@ public class AuthService implements AuthServiceDoc {
     Authentication authentication = authenticationManager.authenticate(userAutheticator);
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
+
     return new LoginResponse(new UsersAppApplicationDto(usersApp),
         jwtUtils.generatedJwtToken(usersApp));
   }
@@ -110,11 +110,15 @@ public class AuthService implements AuthServiceDoc {
 
       if (!isProd)
         confirmByToken(jwtUtils.generatedJwtToken(userApp), token);
-
+      System.out.println("é prod? " + isProd);
+      System.out.println("vai mandar emnsagem?? " + userApp.getId() != null && isProd);
       if (userApp.getId() != null && isProd) {
 
         Map<String, Object> payload = usersRegister.getOtherFields();
         payload.put("access_token", userApp.getAccessToken());
+        payload.put("name", userApp.getUsers().getName());
+        payload.put("email", userApp.getUsers().getEmail());
+
         ApplicationSqsMessage sqsMessage = new ApplicationSqsMessage(
             application.getRegisterUrl(),
             application.getName(),

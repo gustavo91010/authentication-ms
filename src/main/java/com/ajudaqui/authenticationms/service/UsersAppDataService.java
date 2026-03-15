@@ -30,6 +30,10 @@ public class UsersAppDataService {
     return repository.findByAppId(appId);
   }
 
+  public List<UsersAppData> getAllUsersByEmail(String email) {
+    return this.repository.findByUserEmail(email);
+  }
+
   public UsersAppData getUsersByEmail(String email, String application) {
     return this.repository.findByUserEmail(email).stream()
         .filter(u -> application.equals(u.getApplications().getName()))
