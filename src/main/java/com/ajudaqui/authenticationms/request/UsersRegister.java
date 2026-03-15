@@ -22,16 +22,16 @@ public class UsersRegister {
   private String password;
   @NotBlank(message = "Campo aplication é obrigatorio")
   private String aplication;
-  private Map<String, Object> otherFields;
+  private Map<String, Object> payload;
 
-  public Map<String, Object> getOtherFields() {
-    return otherFields == null
+  public Map<String, Object> getPayload() {
+    return payload == null
         ? new HashMap<String, Object>()
-        : otherFields;
+        : payload;
   }
 
-  public void setOtherFields(Map<String, Object> otherFields) {
-    this.otherFields = otherFields;
+  public void setPayload(Map<String, Object> otherFields) {
+    this.payload = otherFields;
   }
 
   @Override

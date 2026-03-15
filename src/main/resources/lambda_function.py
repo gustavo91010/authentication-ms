@@ -22,10 +22,9 @@ def lambda_handler(event, context):
 
 def registrar_usuario(url, body):
 
-    application = body.get("name")
     authorization = body["authorization"]
 
-    url = f"{url}/users/register"
+    url = f"{url}/auth/register"
 
     payload = body.get("payload")
 

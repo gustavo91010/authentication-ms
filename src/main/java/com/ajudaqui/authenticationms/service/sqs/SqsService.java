@@ -34,21 +34,21 @@ public class SqsService {
 
   public void sendMessage(String authorization, ApplicationSqsMessage message) {
     System.out.println("authorization "+authorization);
-    JsonObject sqsMessage = message.fromJson();
-    String applicationFilaName = queueService.getNameFileByApplication(sqsMessage.get("name").getAsString());
+    JsonObject payload = message.fromJson();
+    String applicationFilaName = queueService.getNameFileByApplication(payload.get("name").getAsString());
     System.out.println();
     System.out.println("applicationFilaName "+applicationFilaName);
     System.out.println();
     String queueUrl = queueService.checkinfFile(authorization, applicationFilaName);
     System.out.println("payload");
-    System.out.println(sqsMessage.toString());
+    System.out.println(payload.toString());
     SendMessageRequest request = SendMessageRequest.builder()
         .queueUrl(queueUrl)
         // .messageBody(sqsMessage.get("payload").toString())
-        .messageBody(sqsMessage.toString())
+        .messageBody(payload.toString())
         .build();
 
-    System.out.println(sqsMessage);
+    System.out.println(payload);
     sqsClient.sendMessage(request);
     logger.info("Mensagem enviada para a fila: {}", applicationFilaName);
   }

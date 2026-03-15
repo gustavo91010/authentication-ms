@@ -47,7 +47,7 @@ public class UsersService {
 
     UsersAppData usersAppData = usersRegister.toAppData(users, isInternal, application,
         appDataService.assignRole(ERoles.ROLE_USER));
-    usersAppData.setOtherFields(usersRegister.getOtherFields());
+    usersAppData.setOtherFields(usersRegister.getPayload());
 
     return appDataService.save(usersAppData);
   }

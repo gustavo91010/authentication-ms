@@ -114,10 +114,8 @@ public class AuthService implements AuthServiceDoc {
       System.out.println("vai mandar emnsagem?? " + userApp.getId() != null && isProd);
       if (userApp.getId() != null && isProd) {
 
-        Map<String, Object> payload = usersRegister.getOtherFields();
+        Map<String, Object> payload = usersRegister.getPayload();
         payload.put("access_token", userApp.getAccessToken());
-        payload.put("name", userApp.getUsers().getName());
-        payload.put("email", userApp.getUsers().getEmail());
 
         ApplicationSqsMessage sqsMessage = new ApplicationSqsMessage(
             application.getRegisterUrl(),
