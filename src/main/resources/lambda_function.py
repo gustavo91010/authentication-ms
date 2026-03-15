@@ -9,7 +9,7 @@ def lambda_handler(event, context):
     for record in event.get("Records", []):
         body = json.loads(record["body"])
 
-        url = body.get("registerUrl")
+        url = body.get("register_url")
 
         if url:
             registrar_usuario(url, body)
