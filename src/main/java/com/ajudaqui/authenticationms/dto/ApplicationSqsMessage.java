@@ -15,7 +15,7 @@ public class ApplicationSqsMessage {
   public JsonObject fromJson() {
     JsonObject sqsUsers = new JsonObject();
 
-    sqsUsers.addProperty("url", this.registerUrl);
+    sqsUsers.addProperty("register_url", this.registerUrl);
     sqsUsers.addProperty("authorization", this.authorization);
     sqsUsers.addProperty("name", this.name);
 
