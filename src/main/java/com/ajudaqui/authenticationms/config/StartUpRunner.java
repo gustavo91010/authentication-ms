@@ -52,7 +52,7 @@ public class StartUpRunner implements CommandLineRunner {
                   !users.getPassword().isEmpty()) {
 
                 u.setPassword(users.getPassword());
-                usersAppDataService.save(u);
+                // usersAppDataService.save(u);
               }
             });
 

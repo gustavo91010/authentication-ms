@@ -110,8 +110,6 @@ public class AuthService implements AuthServiceDoc {
 
       if (!isProd)
         confirmByToken(jwtUtils.generatedJwtToken(userApp), token);
-      System.out.println("é prod? " + isProd);
-      System.out.println("vai mandar emnsagem?? " + userApp.getId() != null && isProd);
       if (userApp.getId() != null && isProd) {
 
         Map<String, Object> payload = usersRegister.getPayload();
