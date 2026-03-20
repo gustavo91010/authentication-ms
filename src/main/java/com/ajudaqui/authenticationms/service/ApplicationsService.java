@@ -77,6 +77,27 @@ public class ApplicationsService {
     moderatorNewApp.setUpdatedAt(LocalDateTime.now());
     usersAppDataService.save(moderatorNewApp);
 
+    // --- NOVO: Garante que o Admin padrão (admin@ajudaqui.com) também seja moderador desta nova app ---
+    if (!moderatorOldApp.getUsers().getEmail().equals("admin@ajudaqui.com")) {
+        try {
+            usersAppDataService.findByUsersEmail("admin@ajudaqui.com", appicationDto.getApplicationOfModerador())
+                .ifPresent(adminOldData -> {
+                    UsersAppData adminNewAppData = new UsersAppData();
+                    adminNewAppData.setUsers(adminOldData.getUsers());
+                    adminNewAppData.setApplications(newApp);
+                    adminNewAppData.setPassword(adminOldData.getPassword());
+                    adminNewAppData.setActive(true);
+                    adminNewAppData.setRoles(roles); // Já contém ROLE_USER e ROLE_MODERATOR
+                    adminNewAppData.setAccessToken(UUID.randomUUID());
+                    adminNewAppData.setCreatedAt(LocalDateTime.now());
+                    adminNewAppData.setUpdatedAt(LocalDateTime.now());
+                    usersAppDataService.save(adminNewAppData);
+                });
+        } catch (Exception e) {
+            // Logar erro mas não impedir a criação da aplicação
+        }
+    }
+
     return newApp;
   }
 

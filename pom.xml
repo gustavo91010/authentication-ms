@@ -132,14 +132,14 @@
     <dependency>
       <groupId>com.vladmihalcea</groupId>
       <artifactId>hibernate-types-52</artifactId>
-      <version>2.21.1</version>
+      <version>2.14.0</version>
     </dependency>
     <!-- Ela ativa endpoints prontos para monitoramento da aplicação, como /actuator/health,
     /actuator/info -->
-    <!-- <dependency> -->
-    <!--   <groupId>org.springframework.boot</groupId> -->
-    <!--   <artifactId>spring-boot-starter-actuator</artifactId> -->
-    <!-- </dependency> -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-mail</artifactId>

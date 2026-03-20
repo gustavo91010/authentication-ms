@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Auth-MS | Monitoramento de Aplicações</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: none; }
+        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .status-online { background-color: #28a745; }
+        .status-offline { background-color: #dc3545; }
+        .badge-sqs { background-color: #ff9900; color: white; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="https://ajudaqui.com.br/favicon.ico" width="30" height="30" class="d-inline-block align-top rounded" alt="">
+                Authentication MS Admin
+            </a>
+            <span class="navbar-text">Monitoramento de Sistemas AjudaAqui</span>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Coluna de Aplicações -->
+            <div class="col-lg-8">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3>Aplicações Registradas</h3>
+                    <span class="badge bg-primary" th:text="${#lists.size(applications)} + ' Apps'">0 Apps</span>
+                </div>
+                <div class="card">
+                    <div class="card-body p-0">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Client ID</th>
+                                    <th>Redirect URL</th>
+                                    <th>Register URL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="app : ${applications}">
+                                    <td>
+                                        <span class="status-dot status-online"></span>
+                                        <strong th:text="${app.name}">VPC-App</strong>
+                                    </td>
+                                    <td><small class="text-muted" th:text="${app.clientId}">uuid</small></td>
+                                    <td><a th:href="${app.redirectUrl}" target="_blank" class="text-decoration-none" th:text="${app.redirectUrl}">url</a></td>
+                                    <td><small class="text-muted" th:text="${app.registerUrl}">url</small></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coluna de Filas SQS -->
+            <div class="col-lg-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3>Filas SQS</h3>
+                    <span class="badge badge-sqs">AWS SQS</span>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div th:each="q : ${queues}" class="mb-3 border-bottom pb-2">
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold" th:text="${q.name}">nome-da-fila</span>
+                                <span th:class="'status-dot ' + (${q.online == 'true'} ? 'status-online' : 'status-offline')"></span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <small class="text-muted">Mensagens Pendentes:</small>
+                                <span class="badge bg-secondary" th:text="${q.messages}">0</span>
+                            </div>
+                        </div>
+                        <div th:if="${#lists.isEmpty(queues)}" class="text-center text-muted py-3">
+                            Nenhuma fila configurada.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h5>Diagnóstico Rápido</h5>
+                    <div class="d-grid gap-2">
+                        <a href="/actuator/health" class="btn btn-sm btn-outline-info" target="_blank">Health Status</a>
+                        <a href="/swagger-ui.html" class="btn btn-sm btn-outline-secondary" target="_blank">Swagger Docs</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
