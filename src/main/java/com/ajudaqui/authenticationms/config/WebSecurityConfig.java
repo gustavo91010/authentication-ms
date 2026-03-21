@@ -21,8 +21,6 @@ import com.ajudaqui.authenticationms.config.security.jwt.AuthTokenFilter;
 import com.ajudaqui.authenticationms.config.security.jwt.CustomAccessDeniedHandler;
 import com.ajudaqui.authenticationms.config.security.service.UserDetailsServiceImpl;
 
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -38,23 +36,45 @@ public class WebSecurityConfig {
     return new CustomAccessDeniedHandler();
   }
 
-  // ... (beans mantidos igual)
+  @Bean
+  public AuthTokenFilter authenticationJwtTokenFilter() {
+    return new AuthTokenFilter();
+  }
+
+  @Bean
+  public DaoAuthenticationProvider authenticationProvider() {
+    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+
+    authProvider.setUserDetailsService(userDetailsService);
+    authProvider.setPasswordEncoder(passwordEncoder());
+
+    return authProvider;
+  }
+
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+    return authConfig.getAuthenticationManager();
+  }
+
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.cors().and().csrf().disable()
         .exceptionHandling()
-        // O JWT EntryPoint só será usado se NÃO for rota de admin
-        .defaultAuthenticationEntryPointFor(unauthorizedHandler, request -> !request.getRequestURI().startsWith("/admin/"))
+        .authenticationEntryPoint(unauthorizedHandler) // Centraliza no unauthorizedHandler
         .accessDeniedHandler(accessDeniedHandler())
         .and()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).and()
         .authorizeRequests()
         .antMatchers("/admin/**").hasAuthority("ROLE_MODERATOR") 
         .antMatchers("/**").permitAll() 
         .anyRequest().authenticated()
         .and()
-        .httpBasic(); // Ativa o popup de login para quem não cair no JWT EntryPoint
+        .httpBasic(); // O httpBasic vai tentar usar o EntryPoint padrão se o unauthorizedHandler permitir
     
     http.authenticationProvider(authenticationProvider());
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

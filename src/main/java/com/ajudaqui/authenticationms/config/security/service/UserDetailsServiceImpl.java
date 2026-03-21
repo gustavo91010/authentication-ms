@@ -19,11 +19,26 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
   @Transactional
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    String[] parts = username.split("\\|");
-    String email = parts[0];
-    String application = parts[1];
+    String email;
+    String application = null;
+
+    if (username.contains("|")) {
+      String[] parts = username.split("\\|");
+      email = parts[0];
+      application = parts[1];
+    } else {
+      email = username;
+    }
+
+    final String finalApplication = application;
     UsersAppData user = usersRepository.findByUserEmail(email).stream()
-        .filter(u -> application.equals(u.getApplications().getName()))
+        .filter(u -> {
+          if (finalApplication != null) {
+            return finalApplication.equals(u.getApplications().getName());
+          }
+          // Se não especificou app, procura um onde ele seja MODERADOR (para o Admin Dashboard)
+          return u.getRoles().stream().anyMatch(r -> r.getName().name().equals("ROLE_MODERATOR"));
+        })
         .findFirst()
         .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 

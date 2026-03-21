@@ -19,12 +19,19 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
   @Override
   public void commence(HttpServletRequest request, HttpServletResponse response,
       AuthenticationException authException) throws IOException, ServletException {
+    
+    // Se for rota de admin, deixa o httpBasic disparar o popup do navegador
+    if (request.getRequestURI().startsWith("/admin/")) {
+        response.addHeader("WWW-Authenticate", "Basic realm=\"Admin Dashboard\"");
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
+        return;
+    }
+
     response.setCharacterEncoding("utf-8");
     response.setContentType("application/json");
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     response.getWriter().print("{ \"message\": \"" + "Não autorizado" + "\" }");
     logger.error("Usuario não autorizado!");
-    ;
   }
 
 }
