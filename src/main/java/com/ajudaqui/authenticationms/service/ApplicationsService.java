@@ -52,6 +52,9 @@ public class ApplicationsService {
     if (appicationDto.getEmailModerador() == null || appicationDto.getEmailModerador().isEmpty())
       throw new MessageException("O campo email do emailModerador não pode estar vazio.");
 
+    if (appicationDto.getSecret() != null && appicationDto.getSecret().length() < 88) {
+      throw new IllegalArgumentException("Secret inválida");
+    }
     String name = appicationDto.getName().toLowerCase();
 
     if (repository.findByName(name).isPresent())
@@ -77,25 +80,26 @@ public class ApplicationsService {
     moderatorNewApp.setUpdatedAt(LocalDateTime.now());
     usersAppDataService.save(moderatorNewApp);
 
-    // --- NOVO: Garante que o Admin padrão (admin@ajudaqui.com) também seja moderador desta nova app ---
+    // --- NOVO: Garante que o Admin padrão (admin@ajudaqui.com) também seja
+    // moderador desta nova app ---
     if (!moderatorOldApp.getUsers().getEmail().equals("admin@ajudaqui.com")) {
-        try {
-            usersAppDataService.findByUsersEmail("admin@ajudaqui.com", appicationDto.getApplicationOfModerador())
-                .ifPresent(adminOldData -> {
-                    UsersAppData adminNewAppData = new UsersAppData();
-                    adminNewAppData.setUsers(adminOldData.getUsers());
-                    adminNewAppData.setApplications(newApp);
-                    adminNewAppData.setPassword(adminOldData.getPassword());
-                    adminNewAppData.setActive(true);
-                    adminNewAppData.setRoles(roles); // Já contém ROLE_USER e ROLE_MODERATOR
-                    adminNewAppData.setAccessToken(UUID.randomUUID());
-                    adminNewAppData.setCreatedAt(LocalDateTime.now());
-                    adminNewAppData.setUpdatedAt(LocalDateTime.now());
-                    usersAppDataService.save(adminNewAppData);
-                });
-        } catch (Exception e) {
-            // Logar erro mas não impedir a criação da aplicação
-        }
+      try {
+        usersAppDataService.findByUsersEmail("admin@ajudaqui.com", appicationDto.getApplicationOfModerador())
+            .ifPresent(adminOldData -> {
+              UsersAppData adminNewAppData = new UsersAppData();
+              adminNewAppData.setUsers(adminOldData.getUsers());
+              adminNewAppData.setApplications(newApp);
+              adminNewAppData.setPassword(adminOldData.getPassword());
+              adminNewAppData.setActive(true);
+              adminNewAppData.setRoles(roles); // Já contém ROLE_USER e ROLE_MODERATOR
+              adminNewAppData.setAccessToken(UUID.randomUUID());
+              adminNewAppData.setCreatedAt(LocalDateTime.now());
+              adminNewAppData.setUpdatedAt(LocalDateTime.now());
+              usersAppDataService.save(adminNewAppData);
+            });
+      } catch (Exception e) {
+        // Logar erro mas não impedir a criação da aplicação
+      }
     }
 
     return newApp;
@@ -116,7 +120,8 @@ public class ApplicationsService {
         .map(Roles::getName)
         .anyMatch(r -> {
           for (ERoles allowed : allowedRoles) {
-            if (allowed.equals(r)) return true;
+            if (allowed.equals(r))
+              return true;
           }
           return false;
         });

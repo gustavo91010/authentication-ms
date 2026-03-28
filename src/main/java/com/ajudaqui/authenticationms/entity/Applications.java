@@ -1,6 +1,8 @@
 package com.ajudaqui.authenticationms.entity;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -44,8 +46,7 @@ public class Applications {
   public Applications(String name, String secretId) {
     this.clientId = UUID.randomUUID().toString();
 
-    this.secretId = (secretId == null || secretId.isEmpty()) ?
-    UUID.randomUUID().toString() : secretId;
+    this.secretId = (secretId == null || secretId.isEmpty()) ? newRandowSercretKey() : secretId;
     this.name = name;
     this.createdAt = LocalDateTime.now();
     this.updatedAt = LocalDateTime.now();
@@ -83,6 +84,10 @@ public class Applications {
   }
 
   public void setSecretId(String secretId) {
+
+    if (secretId != null && secretId.length() < 88)
+      throw new IllegalArgumentException("Secret inválida");
+
     this.secretId = secretId;
   }
 
@@ -125,4 +130,12 @@ public class Applications {
   public void setRegisterUrl(String registerUrl) {
     this.registerUrl = registerUrl;
   }
+
+  private String newRandowSercretKey() {
+
+    byte[] bytes = new byte[64]; // 64 bytes = 512 bits
+    new SecureRandom().nextBytes(bytes);
+    return Base64.getEncoder().encodeToString(bytes);
+  }
+
 }
