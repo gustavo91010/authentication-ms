@@ -1,7 +1,5 @@
 package com.ajudaqui.authenticationms.dto;
 
-import java.time.LocalDateTime;
-
 import com.ajudaqui.authenticationms.entity.Applications;
 
 import io.swagger.v3.oas.annotations.media.Schema;

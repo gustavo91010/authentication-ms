@@ -8,7 +8,6 @@ import com.ajudaqui.authenticationms.response.MessageResponse;
 import com.ajudaqui.authenticationms.service.sqs.QueueService;
 import com.ajudaqui.authenticationms.service.sqs.SqsService;
 
-import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

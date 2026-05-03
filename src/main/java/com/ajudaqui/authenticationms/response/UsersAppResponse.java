@@ -1,6 +1,5 @@
 package com.ajudaqui.authenticationms.response;
 
-import java.text.Collator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;

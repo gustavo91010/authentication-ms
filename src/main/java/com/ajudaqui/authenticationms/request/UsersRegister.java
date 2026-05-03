@@ -21,7 +21,7 @@ public class UsersRegister {
   @NotBlank(message = "Campo password é obrigatorio")
   private String password;
   @NotBlank(message = "Campo aplication é obrigatorio")
-  private String aplication;
+  private String application;
   private Map<String, Object> payload;
 
   public Map<String, Object> getPayload() {
@@ -36,7 +36,7 @@ public class UsersRegister {
 
   @Override
   public String toString() {
-    return "UsersRegister{name=" + name + ", email=" + email + ", aplication=" + aplication + "}";
+    return "UsersRegister{name=" + name + ", email=" + email + ", aplication=" + application + "}";
   }
 
   public String getEmail() {
@@ -47,8 +47,8 @@ public class UsersRegister {
     return password;
   }
 
-  public String getAplication() {
-    return aplication;
+  public String getApplication() {
+    return application;
   }
 
   public String getName() {
@@ -67,17 +67,15 @@ public class UsersRegister {
     this.password = password;
   }
 
-  public void setAplication(String aplication) {
-    this.aplication = aplication;
+  public void setApplication(String aplication) {
+    this.application = aplication;
   }
 
   public Users toUsers(boolean isInternal) {
     Users users = new Users();
     users.setName(this.name);
     users.setEmail(this.email);
-    // TODO retirar o cmenatri quando chegar a nova versão do front
-    // users.setActive(isInternal);
-    users.setActive(true);
+    // users.setActive(true);
     return users;
   }
 
@@ -89,8 +87,6 @@ public class UsersRegister {
     usersAppData.setPassword(checkStrongPassword(this.password));
     usersAppData.setApplications(applications);
     usersAppData.setCreatedAt(LocalDateTime.now());
-    // TODO retirar o cmenatri quando chegar a nova versão do front
-    // usersAppData.setActive(isInternal);
     usersAppData.setActive(true);
     return usersAppData;
   }

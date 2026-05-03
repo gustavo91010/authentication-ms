@@ -92,10 +92,10 @@ public class JwtUtils {
     return this.secretKeys.get(clientId);
   }
 
-  private String getClaims(String token, String claim) {
-    return Jwts.parser().setSigningKey(getSecretKeyByJwt(token)).parseClaimsJws(token).getBody().get(claim,
-        String.class);
-  }
+  // private String getClaims(String token, String claim) {
+  //   return Jwts.parser().setSigningKey(getSecretKeyByJwt(token)).parseClaimsJws(token).getBody().get(claim,
+  //       String.class);
+  // }
 
   public boolean validateJwtToken(String authToken, String jwtSecret) {
     try {

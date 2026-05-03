@@ -95,25 +95,4 @@ public class Users {
     this.usersAppData = usersAppData;
   }
 
-  //TODO retirar o password depois da corercao dos registros
-  private String password;
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-  //TODO retirar o password depois da corercao dos registros
-  private Boolean active;
-
-  public Boolean getActive() {
-    return active;
-  }
-
-  public void setActive(Boolean active) {
-    this.active = active;
-  }
-
 }

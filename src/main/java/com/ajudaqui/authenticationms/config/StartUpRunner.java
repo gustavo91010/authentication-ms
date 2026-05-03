@@ -8,7 +8,6 @@ import com.ajudaqui.authenticationms.service.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
 // @Component
 public class StartUpRunner implements CommandLineRunner {
@@ -43,17 +42,17 @@ public class StartUpRunner implements CommandLineRunner {
           register.setName(name);
           register.setEmail(users.getEmail());
           register.setPassword("1aA%23456");
-          register.setAplication(app.getName());
+          register.setApplication(app.getName());
           authService.registerUser(register);
         }
         usersAppDataService.findByUsersEmail(users.getEmail(), application)
             .ifPresent(u -> {
-              if (users.getPassword() != null &&
-                  !users.getPassword().isEmpty()) {
+              // if (users.getPassword() != null &&
+              //     !users.getPassword().isEmpty()) {
 
-                u.setPassword(users.getPassword());
-                // usersAppDataService.save(u);
-              }
+              //   u.setPassword(users.getPassword());
+              //   // usersAppDataService.save(u);
+              // }
             });
 
       } catch (Exception e) {

@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.ajudaqui.authenticationms.exception.BadRequestException;
-import com.ajudaqui.authenticationms.exception.MessageException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,21 +1,5 @@
 package com.ajudaqui.authenticationms.controller;
 
-import com.ajudaqui.authenticationms.entity.UsersAppData;
-import com.ajudaqui.authenticationms.repository.ApplicationsRepository;
-import com.ajudaqui.authenticationms.repository.UsersAppDataRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.RestTemplate;
-import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.model.GetQueueAttributesRequest;
-import software.amazon.awssdk.services.sqs.model.GetQueueAttributesResponse;
-import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
-import software.amazon.awssdk.services.sqs.model.QueueAttributeName;
-
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,12 +7,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.ajudaqui.authenticationms.entity.UsersAppData;
+import com.ajudaqui.authenticationms.repository.UsersAppDataRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.RestTemplate;
+
+import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.GetQueueAttributesRequest;
+import software.amazon.awssdk.services.sqs.model.GetQueueAttributesResponse;
+import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
+import software.amazon.awssdk.services.sqs.model.QueueAttributeName;
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-
-    @Autowired
-    private ApplicationsRepository applicationsRepository;
 
     @Autowired
     private UsersAppDataRepository usersAppDataRepository;

@@ -131,7 +131,6 @@ public class ApplicationsService {
   }
 
   public UsersAppData assignAdmin(String moderatorEmail, String appName, String userEmail) {
-    Applications app = findByName(appName);
     checkPermission(moderatorEmail, appName, ERoles.ROLE_MODERATOR);
 
     UsersAppData userAppData = usersAppDataService.getUsersByEmail(userEmail, appName);
