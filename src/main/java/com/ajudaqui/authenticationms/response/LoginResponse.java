@@ -43,6 +43,7 @@ public class LoginResponse {
   private Map<String, Object> otherFields;
 
   public LoginResponse(UsersAppApplicationDto users, String jwt) {
+    System.out.println("para o  LoginResponse "+users.getUserDataId());
     this.id = users.getUserDataId();
     this.name = users.getName();
     this.email = users.getEmail();

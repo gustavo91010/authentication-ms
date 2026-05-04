@@ -108,8 +108,9 @@ public class AuthService implements AuthServiceDoc {
       emailService.sendEmail(userApp.getUsers().getEmail(),
           "Token de confirmação do registro", token);
 
-      if (!isProd)
+      if (!isProd) // nao estou pedindo isso em produção ainda.
         confirmByToken(jwtUtils.generatedJwtToken(userApp), token);
+
       if (userApp.getId() != null && isProd) {
 
         Map<String, Object> payload = usersRegister.getPayload();

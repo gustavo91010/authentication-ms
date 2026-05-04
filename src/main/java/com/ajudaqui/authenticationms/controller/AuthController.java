@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController implements AuthControllerDoc{
+public class AuthController implements AuthControllerDoc {
   Logger logger = LoggerFactory.getLogger(AuthController.class);
 
   final private AuthService authService;
@@ -33,6 +33,7 @@ public class AuthController implements AuthControllerDoc{
     logger.info(String.format("[POST] | auth/signup | email: " + usersRegister.getEmail()));
     return ResponseEntity.ok(authService.registerUser(usersRegister));
   }
+
   @PostMapping("/signin")
   public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
     LoginResponse userAuthenticated = authService.authenticateUser(loginRequest);
@@ -53,6 +54,5 @@ public class AuthController implements AuthControllerDoc{
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e.getMessage()));
     }
   }
-
 
 }
