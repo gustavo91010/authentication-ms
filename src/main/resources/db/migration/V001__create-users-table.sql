@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS public.users
     aplication character varying(100) COLLATE pg_catalog."default",
 
     access_token character varying(255) COLLATE pg_catalog."default",
-    active boolean NOT NULL,
     created_at timestamp(6) without time zone,
     update_at timestamp(6) without time zone,
     CONSTRAINT users_pkey PRIMARY KEY (id)
