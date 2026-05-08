@@ -26,7 +26,7 @@ SELECT
     a.id,
     u.password,
     u.created_at,
-    u.active,
+    true,
     u.access_token::uuid
 FROM users u
 JOIN applications a 
