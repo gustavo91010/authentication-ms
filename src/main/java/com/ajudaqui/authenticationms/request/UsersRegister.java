@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import com.ajudaqui.authenticationms.entity.*;
 import com.ajudaqui.authenticationms.exception.MessageException;

@@ -1,6 +1,6 @@
 package com.ajudaqui.authenticationms.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 
 @Entity

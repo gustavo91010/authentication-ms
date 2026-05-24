@@ -10,6 +10,7 @@ import com.ajudaqui.authenticationms.service.ApplicationsService;
 
 import com.ajudaqui.authenticationms.entity.UsersAppData;
 
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/app")
+@RegisterReflectionForBinding({ApplicationDto.class, HttpAplications.class, HttpUsersAppData.class})
 public class ApplicationController implements ApplicationsControllerDoc {
 
   final private ApplicationsService applicationsService;

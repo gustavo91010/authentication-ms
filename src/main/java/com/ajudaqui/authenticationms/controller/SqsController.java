@@ -8,11 +8,13 @@ import com.ajudaqui.authenticationms.response.MessageResponse;
 import com.ajudaqui.authenticationms.service.sqs.QueueService;
 import com.ajudaqui.authenticationms.service.sqs.SqsService;
 
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/sqs")
+@RegisterReflectionForBinding({ApplicationSqsMessage.class, MessageResponse.class, ApiResponseList.class})
 public class SqsController {
 
   @Autowired

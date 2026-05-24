@@ -26,6 +26,10 @@ import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.*;
 
+import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+
 @Component
 public class JwtUtils {
   private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
@@ -37,6 +41,11 @@ public class JwtUtils {
 
   private Map<String, String> secretKeys = new HashMap<>();
 
+  private Key getSigningKey(String secret) {
+    byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+    return Keys.hmacShaKeyFor(keyBytes);
+  }
+
   public String generatedJwtToken(UsersAppData usersApp) {
     LocalDateTime issuedAt = LocalDateTime.now(ZoneId.systemDefault());
     Date issuedAtDate = Date.from(issuedAt.atZone(ZoneId.systemDefault()).toInstant());
@@ -45,15 +54,17 @@ public class JwtUtils {
     List<ERoles> roles = usersApp.getRoles().stream()
       .map(Roles::getName)
       .collect(Collectors.toList());
-    // return null;
-    return Jwts.builder().setSubject(usersApp.getUsers().getEmail()).setIssuedAt(issuedAtDate)
+    
+    return Jwts.builder()
+        .setSubject(usersApp.getUsers().getEmail())
+        .setIssuedAt(issuedAtDate)
         .setExpiration(expirationDate)
         .claim("client_id", usersApp.getApplications().getClientId())
         .claim("roles", roles)
         .claim("application", usersApp.getApplications().getName())
         .claim("access_token", usersApp.getAccessToken())
-
-        .signWith(SignatureAlgorithm.HS512, usersApp.getApplications().getSecretId()).compact();
+        .signWith(getSigningKey(usersApp.getApplications().getSecretId()), SignatureAlgorithm.HS512)
+        .compact();
   }
 
   public String getAppFromJwtToken(String token) {
@@ -62,10 +73,12 @@ public class JwtUtils {
     if (!validateJwtToken(token, jwtSecret))
       throw new RuntimeException("Token inválido");
 
-    return Jwts.parser().setSigningKey(jwtSecret)
+    return Jwts.parserBuilder()
+        .setSigningKey(getSigningKey(jwtSecret))
+        .build()
         .parseClaimsJws(token)
         .getBody()
-        .get("application").toString(); // isso retorna o email
+        .get("application").toString();
   }
 
   public String getEmailFromJwtToken(String token) {
@@ -74,7 +87,12 @@ public class JwtUtils {
     if (!validateJwtToken(token, jwtSecret))
       throw new RuntimeException("Token inválido");
 
-    return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    return Jwts.parserBuilder()
+        .setSigningKey(getSigningKey(jwtSecret))
+        .build()
+        .parseClaimsJws(token)
+        .getBody()
+        .getSubject();
   }
 
   private String getSecretKeyByJwt(String token) {
@@ -85,21 +103,19 @@ public class JwtUtils {
     String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));
     JsonObject payload = JsonParser.parseString(payloadJson).getAsJsonObject();
     String clientId = payload.get("client_id").getAsString();
-    if (!secretKeys.keySet().contains(clientId)) {
+    if (!secretKeys.containsKey(clientId)) {
       Applications application = apppaApplicationsService.getByClientId(clientId);
       secretKeys.put(clientId, application.getSecretId());
     }
     return this.secretKeys.get(clientId);
   }
 
-  // private String getClaims(String token, String claim) {
-  //   return Jwts.parser().setSigningKey(getSecretKeyByJwt(token)).parseClaimsJws(token).getBody().get(claim,
-  //       String.class);
-  // }
-
   public boolean validateJwtToken(String authToken, String jwtSecret) {
     try {
-      Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+      Jwts.parserBuilder()
+          .setSigningKey(getSigningKey(jwtSecret))
+          .build()
+          .parseClaimsJws(authToken);
       return true;
     } catch (MalformedJwtException e) {
       logger.error("Invalid JWT token: {}", e.getMessage());

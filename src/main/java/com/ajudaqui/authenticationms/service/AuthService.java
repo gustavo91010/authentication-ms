@@ -149,6 +149,9 @@ public class AuthService implements AuthServiceDoc {
    */
   public Boolean confirmByToken(String jwtToken, String token) {
     Token byToken = tokenService.findByToken(token);
+    if (byToken == null) {
+      return false;
+    }
     String email = jwtUtils.getEmailFromJwtToken(jwtToken);
     String application = jwtUtils.getAppFromJwtToken(jwtToken);
     UsersAppData usersAppData = usersAppDataService.getUsersByEmail(email, application);

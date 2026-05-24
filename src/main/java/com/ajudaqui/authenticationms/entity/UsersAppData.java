@@ -6,15 +6,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import org.hibernate.annotations.Type;
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "user_app_data")
-@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class UsersAppData {
 
   @Id
@@ -56,7 +54,7 @@ public class UsersAppData {
   @JoinTable(name = "user_app_data_roles", joinColumns = @JoinColumn(name = "user_app_data_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
   private Set<Roles> roles = new HashSet<>();
 
-  @Type(type = "jsonb")
+  @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
   private Map<String, Object> otherFields;
 

@@ -3,7 +3,7 @@ package com.ajudaqui.authenticationms.entity;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "a_token")

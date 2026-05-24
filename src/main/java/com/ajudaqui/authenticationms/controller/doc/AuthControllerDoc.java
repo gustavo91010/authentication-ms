@@ -1,6 +1,6 @@
 package com.ajudaqui.authenticationms.controller.doc;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.ajudaqui.authenticationms.request.LoginRequest;
 import com.ajudaqui.authenticationms.request.UsersRegister;

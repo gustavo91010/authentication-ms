@@ -7,7 +7,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import com.ajudaqui.authenticationms.entity.Token;
 import com.ajudaqui.authenticationms.exception.BadRequestException;

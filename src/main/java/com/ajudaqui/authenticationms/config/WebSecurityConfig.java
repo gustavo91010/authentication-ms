@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,10 +19,13 @@ import com.ajudaqui.authenticationms.config.security.jwt.AuthEntryPointJwt;
 import com.ajudaqui.authenticationms.config.security.jwt.AuthTokenFilter;
 import com.ajudaqui.authenticationms.config.security.jwt.CustomAccessDeniedHandler;
 import com.ajudaqui.authenticationms.config.security.service.UserDetailsServiceImpl;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class WebSecurityConfig {
 
   @Autowired
@@ -63,19 +65,20 @@ public class WebSecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.cors().and().csrf().disable()
-        .exceptionHandling()
-        .authenticationEntryPoint(unauthorizedHandler) // Centraliza no unauthorizedHandler
-        .accessDeniedHandler(accessDeniedHandler())
-        .and()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).and()
-        .authorizeRequests()
-        .antMatchers("/admin/**").hasAuthority("ROLE_MODERATOR") 
-        .antMatchers("/**").permitAll() 
-        .anyRequest().authenticated()
-        .and()
-        .httpBasic(); // O httpBasic vai tentar usar o EntryPoint padrão se o unauthorizedHandler permitir
-    
+    http.csrf(AbstractHttpConfigurer::disable)
+        .cors(Customizer.withDefaults())
+        .exceptionHandling(exception -> exception
+            .authenticationEntryPoint(unauthorizedHandler)
+            .accessDeniedHandler(accessDeniedHandler())
+        )
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/admin/**").hasAuthority("ROLE_MODERATOR")
+            .requestMatchers("/**").permitAll()
+            .anyRequest().authenticated()
+        )
+        .httpBasic(Customizer.withDefaults());
+
     http.authenticationProvider(authenticationProvider());
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     return http.build();
