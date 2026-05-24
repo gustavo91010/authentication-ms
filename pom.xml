@@ -136,6 +136,11 @@
       <plugin>
         <groupId>org.graalvm.buildtools</groupId>
         <artifactId>native-maven-plugin</artifactId>
+        <configuration>
+          <buildArgs>
+            <arg>--initialize-at-run-time=sun.security.util.Password$ConsoleHolder,jdk.internal.io.JdkConsoleImpl$1ConsoleHolder</arg>
+          </buildArgs>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
