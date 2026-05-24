@@ -15,7 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 public class UsersAppData {
 
-  private String app_name;
+  private String appName;
 
   private String password;
 

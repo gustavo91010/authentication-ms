@@ -17,32 +17,18 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
-@RegisterReflectionForBinding({UsersAppResponse.class, ResponseError.class})
+@RegisterReflectionForBinding({ UsersAppResponse.class, ResponseError.class })
 public class UsersController {
   Logger logger = LoggerFactory.getLogger(UsersController.class);
 
   @Autowired
   private UsersAppDataService userApp;
 
-  @GetMapping("/email/{email}")
-  public ResponseEntity<?> findById(@PathVariable String email,
-      @RequestParam(required = false, defaultValue = "bill-manager") String application) {
+  @GetMapping("/{accessToken}")
+  public ResponseEntity<?> findById(@PathVariable String accessToken) {
     try {
-      logger.info("[GET] | /users/email/{email}", email);
-      List<UsersAppData> user = userApp.getAllUsersByEmail(email);
-      return ResponseEntity.ok(user.stream()
-          .map(UsersAppResponse::new));
-    } catch (Exception e) {
-      logger.error(e.getMessage());
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));
-    }
-  }
-
-  @GetMapping("/{id}")
-  public ResponseEntity<?> findById(@PathVariable Long userAppId) {
-    try {
-      logger.info("[GET] | /users/{userAppId}", userAppId);
-      UsersAppData user = userApp.findByUsersId(userAppId);
+      logger.info("[GET] | /users/{accessToken}", accessToken);
+      UsersAppData user = userApp.findByAccessToken(accessToken);
       return ResponseEntity.ok(new UsersAppResponse(user));
     } catch (Exception e) {
       logger.error(e.getMessage());

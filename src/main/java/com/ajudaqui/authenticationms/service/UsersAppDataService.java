@@ -16,33 +16,22 @@ import org.springframework.stereotype.Service;
 public class UsersAppDataService {
 
   @Autowired
-  private UsersAppDataRepository repository;
+  private UsersService usersService;
 
   @Autowired
   private RolesRepository rolesRepository;
 
-  public UsersAppData findByUsersId(Long usersId) {
-    return this.repository.findByUsersId(usersId)
+  public UsersAppData findByAccessToken(String accessToken) {
+    return this.usersService.findByAccessToken(accessToken)
         .orElseThrow(() -> new NotFoundException("Usuário não tem dados registardos"));
   }
 
-  public List<UsersAppData> findByAppId(Long appId) {
-    return repository.findByAppId(appId);
-  }
-
-  public List<UsersAppData> getAllUsersByEmail(String email) {
-    return this.repository.findByUserEmail(email);
-  }
-
   public UsersAppData getUsersByEmail(String email, String application) {
-    return this.repository.findByUserEmail(email).stream()
-        .filter(u -> application.equals(u.getApplications().getName()))
-        .findFirst()
-        .orElseThrow(() -> new NotFoundException("Usuário nao registrado"));
+    return this.usersService.findByEmail(email, application);
   }
 
   public Optional<UsersAppData> findByUsersEmail(String email, String application) {
-    List<UsersAppData> byUserEmail = this.repository.findByUserEmail(email);
+    List<UsersAppData> byUserEmail = this.usersService.findByUserEmail(email);
     if (byUserEmail.isEmpty())
       return Optional.empty();
     return byUserEmail.stream()
@@ -51,7 +40,7 @@ public class UsersAppDataService {
   }
 
   public UsersAppData save(UsersAppData usersAppData) {
-    return repository.save(usersAppData);
+    return usersService.save(usersAppData);
   }
 
   public Map<String, String> getData(String accessToken) {
@@ -70,7 +59,7 @@ public class UsersAppDataService {
   }
 
   public UsersAppData findByAccessToken(UUID accessToken) {
-    return repository.findByAccessToken(accessToken)
+    return usersService.findByAccessToken(accessToken)
         .orElseThrow(() -> new NotFoundException("Usuário não tem dados registardos"));
 
   }
