@@ -5,6 +5,11 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class ApplicationSqsMessage {
 
   private String registerUrl;
@@ -28,44 +33,6 @@ public class ApplicationSqsMessage {
     this.name = name;
     this.authorization = authorization;
     this.payload = payload;
-  }
-
-  public String getRegisterUrl() {
-    return registerUrl;
-  }
-
-  public void setRegisterUrl(String registerUrl) {
-    this.registerUrl = registerUrl;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getAuthorization() {
-    return authorization;
-  }
-
-  public void setAuthorization(String authorization) {
-    this.authorization = authorization;
-  }
-
-  public Map<String, Object> getPayload() {
-    return payload;
-  }
-
-  public void setPayload(Map<String, Object> payload) {
-    this.payload = payload;
-  }
-
-  @Override
-  public String toString() {
-    return "ApplicationSqsMessage{registerUrl=" + registerUrl + ", name=" + name + ", authorization=" + authorization
-        + ", payload=" + payload + "}";
   }
 
 }

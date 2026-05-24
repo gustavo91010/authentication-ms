@@ -4,11 +4,15 @@ import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import com.ajudaqui.authenticationms.entity.Applications;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+@Data
+@NoArgsConstructor
 public class ApplicationDto {
 
   @Email
@@ -24,25 +28,6 @@ public class ApplicationDto {
   private String registerUrl;
   @Schema(description = "Campo para fazer a decodificação do jwt")
   private String secret;
-
-  public ApplicationDto() {
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getSecret() {
-    return secret;
-  }
-
-  public void setSecret(String secret) {
-    this.secret = secret;
-  }
 
   public Applications toEntity() {
     Applications applcations = new Applications(this.name, this.secret);
@@ -70,36 +55,5 @@ public class ApplicationDto {
     return applications;
   }
 
-  public String getRedirectUrl() {
-    return redirectUrl;
-  }
-
-  public void setRedirectUrl(String redirectUrl) {
-    this.redirectUrl = redirectUrl;
-  }
-
-  public String getRegisterUrl() {
-    return registerUrl;
-  }
-
-  public void setRegisterUrl(String registerUrl) {
-    this.registerUrl = registerUrl;
-  }
-
-  public String getEmailModerador() {
-    return emailModerador;
-  }
-
-  public void setEmailModerador(String emailModerador) {
-    this.emailModerador = emailModerador;
-  }
-
-  public String getApplicationOfModerador() {
-    return applicationOfModerador;
-  }
-
-  public void setApplicationOfModerador(String applicationOfModerador) {
-    this.applicationOfModerador = applicationOfModerador;
-  }
 
 }
