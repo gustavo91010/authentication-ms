@@ -18,10 +18,10 @@
     <java.version>21</java.version>
   </properties>
   <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-    </dependency>
+    <!-- <dependency> -->
+    <!--   <groupId>org.springframework.boot</groupId> -->
+    <!--   <artifactId>spring-boot-starter-data-jpa</artifactId> -->
+    <!-- </dependency> -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
@@ -41,11 +41,11 @@
       <scope>runtime</scope>
       <optional>true</optional>
     </dependency>
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
-    </dependency>
+    <!-- <dependency> -->
+    <!--   <groupId>org.postgresql</groupId> -->
+    <!--   <artifactId>postgresql</artifactId> -->
+    <!--   <scope>runtime</scope> -->
+    <!-- </dependency> -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
@@ -56,7 +56,7 @@
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <!-- JWT -->
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
@@ -75,21 +75,24 @@
       <version>0.11.5</version>
       <scope>runtime</scope>
     </dependency>
-
     <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-core</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-mongodb</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-database-postgresql</artifactId>
-    </dependency>
+    <!-- <dependency> -->
+    <!--   <groupId>org.flywaydb</groupId> -->
+    <!--   <artifactId>flyway-core</artifactId> -->
+    <!-- </dependency> -->
+    <!-- <dependency> -->
+    <!--   <groupId>org.flywaydb</groupId> -->
+    <!--   <artifactId>flyway-database-postgresql</artifactId> -->
+    <!-- </dependency> -->
 
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -115,9 +118,9 @@
 
     <!-- Hibernate Types (Hypersistence Utils for Hibernate 6) -->
     <dependency>
-        <groupId>io.hypersistence</groupId>
-        <artifactId>hypersistence-utils-hibernate-63</artifactId>
-        <version>3.7.3</version>
+      <groupId>io.hypersistence</groupId>
+      <artifactId>hypersistence-utils-hibernate-63</artifactId>
+      <version>3.7.3</version>
     </dependency>
 
     <dependency>
@@ -129,8 +132,12 @@
       <artifactId>spring-boot-starter-mail</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -138,7 +145,8 @@
         <artifactId>native-maven-plugin</artifactId>
         <configuration>
           <buildArgs>
-            <arg>--initialize-at-run-time=sun.security.util.Password$ConsoleHolder,jdk.internal.io.JdkConsoleImpl$1ConsoleHolder</arg>
+            <arg>
+              --initialize-at-run-time=sun.security.util.Password$ConsoleHolder,jdk.internal.io.JdkConsoleImpl$1ConsoleHolder</arg>
           </buildArgs>
         </configuration>
       </plugin>

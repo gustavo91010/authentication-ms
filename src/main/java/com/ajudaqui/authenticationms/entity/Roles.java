@@ -1,16 +1,14 @@
 package com.ajudaqui.authenticationms.entity;
 
-import jakarta.persistence.*;
 import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 
-@Entity
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "roles")
 public class Roles {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Enumerated(EnumType.STRING)
   private ERoles name;
 
   public Long getId() {
