@@ -3,6 +3,7 @@ package com.ajudaqui.authenticationms.entity;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -43,6 +44,19 @@ public class Users {
     this.name = name;
     this.createdAt = LocalDateTime.now();
     this.updatedAt = LocalDateTime.now();
+  }
+
+  public UsersAppData selectApp(UUID accessToken) {
+    return this.usersAppData.stream()
+        .filter(appData -> accessToken.equals(appData.getAccessToken()))
+        .findFirst()
+        .orElse(null);
+  }
+  public UsersAppData selectApp(String appName) {
+    return this.usersAppData.stream()
+        .filter(appData -> appName.equals(appData.getAppName()))
+        .findFirst()
+        .orElse(null);
   }
 
 }

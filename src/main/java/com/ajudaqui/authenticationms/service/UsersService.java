@@ -44,10 +44,12 @@ public class UsersService {
     Users users = usersRegister.toAppData(usersRegister, isInternal, assignRole(ERoles.ROLE_USER));
 
     save(users);
-    return users.getUsersAppData().stream()
-        .filter(app -> usersRegister.getApplication().equals(app.getAppName()))
-        .findFirst()
-        .get();
+
+    UsersAppData appData = users.selectApp(usersRegister.getApplication());
+    if (appData == null)
+      throw new MessageException("Porblema no registro do usuário");
+
+    return appData;
   }
 
   private Users save(Users users) {
@@ -58,12 +60,14 @@ public class UsersService {
   }
 
   public UsersAppData findByAccessToken(UUID accessToken) {
-    return userRepository.findByUsersAppDataAccessToken(accessToken)
-        .map(user -> user.getUsersAppData().stream()
-            .filter(app -> accessToken.equals(app.getAccessToken()))
-            .findFirst()
-            .orElseThrow(() -> new MessageException("Usuario não encontrado")))
+    Users user = userRepository.findByUsersAppDataAccessToken(accessToken)
         .orElseThrow(() -> new MessageException("Usuario não encontrado"));
+
+    UsersAppData appData = user.selectApp(accessToken);
+    if (appData == null)
+      throw new MessageException("Usuario não encontrado");
+
+    return appData;
 
   }
 
@@ -71,10 +75,11 @@ public class UsersService {
     Users user = userRepository.findByEmailAndUsersAppDataAppName(email, appName)
         .orElseThrow(() -> new MessageException("Usuario não encontrado"));
 
-    return user.getUsersAppData().stream()
-        .filter(app -> appName.equals(app.getAppName()))
-        .findFirst()
-        .orElseThrow(() -> new MessageException("Usuario não encontrado"));
+    UsersAppData appData = user.selectApp(appName);
+    if (appData == null)
+      throw new MessageException("Usuario não encontrado");
+
+    return appData;
   }
 
   public Optional<Users> findByEmail(String email, String appName) {

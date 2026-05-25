@@ -61,38 +61,31 @@ public class ApplicationsService {
     if (repository.findByName(name).isPresent())
       throw new MessageException("Nome já registrado");
 
-    Users moderatorOldApp = usersService
+    Users moderator = usersService
         .findByEmail(appicationDto.getEmailModerador(), appicationDto.getApplicationOfModerador())
         .orElseThrow(() -> new MessageException("O moderador tem que estar registrado previamente"));
 
-    UsersAppData appDataModerador = moderatorOldApp.getUsersAppData().stream()
-        .filter(app -> appicationDto.getApplicationOfModerador().equals(app.getAppName()))
-        .findFirst()
-        .get();
+    UsersAppData appDataModerador = moderator.selectApp(appicationDto.getApplicationOfModerador());
 
     Applications newApp = save(appicationDto.toEntity());
 
     Set<Roles> roles = usersService.assignRole(ERoles.ROLE_USER);
     roles.add(usersService.findByRole(ERoles.ROLE_MODERATOR));
 
-    moderatorOldApp.getUsersAppData().add(
+    moderator.getUsersAppData().add(
         new UsersAppData().newApp(newApp.getName(),
             appDataModerador.getPassword(),
             true,
             roles));
-    // Registrando o moderador na nova aplicação
-    usersService.update(moderatorOldApp);
+    // Atualizando o moderador na nova aplicação
+    usersService.update(moderator);
 
     // --- NOVO: Garante registro do Admin padrão (admin@ajudaqui.com)
     try {
       Users authUser = usersService.findByEmail("admin@ajudaqui.com", "authentication_ms")
           .orElseThrow(() -> new MessageException("O moderador tem que estar registrado previamente"));
 
-      UsersAppData appDataAuth = authUser.getUsersAppData().stream()
-          .filter(app -> "authentication_ms".equals(app.getAppName()))
-          .findFirst()
-          .get();
-      //
+      UsersAppData appDataAuth = authUser.selectApp("authentication_ms");
       usersService.findByRole(ERoles.ROLE_ADMIN);
 
       roles.add(usersService.findByRole(ERoles.ROLE_ADMIN));
@@ -103,7 +96,7 @@ public class ApplicationsService {
               roles));
 
       // Registrando o ADMIN na nova aplicação
-      usersService.update(moderatorOldApp);
+      usersService.update(moderator);
 
     } catch (Exception e) {
       e.printStackTrace();
