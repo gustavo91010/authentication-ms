@@ -11,6 +11,7 @@ import com.ajudaqui.authenticationms.dto.HttpAplications;
 import com.ajudaqui.authenticationms.dto.HttpUsersAppData;
 import com.ajudaqui.authenticationms.entity.Applications;
 import com.ajudaqui.authenticationms.entity.Roles;
+import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
 import com.ajudaqui.authenticationms.exception.BadRequestException;
 import com.ajudaqui.authenticationms.exception.MessageException;
@@ -24,14 +25,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApplicationsService {
   final private ApplicationsRepository repository;
-  final private UsersAppDataService usersAppDataService;
+  final private UsersService usersService;
 
   @Value("${app.auth.master}")
   private String auth_master;
 
-  public ApplicationsService(ApplicationsRepository applicationsRepository, UsersAppDataService usersAppDataService) {
+  public ApplicationsService(ApplicationsRepository applicationsRepository, UsersService usersAppDataService) {
     this.repository = applicationsRepository;
-    this.usersAppDataService = usersAppDataService;
+    this.usersService = usersAppDataService;
   }
 
   public Applications findByName(String name) {
@@ -60,42 +61,50 @@ public class ApplicationsService {
     if (repository.findByName(name).isPresent())
       throw new MessageException("Nome já registrado");
 
-    UsersAppData moderatorOldApp = usersAppDataService
-        .findByUsersEmail(appicationDto.getEmailModerador(), appicationDto.getApplicationOfModerador())
+    Users moderatorOldApp = usersService
+        .findByEmail(appicationDto.getEmailModerador(), appicationDto.getApplicationOfModerador())
         .orElseThrow(() -> new MessageException("O moderador tem que estar registrado previamente"));
+
+    UsersAppData appDataModerador = moderatorOldApp.getUsersAppData().stream()
+        .filter(app -> appicationDto.getApplicationOfModerador().equals(app.getAppName()))
+        .findFirst()
+        .get();
 
     Applications newApp = save(appicationDto.toEntity());
 
-    Set<Roles> roles = usersAppDataService.assignRole(ERoles.ROLE_USER);
-    roles.add(usersAppDataService.findByRole(ERoles.ROLE_MODERATOR));
+    Set<Roles> roles = usersService.assignRole(ERoles.ROLE_USER);
+    roles.add(usersService.findByRole(ERoles.ROLE_MODERATOR));
 
-    UsersAppData moderatorNewApp = new UsersAppData();
-    moderatorNewApp.setUsers(moderatorOldApp.getUsers());
-    moderatorNewApp.setApplications(newApp);
-    moderatorNewApp.setPassword(moderatorOldApp.getPassword());
-    moderatorNewApp.setActive(true);
-    moderatorNewApp.setRoles(roles);
-    moderatorNewApp.setAccessToken(UUID.randomUUID());
-    moderatorNewApp.setCreatedAt(LocalDateTime.now());
-    moderatorNewApp.setUpdatedAt(LocalDateTime.now());
-    usersAppDataService.save(moderatorNewApp);
+    moderatorOldApp.getUsersAppData().add(
+        new UsersAppData().newApp(newApp.getName(),
+            appDataModerador.getPassword(),
+            true,
+            roles));
+    // Registrando o moderador na nova aplicação
+    usersService.update(moderatorOldApp);
 
     // --- NOVO: Garante registro do Admin padrão (admin@ajudaqui.com)
     try {
-      usersAppDataService.findByUsersEmail("admin@ajudaqui.com", "authentication_ms")
-          .ifPresent(adminOldData -> {
-            UsersAppData adminNewAppData = new UsersAppData();
-            adminNewAppData.setUsers(adminOldData.getUsers());
-            adminNewAppData.setApplications(newApp);
-            adminNewAppData.setPassword(adminOldData.getPassword());
-            adminNewAppData.setActive(true);
-            roles.add(usersAppDataService.findByRole(ERoles.ROLE_ADMIN));
-            adminNewAppData.setRoles(roles);
-            adminNewAppData.setAccessToken(UUID.randomUUID());
-            adminNewAppData.setCreatedAt(LocalDateTime.now());
-            adminNewAppData.setUpdatedAt(LocalDateTime.now());
-            usersAppDataService.save(adminNewAppData);
-          });
+      Users authUser = usersService.findByEmail("admin@ajudaqui.com", "authentication_ms")
+          .orElseThrow(() -> new MessageException("O moderador tem que estar registrado previamente"));
+
+      UsersAppData appDataAuth = authUser.getUsersAppData().stream()
+          .filter(app -> "authentication_ms".equals(app.getAppName()))
+          .findFirst()
+          .get();
+      //
+      usersService.findByRole(ERoles.ROLE_ADMIN);
+
+      roles.add(usersService.findByRole(ERoles.ROLE_ADMIN));
+      authUser.getUsersAppData().add(
+          new UsersAppData().newApp(newApp.getName(),
+              appDataAuth.getPassword(),
+              true,
+              roles));
+
+      // Registrando o ADMIN na nova aplicação
+      usersService.update(moderatorOldApp);
+
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -107,13 +116,13 @@ public class ApplicationsService {
     Applications byName = findByName(appName);
     checkPermission(email, appName, ERoles.ROLE_MODERATOR, ERoles.ROLE_ADMIN);
 
-    List<UsersAppData> byAppId = usersAppDataService.findByAppId(byName.getId());
+    List<UsersAppData> byAppId = usersService.findByAppId(byName.getId());
     return byAppId.stream().map(HttpUsersAppData::new)
         .collect(Collectors.toList());
   }
 
   private void checkPermission(String email, String application, ERoles... allowedRoles) {
-    UsersAppData user = usersAppDataService.getUsersByEmail(email, application);
+    UsersAppData user = usersService.getUsersByEmail(email, application);
     boolean hasPermission = user.getRoles().stream()
         .map(Roles::getName)
         .anyMatch(r -> {
@@ -131,7 +140,7 @@ public class ApplicationsService {
   public UsersAppData assignAdmin(String moderatorEmail, String appName, String userEmail) {
     checkPermission(moderatorEmail, appName, ERoles.ROLE_MODERATOR);
 
-    UsersAppData userAppData = usersAppDataService.getUsersByEmail(userEmail, appName);
+    UsersAppData userAppData = usersService.getUsersByEmail(userEmail, appName);
 
     boolean alreadyAdmin = userAppData.getRoles().stream()
         .map(Roles::getName)
@@ -140,9 +149,9 @@ public class ApplicationsService {
     if (alreadyAdmin)
       throw new MessageException("Usuário já é ADMIN nesta aplicação");
 
-    Roles adminRole = usersAppDataService.findByRole(ERoles.ROLE_ADMIN);
+    Roles adminRole = usersService.findByRole(ERoles.ROLE_ADMIN);
     userAppData.getRoles().add(adminRole);
-    return usersAppDataService.save(userAppData);
+    return usersService.save(userAppData);
   }
 
   public Applications getOrRegister(String name) {

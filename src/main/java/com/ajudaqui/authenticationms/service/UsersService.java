@@ -67,16 +67,19 @@ public class UsersService {
 
   }
 
-  public Users findByEmail(String email, String appName) {
+  public UsersAppData getUsersByEmail(String email, String appName) {
     Users user = userRepository.findByEmailAndUsersAppDataAppName(email, appName)
         .orElseThrow(() -> new MessageException("Usuario não encontrado"));
 
-    user.setUsersAppData(
-        user.getUsersAppData()
-            .stream()
-            .filter(app -> appName.equals(app.getAppName()))
-            .collect(Collectors.toSet()));
-    return user;
+    return user.getUsersAppData().stream()
+        .filter(app -> appName.equals(app.getAppName()))
+        .findFirst()
+        .orElseThrow(() -> new MessageException("Usuario não encontrado"));
+  }
+
+  public Optional<Users> findByEmail(String email, String appName) {
+    return userRepository.findByEmailAndUsersAppDataAppName(email, appName);
+
   }
 
   public List<Users> findByEmail(String email) {
@@ -106,12 +109,6 @@ public class UsersService {
     Set<Roles> roles = new HashSet<>();
     roles.add(findByRole(role));
     return roles;
-  }
-
-  public UsersAppData getUsersByEmail(String email, String application) {
-    return this.findByEmail(email, application)
-        .getUsersAppData()
-        .iterator().next();
   }
 
   public Map<String, String> getData(String accessToken) {

@@ -33,5 +33,17 @@ public class UsersAppData {
 
   private Map<String, Object> otherFields;
 
+  public UsersAppData newApp(String appName, String password, boolean active, Set<Roles> roles) {
+    UsersAppData NewApp = new UsersAppData();
+    NewApp.setAppName(appName);
+    NewApp.setPassword(password);
+    NewApp.setActive(active);
+    NewApp.setRoles(roles);
+    NewApp.setAccessToken(UUID.randomUUID());
+    NewApp.setCreatedAt(LocalDateTime.now());
+    NewApp.setUpdatedAt(LocalDateTime.now());
+    return NewApp;
+  }
+
 
 }
