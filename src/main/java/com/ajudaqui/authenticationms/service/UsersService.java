@@ -1,14 +1,13 @@
 package com.ajudaqui.authenticationms.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import com.ajudaqui.authenticationms.config.security.jwt.JwtUtils;
 import com.ajudaqui.authenticationms.entity.*;
 import com.ajudaqui.authenticationms.exception.BadRequestException;
 import com.ajudaqui.authenticationms.exception.MessageException;
+import com.ajudaqui.authenticationms.repository.RolesRepository;
 import com.ajudaqui.authenticationms.repository.UsersRepository;
 import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.utils.enuns.ERoles;
@@ -19,16 +18,14 @@ import org.springframework.stereotype.Service;
 public class UsersService {
 
   private UsersRepository userRepository;
-  private JwtUtils jwtUtils;
   final private ApplicationsService applicationsService;
-  final private UsersAppDataService appDataService;
+  private RolesRepository rolesRepository;
 
-  public UsersService(UsersRepository userRepository, JwtUtils jwtUtils,
-      UsersAppDataService appDataService, ApplicationsService applicationsService) {
+  public UsersService(UsersRepository userRepository,
+      ApplicationsService applicationsService, RolesRepository rolesRepository) {
     this.userRepository = userRepository;
-    this.jwtUtils = jwtUtils;
-    this.appDataService = appDataService;
     this.applicationsService = applicationsService;
+    this.rolesRepository = rolesRepository;
   }
 
   public UsersAppData create(UsersRegister usersRegister, boolean isInternal) {
@@ -37,18 +34,20 @@ public class UsersService {
     if (urlRegister == null || urlRegister.isBlank())
       throw new BadRequestException("A Aplicação não tem URL de registro cadastrada");
 
-    boolean emailRegistradoNaAplicacao = !userRepository.findByUsersAppDataAppName(usersRegister.getName()).isEmpty();
+    boolean emailRegistradoNaAplicacao = userRepository
+        .findByEmailAndUsersAppDataAppName(usersRegister.getEmail(), usersRegister.getApplication())
+        .isPresent();
+
     if (emailRegistradoNaAplicacao)
       throw new MessageException("Email já registrado");
 
-    Users users = userRepository.findByEmail(usersRegister.getEmail())
-        .orElseGet(() -> save(usersRegister.toUsers(isInternal)));
+    Users users = usersRegister.toAppData(usersRegister, isInternal, assignRole(ERoles.ROLE_USER));
 
-    UsersAppData usersAppData = usersRegister.toAppData(users, isInternal, application,
-        appDataService.assignRole(ERoles.ROLE_USER));
-    usersAppData.setOtherFields(usersRegister.getPayload());
-
-    return appDataService.save(usersAppData);
+    save(users);
+    return users.getUsersAppData().stream()
+        .filter(app -> usersRegister.getApplication().equals(app.getAppName()))
+        .findFirst()
+        .get();
   }
 
   private Users save(Users users) {
@@ -56,6 +55,16 @@ public class UsersService {
     users.setCreatedAt(LocalDateTime.now());
 
     return userRepository.save(users);
+  }
+
+  public UsersAppData findByAccessToken(UUID accessToken) {
+    return userRepository.findByUsersAppDataAccessToken(accessToken)
+        .map(user -> user.getUsersAppData().stream()
+            .filter(app -> accessToken.equals(app.getAccessToken()))
+            .findFirst()
+            .orElseThrow(() -> new MessageException("Usuario não encontrado")))
+        .orElseThrow(() -> new MessageException("Usuario não encontrado"));
+
   }
 
   public Users findByEmail(String email, String appName) {
@@ -83,17 +92,41 @@ public class UsersService {
     return userRepository.findAll();
   }
 
-  public Users findByJwt(String jwtToken, String secretKey) {
-    return findByEmail(jwtUtils.getEmailFromJwtToken(jwtToken));
-  }
-
   public Users update(Users users) {
     users.setUpdatedAt(LocalDateTime.now());
     return save(users);
   }
 
-  public Optional<UsersAppData> findByAccessToken(String accessToken) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'findByAccessToken'");
+  public Roles findByRole(ERoles role) {
+    return rolesRepository.findByName(role)
+        .orElseThrow(() -> new RuntimeException("Erro: Type Roles não encontrado."));
+  }
+
+  public Set<Roles> assignRole(ERoles role) {
+    Set<Roles> roles = new HashSet<>();
+    roles.add(findByRole(role));
+    return roles;
+  }
+
+  public UsersAppData getUsersByEmail(String email, String application) {
+    return this.findByEmail(email, application)
+        .getUsersAppData()
+        .iterator().next();
+  }
+
+  public Map<String, String> getData(String accessToken) {
+    Users userApp = userRepository.findByUsersAppDataAccessToken(UUID.fromString(accessToken))
+        .orElseThrow(() -> new MessageException("Usuario não encontrado"));
+
+    Map<String, String> data = new HashMap<>();
+    data.put("access_token", accessToken);
+    String name = userApp.getEmail();
+    if (userApp.getName() != null)
+      name = userApp.getName();
+    data.put("name", name);
+
+    data.put("email", userApp.getEmail());
+    data.put("aplication", userApp.getUsersAppData().iterator().next().getAppName());
+    return data;
   }
 }

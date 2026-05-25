@@ -2,6 +2,7 @@ package com.ajudaqui.authenticationms.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.ajudaqui.authenticationms.entity.Users;
 
@@ -17,4 +18,5 @@ public interface UsersRepository extends MongoRepository<Users, String> {
 
   // busca os appData pelo nome da palicação
   List<Users> findByUsersAppDataAppName(String appName);
+  Optional<Users> findByUsersAppDataAccessToken(UUID accessToken);
 }

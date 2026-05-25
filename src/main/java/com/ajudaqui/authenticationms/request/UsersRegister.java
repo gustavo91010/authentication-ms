@@ -3,16 +3,17 @@ package com.ajudaqui.authenticationms.request;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import com.ajudaqui.authenticationms.entity.*;
 import com.ajudaqui.authenticationms.exception.MessageException;
 
+@Data
+@NoArgsConstructor
 public class UsersRegister {
   @NotBlank(message = "Campo nome é obrigatorio")
   private String name;
@@ -30,47 +31,6 @@ public class UsersRegister {
         : payload;
   }
 
-  public void setPayload(Map<String, Object> otherFields) {
-    this.payload = otherFields;
-  }
-
-  @Override
-  public String toString() {
-    return "UsersRegister{name=" + name + ", email=" + email + ", aplication=" + application + "}";
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public String getApplication() {
-    return application;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public void setApplication(String aplication) {
-    this.application = aplication;
-  }
-
   public Users toUsers(boolean isInternal) {
     Users users = new Users();
     users.setName(this.name);
@@ -79,30 +39,32 @@ public class UsersRegister {
     return users;
   }
 
-  public UsersAppData toAppData(Users users, boolean isInternal, Applications applications, Set<Roles> roles) {
-    UsersAppData usersAppData = new UsersAppData();
-    usersAppData.setUsers(users);
-    usersAppData.setRoles(roles);
-    usersAppData.setAccessToken(UUID.randomUUID());
-    usersAppData.setPassword(checkStrongPassword(this.password));
-    usersAppData.setApplications(applications);
-    usersAppData.setCreatedAt(LocalDateTime.now());
-    usersAppData.setActive(true);
-    return usersAppData;
-  }
-
   private String checkStrongPassword(String password) {
     if (password.length() < 7)
       throw new MessageException("A senha deve ter pelo menos 8 caracters");
 
     boolean isLowAndUpCase = password.matches("^(?=.*[a-z])(?=.*[A-Z]).+$");
     if (!isLowAndUpCase)
-      throw new MessageException("A senha deve ter pelo menos uma letra maiúscula e uma minuscula");
+      throw new MessageException("A senha deve ter pelo menos uma letra maiúscula, uma minuscula e um caracter especial ( @#$%&*_- )");
 
     boolean isCharacterEpecial = password.matches("^(?=.*[@#$%&*_-]).+$");
 
     if (!isCharacterEpecial)
       throw new MessageException("A senha deve ter pelo menos um caracter especial (@,#,$,%,&,*,-,_)");
     return new BCryptPasswordEncoder().encode(password);
+  }
+
+  public Users toAppData(UsersRegister usersRegister, boolean isInternal, Set<Roles> roles) {
+    var user = usersRegister.toUsers(isInternal);
+    UsersAppData usersAppData = new UsersAppData();
+    usersAppData.setRoles(roles);
+    usersAppData.setAccessToken(UUID.randomUUID());
+    usersAppData.setPassword(checkStrongPassword(this.password));
+    usersAppData.setAppName(usersRegister.getApplication());
+    usersAppData.setCreatedAt(LocalDateTime.now());
+    usersAppData.setActive(false);
+    user.getUsersAppData().add(usersAppData);
+
+    return user;
   }
 }
