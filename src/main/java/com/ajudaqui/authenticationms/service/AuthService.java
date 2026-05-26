@@ -43,7 +43,6 @@ public class AuthService implements AuthServiceDoc {
   private String auth_master;
 
   private AuthenticationManager authenticationManager;
-  private UsersAppDataService usersAppDataService;
   private EmailService emailService;
   private SqsService sqsService;
   private UsersService usersService;
@@ -51,11 +50,9 @@ public class AuthService implements AuthServiceDoc {
   final private TokenService tokenService;
 
   public AuthService(AuthenticationManager authenticationManager, SqsService sqsService, UsersService usersService,
-      JwtUtils jwtUtils, TokenService tokenService, EmailService emailService,
-      UsersAppDataService usersAppDataService) {
+      JwtUtils jwtUtils, TokenService tokenService, EmailService emailService) {
     this.authenticationManager = authenticationManager;
     this.sqsService = sqsService;
-    this.usersAppDataService = usersAppDataService;
     this.emailService = emailService;
     this.usersService = usersService;
     this.jwtUtils = jwtUtils;
@@ -65,11 +62,12 @@ public class AuthService implements AuthServiceDoc {
   @Override
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
 
-    UsersAppData usersApp = usersAppDataService.getUsersByEmail(loginRequest.getEmail(), loginRequest.getApplication());
+    Users users = usersService.findByEmail(loginRequest.getEmail());
+    UsersAppData usersApp = users.selectApp(loginRequest.getApplication());
     if (!usersApp.isActive())
       throw new MessageException("sua conta esta desativada, verifique seu email");
     UsernamePasswordAuthenticationToken userAutheticator = new UsernamePasswordAuthenticationToken(
-        loginRequest.getEmail() + "|" + usersApp.getApplications().getName(),
+        loginRequest.getEmail() + "|" + usersApp.getAppName(), // Poderia passar o accessToken aqui, ja que ele é unico por aplicação
         loginRequest.getPassword());
 
     Authentication authentication = authenticationManager.authenticate(userAutheticator);
@@ -81,7 +79,7 @@ public class AuthService implements AuthServiceDoc {
   }
 
   public LoginResponse authenticateUser(String email, String application) {
-    UsersAppData usersApp = usersAppDataService.getUsersByEmail(email, application);
+    UsersAppData usersApp = usersService.getUsersByEmail(email, application);
     return new LoginResponse(new UsersAppApplicationDto(usersApp),
         jwtUtils.generatedJwtToken(usersApp));
   }
@@ -90,7 +88,9 @@ public class AuthService implements AuthServiceDoc {
     String urlRegister = format("http://%s:8082/login/register-auth2", url);
     String urlLogin = format("redirect:http://%s:3000/?token=", url);
     String application = "bill-manager";
-    if (usersAppDataService.findByUsersEmail(email, application).isPresent())
+    Users byEmail = usersService.findByEmail(email);
+
+    if (byEmail.selectApp(name) != null)
       return urlLogin + authenticateUser(email, application).getAccess_token();
     return pageService.showRegisterForm(application, urlLogin, urlRegister, email, name,
         modal);

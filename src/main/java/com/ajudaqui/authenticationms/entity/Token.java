@@ -18,15 +18,15 @@ public class Token {
 
   private String token;
 
-  private String userId;
+  private String accessToken;
 
   private LocalDateTime expirationDate;
 
   private LocalDateTime createdAt;
 
-  public Token(String token, String userId, LocalDateTime expirationDate) {
+  public Token(String token, String accessToken, LocalDateTime expirationDate) {
     this.token = token;
-    this.userId = userId;
+    this.accessToken = accessToken;
     this.expirationDate = expirationDate;
     this.createdAt = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"));
   }

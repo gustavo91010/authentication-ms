@@ -10,7 +10,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface UsersRepository extends MongoRepository<Users, String> {
 
-  List<Users> findByEmail(String email);
+  // List<Users> findByEmail(String email);
+  Users findByEmail(String email);
 
   Optional<Users> findByEmailAndUsersAppDataAppName(
       String email,
@@ -18,5 +19,6 @@ public interface UsersRepository extends MongoRepository<Users, String> {
 
   // busca os appData pelo nome da palicação
   List<Users> findByUsersAppDataAppName(String appName);
+
   Optional<Users> findByUsersAppDataAccessToken(UUID accessToken);
 }

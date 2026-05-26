@@ -1,11 +1,11 @@
 package com.ajudaqui.authenticationms.controller;
 
-import java.util.List;
+import java.util.UUID;
 
-import com.ajudaqui.authenticationms.entity.UsersAppData;
+import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.response.UsersAppResponse;
 import com.ajudaqui.authenticationms.response.error.ResponseError;
-import com.ajudaqui.authenticationms.service.UsersAppDataService;
+import com.ajudaqui.authenticationms.service.UsersService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +22,14 @@ public class UsersController {
   Logger logger = LoggerFactory.getLogger(UsersController.class);
 
   @Autowired
-  private UsersAppDataService userApp;
+  private UsersService userApp;
 
   @GetMapping("/{accessToken}")
   public ResponseEntity<?> findById(@PathVariable String accessToken) {
     try {
       logger.info("[GET] | /users/{accessToken}", accessToken);
-      UsersAppData user = userApp.findByAccessToken(accessToken);
-      return ResponseEntity.ok(new UsersAppResponse(user));
+      Users user = userApp.findByAccessToken(UUID.fromString(accessToken));
+      return ResponseEntity.ok(new UsersAppResponse(user, accessToken));
     } catch (Exception e) {
       logger.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError(e.getMessage()));

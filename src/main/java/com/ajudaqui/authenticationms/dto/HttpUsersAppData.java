@@ -37,8 +37,6 @@ public class HttpUsersAppData {
   private List<String> roles;
 
   public HttpUsersAppData(UsersAppData app) {
-    // this.id = app.getId();
-    // this.email = app.getUsers().getEmail();
     this.lastLogin = app.getLastLogin();
     this.createdAt = app.getCreatedAt();
     this.updatedAt = app.getUpdatedAt();

@@ -25,10 +25,10 @@ public class TokenService {
     this.tokenRepository = tokenRepository;
   }
 
-  public  String createToken(Long userId) {
+  public  String createToken(String accessToken) {
     LocalDateTime expiration = ofInstant(now().plusMillis(360000),
         ZoneId.of("America/Sao_Paulo"));
-    Token token = tokenRepository.save(new Token(generateToken(), userId, expiration));
+    Token token = tokenRepository.save(new Token(generateToken(), accessToken, expiration));
     if (token.getId() == null)
       throw new BadRequestException("Token não criado");
     return token.getToken();
@@ -39,7 +39,7 @@ public class TokenService {
         .orElseThrow(() -> new NotFoundException("Token não localizado"));
   }
 
-  @Transactional
+  // @Transactional
   public void delete(String token) {
     tokenRepository.deleteByToken(token);
   }

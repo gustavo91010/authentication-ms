@@ -4,12 +4,12 @@ import java.util.Optional;
 
 import com.ajudaqui.authenticationms.entity.Applications;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface ApplicationsRepository extends JpaRepository<Applications, Long> {
+public interface ApplicationsRepository extends MongoRepository<Applications, String> {
 
-    Optional<Applications> findByName(String name);
+  Optional<Applications> findByName(String name);
 
-    Optional<Applications> findByClientId(String clientId);
+  Optional<Applications> findBySecretId(String secretId);
 
 }

@@ -3,16 +3,10 @@ package com.ajudaqui.authenticationms.config.security.jwt;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import com.ajudaqui.authenticationms.entity.Applications;
-import com.ajudaqui.authenticationms.entity.Roles;
-import com.ajudaqui.authenticationms.entity.UsersAppData;
+import com.ajudaqui.authenticationms.entity.*;
 import com.ajudaqui.authenticationms.service.ApplicationsService;
 import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 import com.google.gson.JsonObject;
@@ -47,23 +41,30 @@ public class JwtUtils {
   }
 
   public String generatedJwtToken(UsersAppData usersApp) {
+    // UsersAppData usersApp= users
     LocalDateTime issuedAt = LocalDateTime.now(ZoneId.systemDefault());
     Date issuedAtDate = Date.from(issuedAt.atZone(ZoneId.systemDefault()).toInstant());
     LocalDateTime expirationDateTime = issuedAt.plus(jwtExpirationMs, ChronoUnit.MILLIS);
     Date expirationDate = Date.from(expirationDateTime.atZone(ZoneId.systemDefault()).toInstant());
     List<ERoles> roles = usersApp.getRoles().stream()
-      .map(Roles::getName)
-      .collect(Collectors.toList());
-    
+        .map(Roles::getName)
+        .collect(Collectors.toList());
+
+    String appName = usersApp.getAppName();
+    if (!secretKeys.containsKey(appName)) {
+      Applications application = apppaApplicationsService.findByName(appName);
+      secretKeys.put(appName, application.getSecretId());
+    }
+
+    String secretKey = secretKeys.get(appName);
     return Jwts.builder()
-        .setSubject(usersApp.getUsers().getEmail())
+        // .setSubject(usersApp.getUsers().getEmail())
         .setIssuedAt(issuedAtDate)
         .setExpiration(expirationDate)
-        .claim("client_id", usersApp.getApplications().getClientId())
         .claim("roles", roles)
-        .claim("application", usersApp.getApplications().getName())
+        .claim("application", usersApp.getAppName())
         .claim("access_token", usersApp.getAccessToken())
-        .signWith(getSigningKey(usersApp.getApplications().getSecretId()), SignatureAlgorithm.HS512)
+        .signWith(getSigningKey(secretKey), SignatureAlgorithm.HS512)
         .compact();
   }
 

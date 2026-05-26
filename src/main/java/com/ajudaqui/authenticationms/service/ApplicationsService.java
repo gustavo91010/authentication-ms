@@ -1,21 +1,11 @@
 package com.ajudaqui.authenticationms.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import com.ajudaqui.authenticationms.dto.ApplicationDto;
-import com.ajudaqui.authenticationms.dto.HttpAplications;
-import com.ajudaqui.authenticationms.dto.HttpUsersAppData;
-import com.ajudaqui.authenticationms.entity.Applications;
-import com.ajudaqui.authenticationms.entity.Roles;
-import com.ajudaqui.authenticationms.entity.Users;
-import com.ajudaqui.authenticationms.entity.UsersAppData;
-import com.ajudaqui.authenticationms.exception.BadRequestException;
-import com.ajudaqui.authenticationms.exception.MessageException;
-import com.ajudaqui.authenticationms.exception.NotFoundException;
+import com.ajudaqui.authenticationms.dto.*;
+import com.ajudaqui.authenticationms.entity.*;
+import com.ajudaqui.authenticationms.exception.*;
 import com.ajudaqui.authenticationms.repository.ApplicationsRepository;
 import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 
@@ -59,7 +49,7 @@ public class ApplicationsService {
     String name = appicationDto.getName().toLowerCase();
 
     if (repository.findByName(name).isPresent())
-      throw new MessageException("Nome já registrado");
+      throw new MessageException("Já existe uma aplicação registrada com esse nome.");
 
     Users moderator = usersService
         .findByEmail(appicationDto.getEmailModerador(), appicationDto.getApplicationOfModerador())
@@ -106,10 +96,9 @@ public class ApplicationsService {
   }
 
   public List<HttpUsersAppData> userByApp(String email, String appName) {
-    Applications byName = findByName(appName);
     checkPermission(email, appName, ERoles.ROLE_MODERATOR, ERoles.ROLE_ADMIN);
 
-    List<UsersAppData> byAppId = usersService.findByAppId(byName.getId());
+    List<UsersAppData> byAppId = usersService.findByAppName(appName);
     return byAppId.stream().map(HttpUsersAppData::new)
         .collect(Collectors.toList());
   }
@@ -133,7 +122,8 @@ public class ApplicationsService {
   public UsersAppData assignAdmin(String moderatorEmail, String appName, String userEmail) {
     checkPermission(moderatorEmail, appName, ERoles.ROLE_MODERATOR);
 
-    UsersAppData userAppData = usersService.getUsersByEmail(userEmail, appName);
+    Users user = usersService.findByEmail(userEmail);
+    UsersAppData userAppData = user.selectApp(appName);
 
     boolean alreadyAdmin = userAppData.getRoles().stream()
         .map(Roles::getName)
@@ -144,7 +134,8 @@ public class ApplicationsService {
 
     Roles adminRole = usersService.findByRole(ERoles.ROLE_ADMIN);
     userAppData.getRoles().add(adminRole);
-    return usersService.save(userAppData);
+    usersService.update(user);
+    return userAppData;
   }
 
   public Applications getOrRegister(String name) {
@@ -152,27 +143,24 @@ public class ApplicationsService {
         .orElseGet(() -> save(new Applications(name, "")));
   }
 
-  public Applications update(String email, Long applicationId, ApplicationDto dto) {
-    return save(dto.toUpdate(findById(email, applicationId)));
+  // TODO isso ta só a carcaça
+  public Applications update(String email, String appName, ApplicationDto dto) {
+    return save(dto.toUpdate(findByName(appName)));
   }
 
-  public Applications findById(String email, Long applicationId) {
-    return repository.findById(applicationId)
-        .map(a -> {
-          checkPermission(email, a.getName(), ERoles.ROLE_MODERATOR);
-          return a;
-        })
-        .orElseThrow(() -> new NotFoundException("Aplicação não registrada"));
-  }
+  // public Applications findById(String email, Long applicationId) {
+  // return repository.findById(applicationId)
+  // .map(a -> {
+  // checkPermission(email, a.getName(), ERoles.ROLE_MODERATOR);
+  // return a;
+  // })
+  // .orElseThrow(() -> new NotFoundException("Aplicação não registrada"));
+  // }
 
   private Applications save(Applications applications) {
     return repository.save(applications);
   }
 
-  public Applications getByClientId(String clientId) {
-    return repository.findByClientId(clientId)
-        .orElseThrow(() -> new NotFoundException("Aplicação não registrada"));
-  }
 
   public List<HttpAplications> findAll(String authorization) {
     checkingPermission(authorization);

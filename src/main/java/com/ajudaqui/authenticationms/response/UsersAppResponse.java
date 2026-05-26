@@ -1,19 +1,12 @@
 package com.ajudaqui.authenticationms.response;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import com.ajudaqui.authenticationms.entity.Roles;
-import com.ajudaqui.authenticationms.entity.UsersAppData;
+import com.ajudaqui.authenticationms.entity.*;
 import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 
 public class UsersAppResponse {
-
-  private Long id;
-  private Long userId;
 
   private String applications;
 
@@ -25,33 +18,17 @@ public class UsersAppResponse {
 
   private Map<String, Object> otherFields;
 
-  public UsersAppResponse(UsersAppData user) {
-    this.id = user.getId();
-    this.userId = user.getUsers().getId();
-    this.applications = user.getApplications().getName();
-    this.isActive = user.isActive();
-    this.roles = user.getRoles().stream()
+  public UsersAppResponse(Users user, String accessToken) {
+    UsersAppData appData = user.selectApp(accessToken);
+    this.applications = appData.getAppName();
+    this.isActive = appData.isActive();
+    this.roles = appData.getRoles().stream()
         .map(Roles::getName)
         .map(ERoles::name)
         .collect(Collectors.toSet());
-    this.otherFields = user.getOtherFields();
+    this.otherFields = appData.getOtherFields();
   }
 
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public Long getUserId() {
-    return userId;
-  }
-
-  public void setUserId(Long userId) {
-    this.userId = userId;
-  }
 
   public String getApplications() {
     return applications;

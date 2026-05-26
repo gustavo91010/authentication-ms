@@ -2,11 +2,10 @@ package com.ajudaqui.authenticationms.service;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
-
 import com.ajudaqui.authenticationms.entity.*;
 import com.ajudaqui.authenticationms.exception.BadRequestException;
 import com.ajudaqui.authenticationms.exception.MessageException;
+import com.ajudaqui.authenticationms.exception.NotFoundException;
 import com.ajudaqui.authenticationms.repository.RolesRepository;
 import com.ajudaqui.authenticationms.repository.UsersRepository;
 import com.ajudaqui.authenticationms.request.UsersRegister;
@@ -59,15 +58,15 @@ public class UsersService {
     return userRepository.save(users);
   }
 
-  public UsersAppData findByAccessToken(UUID accessToken) {
-    Users user = userRepository.findByUsersAppDataAccessToken(accessToken)
+  public Users findByAccessToken(UUID accessToken) {
+    return userRepository.findByUsersAppDataAccessToken(accessToken)
         .orElseThrow(() -> new MessageException("Usuario não encontrado"));
 
-    UsersAppData appData = user.selectApp(accessToken);
-    if (appData == null)
-      throw new MessageException("Usuario não encontrado");
+    // UsersAppData appData = user.selectApp(accessToken);
+    // if (appData == null)
+    // throw new MessageException("Usuario não encontrado");
 
-    return appData;
+    // return appData;
 
   }
 
@@ -87,7 +86,7 @@ public class UsersService {
 
   }
 
-  public List<Users> findByEmail(String email) {
+  public Users findByEmail(String email) {
     return userRepository.findByEmail(email);
   }
 
@@ -131,4 +130,15 @@ public class UsersService {
     data.put("aplication", userApp.getUsersAppData().iterator().next().getAppName());
     return data;
   }
+
+  public List<UsersAppData> findByAppName(String appName) {
+    var appData = userRepository.findByUsersAppDataAppName(appName);
+    if (appData.isEmpty())
+      throw new NotFoundException("Aplicação não registrada");
+
+    return appData.stream()
+        .map(data -> data.selectApp(appName))
+        .toList();
+  }
+
 }
