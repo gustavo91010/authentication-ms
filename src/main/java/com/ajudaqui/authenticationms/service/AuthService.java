@@ -46,17 +46,20 @@ public class AuthService implements AuthServiceDoc {
   private EmailService emailService;
   private SqsService sqsService;
   private UsersService usersService;
+  private ApplicationsService applicationsService;
   private JwtUtils jwtUtils;
   final private TokenService tokenService;
 
   public AuthService(AuthenticationManager authenticationManager, SqsService sqsService, UsersService usersService,
-      JwtUtils jwtUtils, TokenService tokenService, EmailService emailService) {
+      JwtUtils jwtUtils, TokenService tokenService, EmailService emailService,
+      ApplicationsService applicationsService) {
     this.authenticationManager = authenticationManager;
     this.sqsService = sqsService;
     this.emailService = emailService;
     this.usersService = usersService;
     this.jwtUtils = jwtUtils;
     this.tokenService = tokenService;
+    this.applicationsService = applicationsService;
   }
 
   @Override
@@ -67,7 +70,8 @@ public class AuthService implements AuthServiceDoc {
     if (!usersApp.isActive())
       throw new MessageException("sua conta esta desativada, verifique seu email");
     UsernamePasswordAuthenticationToken userAutheticator = new UsernamePasswordAuthenticationToken(
-        loginRequest.getEmail() + "|" + usersApp.getAppName(), // Poderia passar o accessToken aqui, ja que ele é unico por aplicação
+        loginRequest.getEmail() + "|" + usersApp.getAppId(), // Poderia passar o accessToken aqui, ja que ele é unico
+                                                             // por aplicação
         loginRequest.getPassword());
 
     Authentication authentication = authenticationManager.authenticate(userAutheticator);
@@ -78,8 +82,8 @@ public class AuthService implements AuthServiceDoc {
         jwtUtils.generatedJwtToken(usersApp));
   }
 
-  public LoginResponse authenticateUser(String email, String application) {
-    UsersAppData usersApp = usersService.getUsersByEmail(email, application);
+  public LoginResponse authenticateUser(String email, String appId) {
+    UsersAppData usersApp = usersService.getUsersByEmail(email, appId);
     return new LoginResponse(new UsersAppApplicationDto(usersApp),
         jwtUtils.generatedJwtToken(usersApp));
   }
@@ -100,26 +104,26 @@ public class AuthService implements AuthServiceDoc {
   public LoginResponse registerUser(UsersRegister usersRegister) {
     boolean isProd = ENVIROMENT_PROD.equals(enviroment_current);
     UsersAppData userApp = usersService.create(usersRegister, !isProd);
-    Applications application = userApp.getApplications();
 
     try {
 
-      String token = tokenService.createToken(userApp.getUsers().getId());
-      emailService.sendEmail(userApp.getUsers().getEmail(),
+      String token = tokenService.createToken(userApp.getAccessToken());
+      emailService.sendEmail(usersRegister.getEmail(),
           "Token de confirmação do registro", token);
 
       if (!isProd) // nao estou pedindo isso em produção ainda.
         confirmByToken(jwtUtils.generatedJwtToken(userApp), token);
 
-      if (userApp.getId() != null && isProd) {
+      if (userApp.getAccessToken() != null && isProd) {
 
         Map<String, Object> payload = usersRegister.getPayload();
         payload.put("access_token", userApp.getAccessToken());
 
+        Applications application = applicationsService.findById(usersRegister.getAppId());
         ApplicationSqsMessage sqsMessage = new ApplicationSqsMessage(
             application.getRegisterUrl(),
             application.getName(),
-            application.getSecretId(),
+            application.getSecretId(), // TODO Preiciso mesmo enviar isso???
             payload);
         messageSqsFactor(sqsMessage);
       }
@@ -152,13 +156,13 @@ public class AuthService implements AuthServiceDoc {
     if (byToken == null) {
       return false;
     }
-    String email = jwtUtils.getEmailFromJwtToken(jwtToken);
-    String application = jwtUtils.getAppFromJwtToken(jwtToken);
-    UsersAppData usersAppData = usersAppDataService.getUsersByEmail(email, application);
+    String appId = jwtUtils.getAppIdFromJwtToken(jwtToken);
+    Users users = usersService.findByAccessToken(byToken.getAccessToken());
+    UsersAppData usersAppData = users.selectApp(appId);
 
-    if (byToken.getUserId().equals(usersAppData.getUsers().getId())) {
+    if (byToken.getAccessToken().equals(usersAppData.getAccessToken())) {
       usersAppData.setActive(true);
-      usersAppDataService.save(usersAppData);
+      usersService.update(users); // TODO Será que atualiza pra true mesmo???
       tokenService.delete(token);
     }
     return usersAppData.isActive();
@@ -183,6 +187,7 @@ public class AuthService implements AuthServiceDoc {
    *                                  válido
    */
   public boolean verifyToken(String accessToken) {
-    return usersAppDataService.findByAccessToken(UUID.fromString(accessToken)).isActive();
+    Users byAccessToken = usersService.findByAccessToken(UUID.fromString(accessToken));
+    return byAccessToken.getUsersAppData().iterator().next().isActive();
   }
 }

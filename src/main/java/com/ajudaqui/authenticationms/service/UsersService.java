@@ -70,11 +70,11 @@ public class UsersService {
 
   }
 
-  public UsersAppData getUsersByEmail(String email, String appName) {
-    Users user = userRepository.findByEmailAndUsersAppDataAppName(email, appName)
+  public UsersAppData getUsersByEmail(String email, String appId) {
+    Users user = userRepository.findByEmailAndUsersAppDataAppName(email, appId)
         .orElseThrow(() -> new MessageException("Usuario não encontrado"));
 
-    UsersAppData appData = user.selectApp(appName);
+    UsersAppData appData = user.selectApp(appId);
     if (appData == null)
       throw new MessageException("Usuario não encontrado");
 

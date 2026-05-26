@@ -6,8 +6,7 @@ import static java.time.LocalDateTime.ofInstant;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-
-import jakarta.transaction.Transactional;
+import java.util.UUID;
 
 import com.ajudaqui.authenticationms.entity.Token;
 import com.ajudaqui.authenticationms.exception.BadRequestException;
@@ -25,7 +24,7 @@ public class TokenService {
     this.tokenRepository = tokenRepository;
   }
 
-  public  String createToken(String accessToken) {
+  public  String createToken(UUID accessToken) {
     LocalDateTime expiration = ofInstant(now().plusMillis(360000),
         ZoneId.of("America/Sao_Paulo"));
     Token token = tokenRepository.save(new Token(generateToken(), accessToken, expiration));
@@ -39,7 +38,6 @@ public class TokenService {
         .orElseThrow(() -> new NotFoundException("Token não localizado"));
   }
 
-  // @Transactional
   public void delete(String token) {
     tokenRepository.deleteByToken(token);
   }

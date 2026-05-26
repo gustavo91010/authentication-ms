@@ -2,6 +2,7 @@ package com.ajudaqui.authenticationms.entity;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,13 +19,13 @@ public class Token {
 
   private String token;
 
-  private String accessToken;
+  private UUID accessToken;
 
   private LocalDateTime expirationDate;
 
   private LocalDateTime createdAt;
 
-  public Token(String token, String accessToken, LocalDateTime expirationDate) {
+  public Token(String token, UUID accessToken, LocalDateTime expirationDate) {
     this.token = token;
     this.accessToken = accessToken;
     this.expirationDate = expirationDate;

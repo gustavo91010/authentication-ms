@@ -6,6 +6,9 @@ import java.util.stream.Collectors;
 import com.ajudaqui.authenticationms.entity.*;
 import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 
+import lombok.Data;
+
+@Data
 public class UsersAppResponse {
 
   private String applications;
@@ -20,7 +23,7 @@ public class UsersAppResponse {
 
   public UsersAppResponse(Users user, String accessToken) {
     UsersAppData appData = user.selectApp(accessToken);
-    this.applications = appData.getAppName();
+    this.applications = appData.getAppId();
     this.isActive = appData.isActive();
     this.roles = appData.getRoles().stream()
         .map(Roles::getName)
@@ -29,45 +32,5 @@ public class UsersAppResponse {
     this.otherFields = appData.getOtherFields();
   }
 
-
-  public String getApplications() {
-    return applications;
-  }
-
-  public void setApplications(String applications) {
-    this.applications = applications;
-  }
-
-  public boolean isActive() {
-    return isActive;
-  }
-
-  public void setActive(boolean isActive) {
-    this.isActive = isActive;
-  }
-
-  public UUID getAccessToken() {
-    return accessToken;
-  }
-
-  public void setAccessToken(UUID accessToken) {
-    this.accessToken = accessToken;
-  }
-
-  public Set<String> getRoles() {
-    return roles;
-  }
-
-  public void setRoles(Set<String> roles) {
-    this.roles = roles;
-  }
-
-  public Map<String, Object> getOtherFields() {
-    return otherFields;
-  }
-
-  public void setOtherFields(Map<String, Object> otherFields) {
-    this.otherFields = otherFields;
-  }
 
 }

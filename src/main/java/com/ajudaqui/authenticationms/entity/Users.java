@@ -52,9 +52,9 @@ public class Users {
         .findFirst()
         .orElse(null);
   }
-  public UsersAppData selectApp(String appName) {
+  public UsersAppData selectApp(String appId) {
     return this.usersAppData.stream()
-        .filter(appData -> appName.equals(appData.getAppName()))
+        .filter(appData -> appId.equals(appData.getAppId()))
         .findFirst()
         .orElse(null);
   }

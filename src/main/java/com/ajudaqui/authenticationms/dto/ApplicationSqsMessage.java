@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class ApplicationSqsMessage {
 
   private String registerUrl;
-  private String name;
+  private String appId;
   private String authorization;
   private Map<String, Object> payload;
 
@@ -22,7 +22,7 @@ public class ApplicationSqsMessage {
 
     sqsUsers.addProperty("register_url", this.registerUrl);
     sqsUsers.addProperty("authorization", this.authorization);
-    sqsUsers.addProperty("name", this.name);
+    sqsUsers.addProperty("name", this.appId); // TODO Se algum dia mecher no sqs, troca isso por appId
 
     sqsUsers.add("payload", new Gson().toJsonTree(payload));
     return sqsUsers;
@@ -30,7 +30,7 @@ public class ApplicationSqsMessage {
 
   public ApplicationSqsMessage(String registerUrl, String name, String authorization, Map<String, Object> payload) {
     this.registerUrl = registerUrl;
-    this.name = name;
+    this.appId = name;
     this.authorization = authorization;
     this.payload = payload;
   }

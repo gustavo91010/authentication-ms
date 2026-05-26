@@ -61,13 +61,13 @@ public class JwtUtils {
         .setIssuedAt(issuedAtDate)
         .setExpiration(expirationDate)
         .claim("roles", roles)
-        .claim("application", usersApp.getAppId())
+        .claim("app_id", usersApp.getAppId())
         .claim("access_token", usersApp.getAccessToken())
         .signWith(getSigningKey(secretKey), SignatureAlgorithm.HS512)
         .compact();
   }
 
-  public String getAppFromJwtToken(String token) {
+  public String getAppIdFromJwtToken(String token) {
     token = token.replace("Bearer ", "");
     String jwtSecret = getSecretKeyByJwt(token);
     if (!validateJwtToken(token, jwtSecret))
@@ -78,7 +78,7 @@ public class JwtUtils {
         .build()
         .parseClaimsJws(token)
         .getBody()
-        .get("application").toString();
+        .get("app_id").toString();
   }
 
   public String getEmailFromJwtToken(String token) {
@@ -102,7 +102,7 @@ public class JwtUtils {
 
     String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));
     JsonObject payload = JsonParser.parseString(payloadJson).getAsJsonObject();
-    String appId = payload.get("application").getAsString();
+    String appId = payload.get("app_id").getAsString();
     if (!secretKeys.containsKey(appId)) {
       Applications application = apppaApplicationsService.findById(appId);
       secretKeys.put(appId, application.getSecretId());

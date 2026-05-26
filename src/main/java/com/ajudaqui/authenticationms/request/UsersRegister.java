@@ -22,7 +22,7 @@ public class UsersRegister {
   @NotBlank(message = "Campo password é obrigatorio")
   private String password;
   @NotBlank(message = "Campo aplication é obrigatorio")
-  private String application;
+  private String appId;
   private Map<String, Object> payload;
 
   public Map<String, Object> getPayload() {
@@ -60,7 +60,7 @@ public class UsersRegister {
     usersAppData.setRoles(roles);
     usersAppData.setAccessToken(UUID.randomUUID());
     usersAppData.setPassword(checkStrongPassword(this.password));
-    usersAppData.setAppName(usersRegister.getApplication());
+    usersAppData.setAppId(usersRegister.getAppId());
     usersAppData.setCreatedAt(LocalDateTime.now());
     usersAppData.setActive(false);
     user.getUsersAppData().add(usersAppData);
