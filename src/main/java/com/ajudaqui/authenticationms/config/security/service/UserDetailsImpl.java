@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.ajudaqui.authenticationms.entity.Users;
 import com.ajudaqui.authenticationms.entity.UsersAppData;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -16,7 +17,7 @@ public class UserDetailsImpl implements UserDetails {
 
   private static final long serialVersionUID = 1L;
 
-  private Long id;
+  private String id;
 
   private String username;
   private Boolean active;
@@ -36,20 +37,20 @@ public class UserDetailsImpl implements UserDetails {
     this.active = active;
   }
 
-  public static UserDetailsImpl build(UsersAppData users) {
+  public static UserDetailsImpl build(Users users) {
+    UsersAppData userApp = users.getUsersAppData().iterator().next();
 
-    List<GrantedAuthority> authorites = users.getRoles().stream()
+    List<GrantedAuthority> authorites = userApp.getRoles().stream()
         .map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
 
-    return new UserDetailsImpl(users.getId(), users.getUsers().getEmail(),
-        users.getPassword(), users.isActive(), authorites);
+    return new UserDetailsImpl(users.getId(), users.getEmail(), userApp.getPassword(), userApp.isActive(), authorites);
   }
 
-  public Long getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(String id) {
     this.id = id;
   }
 
