@@ -50,19 +50,18 @@ public class JwtUtils {
         .map(Roles::getName)
         .collect(Collectors.toList());
 
-    String appName = usersApp.getAppName();
-    if (!secretKeys.containsKey(appName)) {
-      Applications application = apppaApplicationsService.findByName(appName);
-      secretKeys.put(appName, application.getSecretId());
+    String appId = usersApp.getAppId();
+    if (!secretKeys.containsKey(appId)) {
+      Applications application = apppaApplicationsService.findByName(appId);
+      secretKeys.put(appId, application.getSecretId());
     }
 
-    String secretKey = secretKeys.get(appName);
+    String secretKey = secretKeys.get(appId);
     return Jwts.builder()
-        // .setSubject(usersApp.getUsers().getEmail())
         .setIssuedAt(issuedAtDate)
         .setExpiration(expirationDate)
         .claim("roles", roles)
-        .claim("application", usersApp.getAppName())
+        .claim("application", usersApp.getAppId())
         .claim("access_token", usersApp.getAccessToken())
         .signWith(getSigningKey(secretKey), SignatureAlgorithm.HS512)
         .compact();
@@ -103,12 +102,12 @@ public class JwtUtils {
 
     String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));
     JsonObject payload = JsonParser.parseString(payloadJson).getAsJsonObject();
-    String clientId = payload.get("client_id").getAsString();
-    if (!secretKeys.containsKey(clientId)) {
-      Applications application = apppaApplicationsService.getByClientId(clientId);
-      secretKeys.put(clientId, application.getSecretId());
+    String appId = payload.get("application").getAsString();
+    if (!secretKeys.containsKey(appId)) {
+      Applications application = apppaApplicationsService.findById(appId);
+      secretKeys.put(appId, application.getSecretId());
     }
-    return this.secretKeys.get(clientId);
+    return this.secretKeys.get(appId);
   }
 
   public boolean validateJwtToken(String authToken, String jwtSecret) {

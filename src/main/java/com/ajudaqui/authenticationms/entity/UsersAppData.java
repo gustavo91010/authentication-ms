@@ -15,7 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 public class UsersAppData {
 
-  private String appName;
+  private String appId;
 
   private String password;
 
@@ -33,9 +33,9 @@ public class UsersAppData {
 
   private Map<String, Object> otherFields;
 
-  public UsersAppData newApp(String appName, String password, boolean active, Set<Roles> roles) {
+  public UsersAppData newApp(String appId, String password, boolean active, Set<Roles> roles) {
     UsersAppData NewApp = new UsersAppData();
-    NewApp.setAppName(appName);
+    NewApp.setAppId(appId);
     NewApp.setPassword(password);
     NewApp.setActive(active);
     NewApp.setRoles(roles);
