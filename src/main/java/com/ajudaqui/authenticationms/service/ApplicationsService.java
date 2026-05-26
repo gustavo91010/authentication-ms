@@ -95,10 +95,10 @@ public class ApplicationsService {
     return newApp;
   }
 
-  public List<HttpUsersAppData> userByApp(String email, String appName) {
-    checkPermission(email, appName, ERoles.ROLE_MODERATOR, ERoles.ROLE_ADMIN);
+  public List<HttpUsersAppData> userByApp(String email, String appId) {
+    checkPermission(email, appId, ERoles.ROLE_MODERATOR, ERoles.ROLE_ADMIN);
 
-    List<UsersAppData> byAppId = usersService.findByAppName(appName);
+    List<UsersAppData> byAppId = usersService.findByAppId(appId);
     return byAppId.stream().map(HttpUsersAppData::new)
         .collect(Collectors.toList());
   }
@@ -119,11 +119,11 @@ public class ApplicationsService {
       throw new MessageException("Solicitação não autorizada");
   }
 
-  public UsersAppData assignAdmin(String moderatorEmail, String appName, String userEmail) {
-    checkPermission(moderatorEmail, appName, ERoles.ROLE_MODERATOR);
+  public UsersAppData assignAdmin(String moderatorEmail, String appId, String userEmail) {
+    checkPermission(moderatorEmail, appId, ERoles.ROLE_MODERATOR);
 
     Users user = usersService.findByEmail(userEmail);
-    UsersAppData userAppData = user.selectApp(appName);
+    UsersAppData userAppData = user.selectApp(appId);
 
     boolean alreadyAdmin = userAppData.getRoles().stream()
         .map(Roles::getName)
@@ -144,8 +144,8 @@ public class ApplicationsService {
   }
 
   // TODO isso ta só a carcaça
-  public Applications update(String email, String appName, ApplicationDto dto) {
-    return save(dto.toUpdate(findByName(appName)));
+  public Applications update(String email, String appId, ApplicationDto dto) {
+    return save(dto.toUpdate(findByName(appId)));
   }
 
   public Applications findById(String applicationId) {

@@ -15,10 +15,10 @@ public interface UsersRepository extends MongoRepository<Users, String> {
 
   Optional<Users> findByEmailAndUsersAppDataAppId(
       String email,
-      String appName);
+      String appId);
 
   // busca os appData pelo nome da palicação
-  List<Users> findByUsersAppDataAppName(String appName);
+  List<Users> findByUsersAppDataAppId(String appId);
 
   Optional<Users> findByUsersAppDataAccessToken(UUID accessToken);
 }

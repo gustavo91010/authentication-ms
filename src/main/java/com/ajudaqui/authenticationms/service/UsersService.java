@@ -6,6 +6,7 @@ import com.ajudaqui.authenticationms.entity.*;
 import com.ajudaqui.authenticationms.exception.BadRequestException;
 import com.ajudaqui.authenticationms.exception.MessageException;
 import com.ajudaqui.authenticationms.exception.NotFoundException;
+import com.ajudaqui.authenticationms.repository.ApplicationsRepository;
 import com.ajudaqui.authenticationms.repository.RolesRepository;
 import com.ajudaqui.authenticationms.repository.UsersRepository;
 import com.ajudaqui.authenticationms.request.UsersRegister;
@@ -17,18 +18,24 @@ import org.springframework.stereotype.Service;
 public class UsersService {
 
   private UsersRepository userRepository;
-  final private ApplicationsService applicationsService;
+  final private ApplicationsRepository applicationsService;
   private RolesRepository rolesRepository;
 
   public UsersService(UsersRepository userRepository,
-      ApplicationsService applicationsService, RolesRepository rolesRepository) {
+      ApplicationsRepository applicationsService, RolesRepository rolesRepository) {
     this.userRepository = userRepository;
     this.applicationsService = applicationsService;
     this.rolesRepository = rolesRepository;
   }
 
   public UsersAppData create(UsersRegister usersRegister, boolean isInternal) {
-    Applications application = applicationsService.findByName(usersRegister.getAppId());
+
+    // return repository.findByName(name)
+    // .orElseThrow(() -> new NotFoundException("Aplicação não " + name + "
+    // registrada."));
+    Applications application = applicationsService.findById(usersRegister.getAppId())
+        .orElseThrow(() -> new NotFoundException("Aplicação nao registrada"));
+
     String urlRegister = application.getRegisterUrl();
     if (urlRegister == null || urlRegister.isBlank())
       throw new BadRequestException("A Aplicação não tem URL de registro cadastrada");
@@ -81,8 +88,8 @@ public class UsersService {
     return appData;
   }
 
-  public Optional<Users> findByEmail(String email, String appName) {
-    return userRepository.findByEmailAndUsersAppDataAppId(email, appName);
+  public Optional<Users> findByEmail(String email, String appId) {
+    return userRepository.findByEmailAndUsersAppDataAppId(email, appId);
 
   }
 
@@ -131,13 +138,13 @@ public class UsersService {
     return data;
   }
 
-  public List<UsersAppData> findByAppName(String appName) {
-    var appData = userRepository.findByUsersAppDataAppName(appName);
+  public List<UsersAppData> findByAppId(String appId) {
+    var appData = userRepository.findByUsersAppDataAppId(appId);
     if (appData.isEmpty())
       throw new NotFoundException("Aplicação não registrada");
 
     return appData.stream()
-        .map(data -> data.selectApp(appName))
+        .map(data -> data.selectApp(appId))
         .toList();
   }
 
