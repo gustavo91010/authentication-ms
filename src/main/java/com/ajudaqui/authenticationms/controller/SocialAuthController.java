@@ -60,7 +60,7 @@ public class SocialAuthController {
     usersRegister.setName(name);
     usersRegister.setEmail(email);
     usersRegister.setPassword(password);
-    usersRegister.setApplication(appName);
+    usersRegister.setAppId(appName);
     return urlLogin + authService.registerUser(usersRegister).getAccess_token();
   }
 }

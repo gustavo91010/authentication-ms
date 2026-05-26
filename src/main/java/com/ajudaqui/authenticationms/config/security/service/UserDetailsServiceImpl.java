@@ -33,7 +33,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     UsersAppData user = usersRepository.findByEmail(email).getUsersAppData().stream()
         .filter(u -> {
           if (finalApplication != null) {
-            return finalApplication.equals(u.getAppName());
+            return finalApplication.equals(u.getAppId());
           }
           // Se não especificou app, procura um onde ele seja MODERADOR (para o Admin Dashboard)
           return u.getRoles().stream().anyMatch(r -> r.getName().name().equals("ROLE_MODERATOR"));

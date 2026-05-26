@@ -148,19 +148,14 @@ public class ApplicationsService {
     return save(dto.toUpdate(findByName(appName)));
   }
 
-  // public Applications findById(String email, Long applicationId) {
-  // return repository.findById(applicationId)
-  // .map(a -> {
-  // checkPermission(email, a.getName(), ERoles.ROLE_MODERATOR);
-  // return a;
-  // })
-  // .orElseThrow(() -> new NotFoundException("Aplicação não registrada"));
-  // }
+  public Applications findById(String applicationId) {
+    return repository.findById(applicationId)
+        .orElseThrow(() -> new NotFoundException("Aplicação não registrada"));
+  }
 
   private Applications save(Applications applications) {
     return repository.save(applications);
   }
-
 
   public List<HttpAplications> findAll(String authorization) {
     checkingPermission(authorization);

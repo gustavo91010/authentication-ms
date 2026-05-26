@@ -28,13 +28,13 @@ public class UsersService {
   }
 
   public UsersAppData create(UsersRegister usersRegister, boolean isInternal) {
-    Applications application = applicationsService.findByName(usersRegister.getApplication());
+    Applications application = applicationsService.findByName(usersRegister.getAppId());
     String urlRegister = application.getRegisterUrl();
     if (urlRegister == null || urlRegister.isBlank())
       throw new BadRequestException("A Aplicação não tem URL de registro cadastrada");
 
     boolean emailRegistradoNaAplicacao = userRepository
-        .findByEmailAndUsersAppDataAppName(usersRegister.getEmail(), usersRegister.getApplication())
+        .findByEmailAndUsersAppDataAppId(usersRegister.getEmail(), usersRegister.getAppId())
         .isPresent();
 
     if (emailRegistradoNaAplicacao)
@@ -44,7 +44,7 @@ public class UsersService {
 
     save(users);
 
-    UsersAppData appData = users.selectApp(usersRegister.getApplication());
+    UsersAppData appData = users.selectApp(usersRegister.getAppId());
     if (appData == null)
       throw new MessageException("Porblema no registro do usuário");
 
@@ -71,7 +71,7 @@ public class UsersService {
   }
 
   public UsersAppData getUsersByEmail(String email, String appId) {
-    Users user = userRepository.findByEmailAndUsersAppDataAppName(email, appId)
+    Users user = userRepository.findByEmailAndUsersAppDataAppId(email, appId)
         .orElseThrow(() -> new MessageException("Usuario não encontrado"));
 
     UsersAppData appData = user.selectApp(appId);
@@ -82,7 +82,7 @@ public class UsersService {
   }
 
   public Optional<Users> findByEmail(String email, String appName) {
-    return userRepository.findByEmailAndUsersAppDataAppName(email, appName);
+    return userRepository.findByEmailAndUsersAppDataAppId(email, appName);
 
   }
 
@@ -127,7 +127,7 @@ public class UsersService {
     data.put("name", name);
 
     data.put("email", userApp.getEmail());
-    data.put("aplication", userApp.getUsersAppData().iterator().next().getAppName());
+    data.put("aplication", userApp.getUsersAppData().iterator().next().getAppId());
     return data;
   }
 

@@ -31,7 +31,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       String jwt = parseJwt(request);
       if (jwt != null) {
         String email = jwtUtils.getEmailFromJwtToken(jwt);
-        String app = jwtUtils.getAppFromJwtToken(jwt);
+        String app = jwtUtils.getAppIdFromJwtToken(jwt);
         String auth_login=  email+"|"+app;
 
         UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(auth_login);

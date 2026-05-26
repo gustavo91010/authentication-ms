@@ -13,7 +13,7 @@ public interface UsersRepository extends MongoRepository<Users, String> {
   // List<Users> findByEmail(String email);
   Users findByEmail(String email);
 
-  Optional<Users> findByEmailAndUsersAppDataAppName(
+  Optional<Users> findByEmailAndUsersAppDataAppId(
       String email,
       String appName);
 
