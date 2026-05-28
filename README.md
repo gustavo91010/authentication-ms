@@ -1,8 +1,8 @@
-# Authentication-MS  
+# Porteiro API  
 Sistema de autenticação centralizado para múltiplas aplicações, desenvolvido com **Spring Boot** e suporte a autenticação via **JWT** e **OAuth2** (Google e GitHub).  
 
 ## 📌 Descrição  
-O **Authentication-MS** é um microsserviço que gerencia autenticação e registro de usuários para diferentes aplicações clientes.  
+A **Porteiro API** é um microsserviço que gerencia autenticação e registro de usuários para diferentes aplicações clientes.  
 - Cada aplicação é registrada no sistema com suas próprias chaves (`clientId` e `secretId`).  
 - Um mesmo e-mail pode ser usado em aplicações diferentes sem conflitos.  
 - Registro e integração de novos usuários via **SQS** (AWS) com Lambda para comunicação automática entre sistemas.  
@@ -57,8 +57,8 @@ src/main/java/com/ajudaqui/authenticationms
 ### Rodando localmente  
 ```bash
 # Clonar o repositório
-git clone https://github.com/seu-repositorio/authentication-ms.git
-cd authentication-ms
+git clone https://github.com/seu-repositorio/porteiro-api.git
+cd porteiro-api
 
 # Subir banco com Docker
 docker-compose up -d

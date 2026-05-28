@@ -72,10 +72,10 @@ public class ApplicationsService {
 
     // --- NOVO: Garante registro do Admin padrão (admin@ajudaqui.com)
     try {
-      Users authUser = usersService.findByEmail("admin@ajudaqui.com", "authentication_ms")
+      Users authUser = usersService.findByEmail("admin@ajudaqui.com", "porteiro_api")
           .orElseThrow(() -> new MessageException("O moderador tem que estar registrado previamente"));
 
-      UsersAppData appDataAuth = authUser.selectApp("authentication_ms");
+      UsersAppData appDataAuth = authUser.selectApp("porteiro_api");
       usersService.findByRole(ERoles.ROLE_ADMIN);
 
       roles.add(usersService.findByRole(ERoles.ROLE_ADMIN));

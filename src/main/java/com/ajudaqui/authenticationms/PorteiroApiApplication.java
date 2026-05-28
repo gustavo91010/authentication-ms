@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AuthenticationMsApplication {
+public class PorteiroApiApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(AuthenticationMsApplication.class, args);
+    SpringApplication.run(PorteiroApiApplication.class, args);
   }
 
 }
