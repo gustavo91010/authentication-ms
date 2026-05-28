@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface UsersRepository extends MongoRepository<Users, String> {
 
   // List<Users> findByEmail(String email);
-  Users findByEmail(String email);
+  Optional<Users> findByEmail(String email);
 
   Optional<Users> findByEmailAndUsersAppDataAppId(
       String email,

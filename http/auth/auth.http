@@ -1,0 +1,37 @@
+### Signup
+# @name signup
+POST {{url_auth}}/auth/signup
+Content-Type: application/json
+
+{
+    "name": "User Test",
+    "email": "test@ajudaqui.com",
+    "password": "@Ajudaqui",
+    "aplication": "bill-manager",
+    "otherFields": {}
+}
+
+> {%
+    client.global.set("email", response.body.email);
+%}
+
+### Login
+# @name login
+POST {{url_auth}}/auth/signin
+Content-Type: application/json
+
+{
+    "email": "admin@ajudaqui.com",
+    "password": "@Ajudaqui",
+    "application": "vem-pro-culto"
+}
+
+> {%
+    client.global.set("jwt", response.body.jwt);
+    client.global.set("access_token", response.body.access_token);
+%}
+
+### Confirm Token
+# @name confirmToken
+PUT {{url_auth}}/auth/confirm-token?token=487700
+Authorization: Bearer {{jwt}}

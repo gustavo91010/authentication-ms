@@ -1,0 +1,13 @@
+### Get User Authorization
+# @name getAuthorization
+GET {{url_auth}}/users/authorization
+Authorization: {{access_token}}
+
+### Find User by Email
+# @name findByEmail
+GET {{url_auth}}/users/email/{{email}}
+Authorization: Bearer {{jwt}}
+
+> {%
+    client.global.set("access_token", response.body.access_token);
+%}

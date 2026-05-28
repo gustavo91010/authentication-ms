@@ -94,7 +94,8 @@ public class UsersService {
   }
 
   public Users findByEmail(String email) {
-    return userRepository.findByEmail(email);
+    return userRepository.findByEmail(email)
+    .orElseThrow(()-> new MessageException(String.format("Email %s não registrado", email)));
   }
 
   public Users findById(String id) {
@@ -124,7 +125,7 @@ public class UsersService {
 
   public Map<String, String> getData(String accessToken) {
     Users userApp = userRepository.findByUsersAppDataAccessToken(UUID.fromString(accessToken))
-        .orElseThrow(() -> new MessageException("Usuario não encontrado"));
+        .orElseThrow(() -> new MessageException(String.format("Usuario do %s não encontrado", accessToken.toString())));
 
     Map<String, String> data = new HashMap<>();
     data.put("access_token", accessToken);
@@ -141,7 +142,7 @@ public class UsersService {
   public List<UsersAppData> findByAppId(String appId) {
     var appData = userRepository.findByUsersAppDataAppId(appId);
     if (appData.isEmpty())
-      throw new NotFoundException("Aplicação não registrada");
+      throw new NotFoundException(String.format("Aplicação %s não registrada", appId));
 
     return appData.stream()
         .map(data -> data.selectApp(appId))

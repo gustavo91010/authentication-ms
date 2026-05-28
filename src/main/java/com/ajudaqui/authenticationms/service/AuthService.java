@@ -65,6 +65,9 @@ public class AuthService implements AuthServiceDoc {
   @Override
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
 
+    System.out.println("email: "+loginRequest.getEmail());
+    System.out.println("application "+loginRequest.getApplication());
+
     Users users = usersService.findByEmail(loginRequest.getEmail());
     UsersAppData usersApp = users.selectApp(loginRequest.getApplication());
     if (!usersApp.isActive())

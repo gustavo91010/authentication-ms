@@ -1,0 +1,32 @@
+### Info
+# @name info
+GET {{url_auth}}/actuator/info
+
+### Health
+# @name health
+GET {{url_auth}}/actuator/health
+
+### SQS: Send Message
+# @name sqsSendMessage
+POST {{url_auth}}/sqs/send-message
+Authorization: {{access_token}}
+Content-Type: application/json
+
+{
+    "message": "ola mundo"
+}
+
+### SQS: Create Queue
+# @name sqsCreateQueue
+POST {{url_gateway}}/sqs/queue-create?queueName=fila_test
+Authorization: {{access_token}}
+
+### SQS: List Queues
+# @name sqsListQueues
+GET {{url_auth}}/sqs/queue-list
+Authorization: {{access_token}}
+
+### SQS: Delete Queue
+# @name sqsDeleteQueue
+DELETE {{url_gateway}}/sqs/queue-delete?queueName=fila_test
+Authorization: {{access_token}}

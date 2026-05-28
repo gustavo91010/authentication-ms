@@ -1,0 +1,26 @@
+### Register Application
+# @name registerApp
+POST {{url_auth}}/app
+Content-Type: application/json
+Authorization: {{master_auth}}
+
+{
+    "name": "vem-pro-culto",
+    "emailModerador": "admin@ajudaqui.com",
+    "applicationOfModerador": "authentication_ms",
+    "registerUrl": "http://3.229.225.73:8084",
+    "secret": "GmL3M1KJFVi7JSHxtrxDKKSNRjjw0NBWHJ3uys6qlxENlCZURgNNxDsN//yGY2die+CnV7MmgeqgzfPKFoo9Gg=="
+}
+
+### Update Application
+# @name updateApp
+PUT {{url_auth}}/app
+Content-Type: application/json
+Authorization: {{master_auth}}
+
+{
+    "name": "vem-pro-culto",
+    "emailModerador": "admin@ajudaqui.com",
+    "registerUrl": "http://20.246.66.131:8084",
+    "secret": "7dadc4d8-633f-4920-9db5-724844fa5287"
+}
