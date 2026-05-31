@@ -19,12 +19,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
   @Transactional
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     String email;
-    String application = null;
+    String appId = null;
 
     if (username.contains("|")) {
       String[] parts = username.split("\\|");
       email = parts[0];
-      application = parts[1];
+      appId = parts[1];
     } else {
       email = username;
     }
@@ -46,7 +46,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     //     .findFirst()
     //     .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
-    return UserDetailsImpl.build(user);
+    return UserDetailsImpl.build(user, appId);
   }
 
 }

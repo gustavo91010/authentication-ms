@@ -37,8 +37,8 @@ public class UserDetailsImpl implements UserDetails {
     this.active = active;
   }
 
-  public static UserDetailsImpl build(Users users) {
-    UsersAppData userApp = users.getUsersAppData().iterator().next();
+  public static UserDetailsImpl build(Users users, String appId) {
+    UsersAppData userApp = users.selectApp(appId);
 
     List<GrantedAuthority> authorites = userApp.getRoles().stream()
         .map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());

@@ -29,13 +29,14 @@ public class UsersAppData {
   private boolean isActive;
 
   private UUID accessToken;
-
+  // @Builder.Default // TODO sera que iss da??
   private Set<Roles> roles = new HashSet<>();
 
   private Map<String, Object> otherFields;
 
-  public UsersAppData newApp(String appName, String password, boolean active, Set<Roles> roles) {
+  public UsersAppData newApp(String appId, String appName, String password, boolean active, Set<Roles> roles) {
     UsersAppData NewApp = new UsersAppData();
+    NewApp.setAppId(appId);
     NewApp.setAppName(appName);
     NewApp.setPassword(password);
     NewApp.setActive(active);

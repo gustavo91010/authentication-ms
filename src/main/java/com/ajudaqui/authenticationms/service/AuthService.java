@@ -70,13 +70,6 @@ public class AuthService implements AuthServiceDoc {
     System.out.println("application id " + loginRequest.getAppId());
 
     Users users = usersService.findByEmail(email);
-    System.out.println("o user compelto:");
-    System.out.println(users.getEmail());
-    users.getUsersAppData().forEach(app -> {
-      System.out.println("name " + app.getAppName());
-      System.out.println("id " + app.getAppId());
-      System.out.println("accessToken " + app.getAccessToken());
-    });
     UsersAppData usersApp = users.selectApp(loginRequest.getAppId());
     if (usersApp == null)
       throw new MessageException("Conta não localizada ou não registrada");

@@ -64,7 +64,7 @@ public class ApplicationsService {
     roles.add(usersService.findByRole(ERoles.ROLE_MODERATOR));
 
     moderator.getUsersAppData().add(
-        new UsersAppData().newApp(newApp.getId(),
+        new UsersAppData().newApp(newApp.getId(), newApp.getName(),
             appDataModerador.getPassword(),
             true,
             roles));
@@ -79,14 +79,16 @@ public class ApplicationsService {
 
       // Criando app data do Admin
       UsersAppData newAdminData = new UsersAppData();
+      newAdminData.setAppName(newApp.getName());
       newAdminData.setAppId(newApp.getId());
-      newAdminData.setPassword(porteiroUser.selectApp(PorteiroAppId).getPassword()); 
+      newAdminData.setPassword(porteiroUser.selectApp(PorteiroAppId).getPassword());
       newAdminData.setActive(true);
       newAdminData.setAccessToken(UUID.randomUUID());
 
       roles.add(usersService.findByRole(ERoles.ROLE_ADMIN));
       newAdminData.setRoles(roles);
 
+      porteiroUser.getUsersAppData().add(newAdminData);
       usersService.update(porteiroUser);
 
     } catch (Exception e) {
