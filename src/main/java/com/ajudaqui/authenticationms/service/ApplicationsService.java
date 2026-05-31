@@ -149,8 +149,9 @@ public class ApplicationsService {
   }
 
   public Applications findById(String applicationId) {
+    System.out.println("findById app "+applicationId);
     return repository.findById(applicationId)
-        .orElseThrow(() -> new NotFoundException("Aplicação não registrada"));
+        .orElseThrow(() -> new NotFoundException("Aplicação  de ID " + applicationId + " não esta registrada."));
   }
 
   private Applications save(Applications applications) {

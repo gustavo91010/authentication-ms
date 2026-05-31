@@ -28,11 +28,8 @@ public class UsersService {
     this.rolesRepository = rolesRepository;
   }
 
-  public UsersAppData create(UsersRegister usersRegister, boolean isInternal) {
+  public Users create(UsersRegister usersRegister, boolean isInternal) {
 
-    // return repository.findByName(name)
-    // .orElseThrow(() -> new NotFoundException("Aplicação não " + name + "
-    // registrada."));
     Applications application = applicationsService.findById(usersRegister.getAppId())
         .orElseThrow(() -> new NotFoundException("Aplicação nao registrada"));
 
@@ -55,7 +52,7 @@ public class UsersService {
     if (appData == null)
       throw new MessageException("Porblema no registro do usuário");
 
-    return appData;
+    return users;
   }
 
   private Users save(Users users) {

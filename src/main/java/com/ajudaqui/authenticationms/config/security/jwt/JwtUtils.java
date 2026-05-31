@@ -52,7 +52,7 @@ public class JwtUtils {
 
     String appId = usersApp.getAppId();
     if (!secretKeys.containsKey(appId)) {
-      Applications application = apppaApplicationsService.findByName(appId);
+      Applications application = apppaApplicationsService.findById(appId);
       secretKeys.put(appId, application.getSecretId());
     }
 

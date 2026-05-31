@@ -16,6 +16,7 @@ import lombok.*;
 public class UsersAppData {
 
   private String appId;
+  private String appName;
 
   private String password;
 
@@ -33,9 +34,9 @@ public class UsersAppData {
 
   private Map<String, Object> otherFields;
 
-  public UsersAppData newApp(String appId, String password, boolean active, Set<Roles> roles) {
+  public UsersAppData newApp(String appName, String password, boolean active, Set<Roles> roles) {
     UsersAppData NewApp = new UsersAppData();
-    NewApp.setAppId(appId);
+    NewApp.setAppName(appName);
     NewApp.setPassword(password);
     NewApp.setActive(active);
     NewApp.setRoles(roles);
@@ -44,6 +45,5 @@ public class UsersAppData {
     NewApp.setUpdatedAt(LocalDateTime.now());
     return NewApp;
   }
-
 
 }

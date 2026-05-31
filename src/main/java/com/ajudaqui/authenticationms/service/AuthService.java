@@ -65,30 +65,42 @@ public class AuthService implements AuthServiceDoc {
   @Override
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
 
-    System.out.println("email: "+loginRequest.getEmail());
-    System.out.println("application "+loginRequest.getApplication());
+    String email = loginRequest.getEmail();
+    System.out.println("email: " + email);
+    System.out.println("application id " + loginRequest.getAppId());
 
-    Users users = usersService.findByEmail(loginRequest.getEmail());
-    UsersAppData usersApp = users.selectApp(loginRequest.getApplication());
+    Users users = usersService.findByEmail(email);
+    System.out.println("o user compelto:");
+    System.out.println(users.getEmail());
+    users.getUsersAppData().forEach(app -> {
+      System.out.println("name " + app.getAppName());
+      System.out.println("id " + app.getAppId());
+      System.out.println("accessToken " + app.getAccessToken());
+    });
+    UsersAppData usersApp = users.selectApp(loginRequest.getAppId());
+    if (usersApp == null)
+      throw new MessageException("Conta não localizada ou não registrada");
+
     if (!usersApp.isActive())
       throw new MessageException("sua conta esta desativada, verifique seu email");
     UsernamePasswordAuthenticationToken userAutheticator = new UsernamePasswordAuthenticationToken(
-        loginRequest.getEmail() + "|" + usersApp.getAppId(), // Poderia passar o accessToken aqui, ja que ele é unico
-                                                             // por aplicação
-        loginRequest.getPassword());
+        email + "|" + usersApp.getAppId(), loginRequest.getPassword());
 
     Authentication authentication = authenticationManager.authenticate(userAutheticator);
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    return new LoginResponse(new UsersAppApplicationDto(usersApp),
+    var lalal = new LoginResponse(new UsersAppApplicationDto(loginRequest.getAppId(), users),
         jwtUtils.generatedJwtToken(usersApp));
+    System.out.println(lalal.toString());
+    return lalal;
   }
 
   public LoginResponse authenticateUser(String email, String appId) {
-    UsersAppData usersApp = usersService.getUsersByEmail(email, appId);
-    return new LoginResponse(new UsersAppApplicationDto(usersApp),
-        jwtUtils.generatedJwtToken(usersApp));
+    return null;
+    // UsersAppData usersApp = usersService.getUsersByEmail(email, appId);
+    // return new LoginResponse(new UsersAppApplicationDto(usersApp),
+    // jwtUtils.generatedJwtToken(usersApp));
   }
 
   public String authOrRegister(String email, String name, Model modal) {
@@ -106,7 +118,9 @@ public class AuthService implements AuthServiceDoc {
   @Override
   public LoginResponse registerUser(UsersRegister usersRegister) {
     boolean isProd = ENVIROMENT_PROD.equals(enviroment_current);
-    UsersAppData userApp = usersService.create(usersRegister, !isProd);
+    Users user = usersService.create(usersRegister, !isProd);
+    String appId = usersRegister.getAppId().toString();
+    UsersAppData userApp = user.selectApp(appId);
 
     try {
 
@@ -122,11 +136,11 @@ public class AuthService implements AuthServiceDoc {
         Map<String, Object> payload = usersRegister.getPayload();
         payload.put("access_token", userApp.getAccessToken());
 
-        Applications application = applicationsService.findById(usersRegister.getAppId());
+        Applications application = applicationsService.findById(appId);
         ApplicationSqsMessage sqsMessage = new ApplicationSqsMessage(
             application.getRegisterUrl(),
             application.getName(),
-            application.getSecretId(), // TODO Preiciso mesmo enviar isso???
+            application.getSecretId(),
             payload);
         messageSqsFactor(sqsMessage);
       }
@@ -135,7 +149,7 @@ public class AuthService implements AuthServiceDoc {
       logger.error("Erro no envio da mensagem para fila sqs", e);
     }
 
-    return new LoginResponse(new UsersAppApplicationDto(userApp), jwtUtils.generatedJwtToken(userApp));
+    return new LoginResponse(new UsersAppApplicationDto(appId, user), jwtUtils.generatedJwtToken(userApp));
   }
 
   /**
@@ -165,7 +179,7 @@ public class AuthService implements AuthServiceDoc {
 
     if (byToken.getAccessToken().equals(usersAppData.getAccessToken())) {
       usersAppData.setActive(true);
-      usersService.update(users); // TODO Será que atualiza pra true mesmo???
+      usersService.update(users); // TODO confirmar via test unitarios
       tokenService.delete(token);
     }
     return usersAppData.isActive();
