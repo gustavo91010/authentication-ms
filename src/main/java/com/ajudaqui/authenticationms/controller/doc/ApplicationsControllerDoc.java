@@ -59,11 +59,11 @@ public interface ApplicationsControllerDoc {
   @GetMapping("/id/{applicationId}")
   ResponseEntity<HttpAplications> getById(
       @Parameter(description = "Token JWT no formato Bearer") @RequestHeader("Authorization") String jwtToken,
-      @Parameter(description = "ID da aplicação", example = "1") @PathVariable Long applicationId);
+      @Parameter(description = "ID da aplicação", example = "1") @PathVariable String applicationId);
 
   @PutMapping("/id/{applicationId}")
   ResponseEntity<HttpAplications> update(
       @Parameter(description = "Token JWT no formato Bearer do MODERATOR da aplicação") @RequestHeader("Authorization") String jwtToken,
-      @Parameter(description = "ID da aplicação", example = "1") @PathVariable Long applicationId, ApplicationDto dto);
+      @Parameter(description = "ID da aplicação", example = "1") @PathVariable String applicationId, ApplicationDto dto);
 
 }

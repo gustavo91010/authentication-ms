@@ -31,11 +31,10 @@ public class UsersRegister {
         : payload;
   }
 
-  public Users toUsers(boolean isInternal) {
+  public Users toUsers() {
     Users users = new Users();
     users.setName(this.name);
     users.setEmail(this.email);
-    // users.setActive(true);
     return users;
   }
 
@@ -45,7 +44,8 @@ public class UsersRegister {
 
     boolean isLowAndUpCase = password.matches("^(?=.*[a-z])(?=.*[A-Z]).+$");
     if (!isLowAndUpCase)
-      throw new MessageException("A senha deve ter pelo menos uma letra maiúscula, uma minuscula e um caracter especial ( @#$%&*_- )");
+      throw new MessageException(
+          "A senha deve ter pelo menos uma letra maiúscula, uma minuscula e um caracter especial ( @#$%&*_- )");
 
     boolean isCharacterEpecial = password.matches("^(?=.*[@#$%&*_-]).+$");
 
@@ -54,13 +54,14 @@ public class UsersRegister {
     return new BCryptPasswordEncoder().encode(password);
   }
 
-  public Users toAppData(UsersRegister usersRegister, boolean isInternal, Set<Roles> roles) {
-    var user = usersRegister.toUsers(isInternal);
+  // public Users toAppData(UsersRegister usersRegister, Set<Roles> roles) {
+  public Users toAppData( Set<Roles> roles) {
+    var user = this.toUsers();
     UsersAppData usersAppData = new UsersAppData();
     usersAppData.setRoles(roles);
     usersAppData.setAccessToken(UUID.randomUUID());
     usersAppData.setPassword(checkStrongPassword(this.password));
-    usersAppData.setAppId(usersRegister.getAppId());
+    usersAppData.setAppId(this.getAppId());
     usersAppData.setCreatedAt(LocalDateTime.now());
     usersAppData.setActive(false);
     user.getUsersAppData().add(usersAppData);

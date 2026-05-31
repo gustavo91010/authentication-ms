@@ -7,6 +7,7 @@ import com.ajudaqui.authenticationms.dto.*;
 import com.ajudaqui.authenticationms.entity.*;
 import com.ajudaqui.authenticationms.exception.*;
 import com.ajudaqui.authenticationms.repository.ApplicationsRepository;
+import com.ajudaqui.authenticationms.request.UsersRegister;
 import com.ajudaqui.authenticationms.utils.enuns.ERoles;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -37,8 +38,8 @@ public class ApplicationsService {
     if (appicationDto.getName() == null || appicationDto.getName().isEmpty())
       throw new MessageException("O campo name não pode estar vazio.");
 
-    if (appicationDto.getApplicationOfModerador() == null || appicationDto.getApplicationOfModerador().isEmpty())
-      throw new MessageException("O campo aplicação do moderador não pode estar vazio.");
+    if (appicationDto.getAppIdOfModerador() == null || appicationDto.getAppIdOfModerador().isEmpty())
+      throw new MessageException("O campo appId do moderador não pode estar vazio.");
 
     if (appicationDto.getEmailModerador() == null || appicationDto.getEmailModerador().isEmpty())
       throw new MessageException("O campo email do emailModerador não pode estar vazio.");
@@ -52,10 +53,10 @@ public class ApplicationsService {
       throw new MessageException("Já existe uma aplicação registrada com esse nome.");
 
     Users moderator = usersService
-        .findByEmail(appicationDto.getEmailModerador(), appicationDto.getApplicationOfModerador())
+        .findByEmail(appicationDto.getEmailModerador(), appicationDto.getAppIdOfModerador())
         .orElseThrow(() -> new MessageException("O moderador tem que estar registrado previamente"));
 
-    UsersAppData appDataModerador = moderator.selectApp(appicationDto.getApplicationOfModerador());
+    UsersAppData appDataModerador = moderator.selectApp(appicationDto.getAppIdOfModerador());
 
     Applications newApp = save(appicationDto.toEntity());
 
@@ -63,7 +64,7 @@ public class ApplicationsService {
     roles.add(usersService.findByRole(ERoles.ROLE_MODERATOR));
 
     moderator.getUsersAppData().add(
-        new UsersAppData().newApp(newApp.getName(),
+        new UsersAppData().newApp(newApp.getId(),
             appDataModerador.getPassword(),
             true,
             roles));
@@ -72,21 +73,21 @@ public class ApplicationsService {
 
     // --- NOVO: Garante registro do Admin padrão (admin@ajudaqui.com)
     try {
-      Users authUser = usersService.findByEmail("admin@ajudaqui.com", "porteiro_api")
-          .orElseThrow(() -> new MessageException("O moderador tem que estar registrado previamente"));
+      String PorteiroAppId = "6a1ba9823a434a40267d4042";
+      Users porteiroUser = usersService.findByEmail("admin@ajudaqui.com", PorteiroAppId)
+          .orElseThrow(() -> new MessageException("Admin padrão não encontrado"));
 
-      UsersAppData appDataAuth = authUser.selectApp("porteiro_api");
-      usersService.findByRole(ERoles.ROLE_ADMIN);
+      // Criando app data do Admin
+      UsersAppData newAdminData = new UsersAppData();
+      newAdminData.setAppId(newApp.getId());
+      newAdminData.setPassword(porteiroUser.selectApp(PorteiroAppId).getPassword()); 
+      newAdminData.setActive(true);
+      newAdminData.setAccessToken(UUID.randomUUID());
 
       roles.add(usersService.findByRole(ERoles.ROLE_ADMIN));
-      authUser.getUsersAppData().add(
-          new UsersAppData().newApp(newApp.getName(),
-              appDataAuth.getPassword(),
-              true,
-              roles));
+      newAdminData.setRoles(roles);
 
-      // Registrando o ADMIN na nova aplicação
-      usersService.update(moderator);
+      usersService.update(porteiroUser);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -149,7 +150,7 @@ public class ApplicationsService {
   }
 
   public Applications findById(String applicationId) {
-    System.out.println("findById app "+applicationId);
+    System.out.println("findById app " + applicationId);
     return repository.findById(applicationId)
         .orElseThrow(() -> new NotFoundException("Aplicação  de ID " + applicationId + " não esta registrada."));
   }

@@ -19,7 +19,7 @@ public class ApplicationDto {
   @NotBlank(message = "Email é obrigatório")
   private String emailModerador;
   @NotBlank(message = "Aplicação do moderador é obrigatória")
-  private String applicationOfModerador;
+  private String appIdOfModerador;
   @NotBlank(message = "Nome é obrigatório")
   private String name;
   @Schema(description = "A campo redirectUrl é utilizado para o redirecionamento no caso de auth2")

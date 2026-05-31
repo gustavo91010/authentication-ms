@@ -109,16 +109,17 @@ public class AuthService implements AuthServiceDoc {
     String application = "bill-manager";
     Users byEmail = usersService.findByEmail(email);
 
-    if (byEmail.selectApp(name) != null)
-      return urlLogin + authenticateUser(email, application).getAccess_token();
-    return pageService.showRegisterForm(application, urlLogin, urlRegister, email, name,
-        modal);
+    // if (byEmail.selectApp(name) != null)
+    //   return urlLogin + authenticateUser(email, application).getAccess_token();
+    // return pageService.showRegisterForm(application, urlLogin, urlRegister, email, name,
+    //     modal);
+    return null;
   }
 
   @Override
   public LoginResponse registerUser(UsersRegister usersRegister) {
     boolean isProd = ENVIROMENT_PROD.equals(enviroment_current);
-    Users user = usersService.create(usersRegister, !isProd);
+    Users user = usersService.create(usersRegister);
     String appId = usersRegister.getAppId().toString();
     UsersAppData userApp = user.selectApp(appId);
 

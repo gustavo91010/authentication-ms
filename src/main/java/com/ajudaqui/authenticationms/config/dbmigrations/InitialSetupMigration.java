@@ -24,6 +24,7 @@ public class InitialSetupMigration {
   public void execution(MongoTemplate mongoTemplate) {
 
     Roles roleMod = createRoleIfNotFound(mongoTemplate, ERoles.ROLE_MODERATOR);
+    Roles user_role = createRoleIfNotFound(mongoTemplate, ERoles.ROLE_USER);
     Roles roleAdmin = createRoleIfNotFound(mongoTemplate, ERoles.ROLE_ADMIN);
 
     if (!mongoTemplate.exists(Query.query(Criteria.where("email").is("admin@ajudaqui.com")), Users.class)) {
@@ -31,10 +32,11 @@ public class InitialSetupMigration {
       UsersAppData adminAppData = UsersAppData.builder()
           .appId("6a1ba9823a434a40267d4042")
           .appName("porteiro_api")
-          .password("$2a$10$vL4PXOamKa7B5jFNBvvbVOeP3t.Lm94mktrJyJg5inlcYs1ogcr3K")
+          .password("$2a$10$G9urthVYdGrXupVF1.Pq2u7AFTl7V.nBLUzZI6ysrhMaIXsm6Foay")
+          // .password("$2a$10$vL4PXOamKa7B5jFNBvvbVOeP3t.Lm94mktrJyJg5inlcYs1ogcr3K")
           .isActive(true)
           .accessToken(UUID.fromString("77a1e032-823a-4793-ac96-2e34567b3059")) // ID mestre do properties
-          .roles(new HashSet<>(Arrays.asList(roleMod, roleAdmin)))
+          .roles(new HashSet<>(Arrays.asList(roleMod, roleAdmin, user_role)))
           .createdAt(LocalDateTime.now())
           .updatedAt(LocalDateTime.now())
           .build();

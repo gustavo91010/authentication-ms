@@ -81,13 +81,14 @@ public class GithubService {
     String urlRegister = format("http://%s:8082/login/register-auth2", url);
     String urlLogin = format("redirect:http://%s:3000/?token=", url);
     String application = "bill-manager";
-    try {
-      LoginResponse login = authService.authenticateUser(data.get("email"), application);
-      return urlLogin + login.getAccess_token();
-    } catch (Exception e) {
-      return pageService.showRegisterForm(application, urlLogin, urlRegister, data.get("email"), data.get("name"),
-          model);
-    }
+    // try {
+    //   LoginResponse login = authService.authenticateUser(data.get("email"), application);
+    //   return urlLogin + login.getAccess_token();
+    // } catch (Exception e) {
+    //   return pageService.showRegisterForm(application, urlLogin, urlRegister, data.get("email"), data.get("name"),
+    //       model);
+    // }
+    return null;
   }
 
   private Map<String, String> getUserData(String authorization_code) {

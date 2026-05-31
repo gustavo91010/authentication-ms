@@ -28,7 +28,7 @@ public class UsersService {
     this.rolesRepository = rolesRepository;
   }
 
-  public Users create(UsersRegister usersRegister, boolean isInternal) {
+  public Users create(UsersRegister usersRegister) {
 
     Applications application = applicationsService.findById(usersRegister.getAppId())
         .orElseThrow(() -> new NotFoundException("Aplicação nao registrada"));
@@ -44,7 +44,7 @@ public class UsersService {
     if (emailRegistradoNaAplicacao)
       throw new MessageException("Email já registrado");
 
-    Users users = usersRegister.toAppData(usersRegister, isInternal, assignRole(ERoles.ROLE_USER));
+    Users users = usersRegister.toAppData( assignRole(ERoles.ROLE_USER));
 
     save(users);
 
@@ -92,7 +92,7 @@ public class UsersService {
 
   public Users findByEmail(String email) {
     return userRepository.findByEmail(email)
-    .orElseThrow(()-> new MessageException(String.format("Email %s não registrado", email)));
+        .orElseThrow(() -> new MessageException(String.format("Email %s não registrado", email)));
   }
 
   public Users findById(String id) {
@@ -106,7 +106,7 @@ public class UsersService {
 
   public Users update(Users users) {
     users.setUpdatedAt(LocalDateTime.now());
-    return save(users);
+    return userRepository.save(users);
   }
 
   public Roles findByRole(ERoles role) {

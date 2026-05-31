@@ -3,7 +3,9 @@ package com.ajudaqui.authenticationms.exception;
 import static org.springframework.http.HttpStatus.*;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.ajudaqui.authenticationms.response.error.ResponseError;
@@ -20,10 +22,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestControllerAdvice
 public class GlobalHandlerException {
 
-  private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getSimpleName());
+  // private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getSimpleName());
 
   // Para tratar ausencia de parametros em objetos validado na chamada de enpoints
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -81,13 +86,23 @@ public class GlobalHandlerException {
   }
 
   private void infoTrace(Exception exception) {
-    StackTraceElement element = exception.getStackTrace()[0];
-    StackTraceElement callElement = exception.getStackTrace()[1];
+    StackTraceElement[] fullTrace = exception.getStackTrace();
 
-    logger.error("Exception occurred at: [{}] {}, line: {} with error Details: [{}] {}, line: {} | {}",
-        callElement.getFileName(), callElement.getMethodName(),
-        callElement.getLineNumber(), element.getFileName(), element.getMethodName(),
-        element.getLineNumber(), exception.getMessage());
+    List<StackTraceElement> projectTrace = Arrays.stream(fullTrace)
+        .filter(e -> e.getClassName().startsWith("br.com.gif"))
+        .toList();
+
+    StringBuilder sb = new StringBuilder("Project stack trace:\n");
+    for (int i = 0; i < projectTrace.size(); i++) {
+      StackTraceElement e = projectTrace.get(i);
+      sb.append(String.format("  [%d] %s.%s (line %d)%n",
+          i, e.getFileName(), e.getMethodName(), e.getLineNumber()));
+    }
+    sb.append("Message: ").append(exception.getMessage());
+    if (exception.getCause() != null) {
+      sb.append("\nCause: ").append(exception.getCause().getMessage());
+    }
+    log.error(sb.toString());
   }
 
   private static final Map<Class<? extends Exception>, HttpStatus> EXCEPTION_STATUS = new HashMap<>();
