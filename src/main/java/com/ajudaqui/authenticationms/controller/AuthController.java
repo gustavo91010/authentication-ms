@@ -36,6 +36,13 @@ public class AuthController implements AuthControllerDoc {
     return ResponseEntity.ok(authService.registerUser(usersRegister));
   }
 
+  @PostMapping("/signin/by-token/{token}")
+  public ResponseEntity<LoginResponse> loginByToken(@RequestParam String token) {
+    LoginResponse userAuthenticated = authService.loginByToken(token);
+    logger.info("[POST] | auth/signin | email: " + userAuthenticated.getEmail());
+    return ResponseEntity.ok(userAuthenticated);
+  }
+
   @PostMapping("/signin")
   public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
     LoginResponse userAuthenticated = authService.authenticateUser(loginRequest);

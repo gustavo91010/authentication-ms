@@ -66,8 +66,6 @@ public class AuthService implements AuthServiceDoc {
   public LoginResponse authenticateUser(LoginRequest loginRequest) {
 
     String email = loginRequest.getEmail();
-    System.out.println("email: " + email);
-    System.out.println("application id " + loginRequest.getAppId());
 
     Users users = usersService.findByEmail(email);
     UsersAppData usersApp = users.selectApp(loginRequest.getAppId());
@@ -83,10 +81,8 @@ public class AuthService implements AuthServiceDoc {
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    var lalal = new LoginResponse(new UsersAppApplicationDto(loginRequest.getAppId(), users),
+    return new LoginResponse(new UsersAppApplicationDto(loginRequest.getAppId(), users),
         jwtUtils.generatedJwtToken(usersApp));
-    System.out.println(lalal.toString());
-    return lalal;
   }
 
   public LoginResponse authenticateUser(String email, String appId) {
@@ -103,9 +99,10 @@ public class AuthService implements AuthServiceDoc {
     Users byEmail = usersService.findByEmail(email);
 
     // if (byEmail.selectApp(name) != null)
-    //   return urlLogin + authenticateUser(email, application).getAccess_token();
-    // return pageService.showRegisterForm(application, urlLogin, urlRegister, email, name,
-    //     modal);
+    // return urlLogin + authenticateUser(email, application).getAccess_token();
+    // return pageService.showRegisterForm(application, urlLogin, urlRegister,
+    // email, name,
+    // modal);
     return null;
   }
 
@@ -200,5 +197,29 @@ public class AuthService implements AuthServiceDoc {
   public boolean verifyToken(String accessToken) {
     Users byAccessToken = usersService.findByAccessToken(UUID.fromString(accessToken));
     return byAccessToken.getUsersAppData().iterator().next().isActive();
+  }
+
+  public LoginResponse loginByToken(String token) {
+    UUID accessToken = tokenService.findByToken(token).getAccessToken();
+
+    Users users = usersService.findByAccessToken(accessToken);
+    // Se achou o usuario, deleta o token
+    tokenService.delete(token);
+
+    UsersAppData usersApp = users.selectApp(accessToken);
+    if (usersApp == null)
+      throw new MessageException("Conta não localizada ou não registrada");
+
+    if (!usersApp.isActive())
+      throw new MessageException("sua conta esta desativada, verifique seu email");
+    UsernamePasswordAuthenticationToken userAutheticator = new UsernamePasswordAuthenticationToken(
+        users.getEmail() + "|" + usersApp.getAppId(), usersApp.getPassword());
+
+    Authentication authentication = authenticationManager.authenticate(userAutheticator);
+
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    return new LoginResponse(new UsersAppApplicationDto(usersApp.getAppId(), users),
+        jwtUtils.generatedJwtToken(usersApp));
   }
 }

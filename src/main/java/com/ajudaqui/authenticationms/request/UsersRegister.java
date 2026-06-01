@@ -21,8 +21,9 @@ public class UsersRegister {
   private String email;
   @NotBlank(message = "Campo password é obrigatorio")
   private String password;
-  @NotBlank(message = "Campo aplication é obrigatorio")
+  @NotBlank(message = "Campo aooId é obrigatorio")
   private String appId;
+
   private Map<String, Object> payload;
 
   public Map<String, Object> getPayload() {
