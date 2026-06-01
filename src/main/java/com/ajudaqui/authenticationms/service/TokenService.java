@@ -35,7 +35,7 @@ public class TokenService {
 
   public Token findByToken(String token) {
     return tokenRepository.findByToken(token)
-        .orElseThrow(() -> new NotFoundException("Token não localizado"));
+        .orElseThrow(() -> new NotFoundException("Token não localizado ou expirado"));
   }
 
   public void delete(String token) {

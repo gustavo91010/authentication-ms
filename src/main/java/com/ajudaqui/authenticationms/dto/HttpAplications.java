@@ -21,7 +21,7 @@ public class HttpAplications {
   private String registertUrl;
 
   @Schema(example = "https://app.com/redirect")
-  private String redirectUrl;
+  private String loginByTokenUrl;
 
   @Schema(example = "150")
   private int totalUsers;
@@ -31,9 +31,8 @@ public class HttpAplications {
     this.name = applcations.getName();
     if (applcations.getRegisterUrl() != null)
       this.registertUrl = applcations.getRegisterUrl();
-    if (applcations.getRedirectUrl() != null)
-      this.redirectUrl = applcations.getRedirectUrl();
-    // this.totalUsers = applcations.getUsersAppData().size();
+    if (applcations.getLoginByTokenUrl() != null)
+      this.loginByTokenUrl = applcations.getLoginByTokenUrl();
   }
 
 }

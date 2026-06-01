@@ -108,33 +108,34 @@ public class AuthService implements AuthServiceDoc {
 
   @Override
   public LoginResponse registerUser(UsersRegister usersRegister) {
-    boolean isProd = ENVIROMENT_PROD.equals(enviroment_current);
     Users user = usersService.create(usersRegister);
     String appId = usersRegister.getAppId().toString();
     UsersAppData userApp = user.selectApp(appId);
 
     try {
 
-      String token = tokenService.createToken(userApp.getAccessToken());
-      emailService.sendEmail(usersRegister.getEmail(),
-          "Token de confirmação do registro", token);
+      Applications application = applicationsService.findById(appId);
 
-      if (!isProd) // nao estou pedindo isso em produção ainda.
-        confirmByToken(jwtUtils.generatedJwtToken(userApp), token);
+      String urlLoginByToken = application.getLoginByTokenUrl();
+      if (urlLoginByToken != null && urlLoginByToken.isBlank()) {
+        String token = tokenService.createToken(userApp.getAccessToken());
+        String text = String.format("%s/%s", urlLoginByToken, token);
 
-      if (userApp.getAccessToken() != null && isProd) {
-
-        Map<String, Object> payload = usersRegister.getPayload();
-        payload.put("access_token", userApp.getAccessToken());
-
-        Applications application = applicationsService.findById(appId);
-        ApplicationSqsMessage sqsMessage = new ApplicationSqsMessage(
-            application.getRegisterUrl(),
-            application.getName(),
-            application.getSecretId(),
-            payload);
-        messageSqsFactor(sqsMessage);
+        emailService.sendEmail(usersRegister.getEmail(),
+            "Confirmação de cadastro na plataforma " + application.getName(),
+            text);
       }
+
+      Map<String, Object> payload = usersRegister.getPayload();
+      payload.put("access_token", userApp.getAccessToken());
+
+      ApplicationSqsMessage sqsMessage = new ApplicationSqsMessage(
+          application.getRegisterUrl(),
+          application.getName(),
+          application.getSecretId(),
+          payload);
+      messageSqsFactor(sqsMessage);
+      // }
 
     } catch (Exception e) {
       logger.error("Erro no envio da mensagem para fila sqs", e);
@@ -203,21 +204,25 @@ public class AuthService implements AuthServiceDoc {
     UUID accessToken = tokenService.findByToken(token).getAccessToken();
 
     Users users = usersService.findByAccessToken(accessToken);
-    // Se achou o usuario, deleta o token
-    tokenService.delete(token);
-
     UsersAppData usersApp = users.selectApp(accessToken);
+
     if (usersApp == null)
       throw new MessageException("Conta não localizada ou não registrada");
 
-    if (!usersApp.isActive())
-      throw new MessageException("sua conta esta desativada, verifique seu email");
+    // Se achou o usuario, deleta o token
+    tokenService.delete(token);
+
     UsernamePasswordAuthenticationToken userAutheticator = new UsernamePasswordAuthenticationToken(
         users.getEmail() + "|" + usersApp.getAppId(), usersApp.getPassword());
 
     Authentication authentication = authenticationManager.authenticate(userAutheticator);
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    if (!usersApp.isActive()) {
+      usersApp.setActive(true);
+      usersService.update(users);
+    }
 
     return new LoginResponse(new UsersAppApplicationDto(usersApp.getAppId(), users),
         jwtUtils.generatedJwtToken(usersApp));

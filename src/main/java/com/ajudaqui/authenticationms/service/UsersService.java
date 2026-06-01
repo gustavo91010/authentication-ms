@@ -44,11 +44,16 @@ public class UsersService {
     if (emailRegistradoNaAplicacao)
       throw new MessageException("Email já registrado");
 
-    Users users = usersRegister.toAppData( assignRole(ERoles.ROLE_USER));
+    Users users = usersRegister.toAppData(assignRole(ERoles.ROLE_USER));
+    UsersAppData appData = users.selectApp(usersRegister.getAppId());
+
+    String urlLoginByToken = application.getLoginByTokenUrl();
+    boolean isloginByToken = !(urlLoginByToken == null || urlLoginByToken.isBlank());
+    if (isloginByToken)
+      appData.setActive(!isloginByToken);
 
     save(users);
 
-    UsersAppData appData = users.selectApp(usersRegister.getAppId());
     if (appData == null)
       throw new MessageException("Porblema no registro do usuário");
 

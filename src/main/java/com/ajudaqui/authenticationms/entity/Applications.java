@@ -32,7 +32,7 @@ public class Applications {
 
   private String registerUrl;
 
-  private String redirectUrl;
+  private String loginByTokenUrl;
 
   private LocalDateTime createdAt;
 

@@ -16,14 +16,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class ApplicationDto {
 
   @Email
-  @NotBlank(message = "Email é obrigatório")
+  @NotBlank(message = "Email do moderador é obrigatório")
   private String emailModerador;
-  @NotBlank(message = "Aplicação do moderador é obrigatória")
+  @NotBlank(message = "O ID da aplicação do moderador é obrigatória")
   private String appIdOfModerador;
   @NotBlank(message = "Nome é obrigatório")
   private String name;
-  @Schema(description = "A campo redirectUrl é utilizado para o redirecionamento no caso de auth2")
-  private String redirectUrl;
+  @Schema(description = "A campo loginByTokenUrl é responsavel pela confirmação do email no registro")
+  private String loginByTokenUrl;
   @Schema(description = "A campo registerUrl(IP da aplicação) é utilizado para o envio dos dados no registro")
   private String registerUrl;
   @Schema(description = "Campo para fazer a decodificação do jwt")
@@ -35,8 +35,8 @@ public class ApplicationDto {
     if (this.registerUrl != null && !this.registerUrl.isEmpty())
       applcations.setRegisterUrl(this.registerUrl);
 
-    if (this.redirectUrl != null && !this.redirectUrl.isEmpty())
-      applcations.setRedirectUrl(this.redirectUrl);
+    if (this.loginByTokenUrl != null && !this.loginByTokenUrl.isEmpty())
+      applcations.setLoginByTokenUrl(this.loginByTokenUrl);
     return applcations;
   }
 
@@ -46,8 +46,8 @@ public class ApplicationDto {
       applications.setName(this.name);
     if (this.secret != null && !this.secret.isEmpty())
       applications.setSecretId(this.secret);
-    if (this.redirectUrl != null && !this.redirectUrl.isEmpty())
-      applications.setRedirectUrl(this.redirectUrl);
+    if (this.loginByTokenUrl != null && !this.loginByTokenUrl.isEmpty())
+      applications.setLoginByTokenUrl(this.loginByTokenUrl);
     if (this.registerUrl != null && !this.registerUrl.isEmpty())
       applications.setRegisterUrl(this.registerUrl);
 

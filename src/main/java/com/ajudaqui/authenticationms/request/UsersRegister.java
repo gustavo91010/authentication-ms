@@ -64,7 +64,7 @@ public class UsersRegister {
     usersAppData.setPassword(checkStrongPassword(this.password));
     usersAppData.setAppId(this.getAppId());
     usersAppData.setCreatedAt(LocalDateTime.now());
-    usersAppData.setActive(false);
+    usersAppData.setActive(true);
     user.getUsersAppData().add(usersAppData);
 
     return user;
