@@ -191,7 +191,4 @@ public class UsersServiceTest {
 
   }
 
-  void validarOcheckStrongPassword() {
-
-  }
 }

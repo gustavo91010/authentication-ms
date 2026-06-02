@@ -46,7 +46,7 @@ public class UsersRegister {
     boolean isLowAndUpCase = password.matches("^(?=.*[a-z])(?=.*[A-Z]).+$");
     if (!isLowAndUpCase)
       throw new MessageException(
-          "A senha deve ter pelo menos uma letra maiúscula, uma minuscula e um caracter especial ( @#$%&*_- )");
+          "A senha deve ter pelo menos uma letra maiúscula e uma minuscula");
 
     boolean isCharacterEpecial = password.matches("^(?=.*[@#$%&*_-]).+$");
 
