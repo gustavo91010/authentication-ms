@@ -116,7 +116,7 @@ public class UsersService {
 
   public Roles findByRole(ERoles role) {
     return rolesRepository.findByName(role)
-        .orElseThrow(() -> new RuntimeException("Erro: Type Roles não encontrado."));
+        .orElseThrow(() -> new MessageException("Roles não encontrado."));
   }
 
   public Set<Roles> assignRole(ERoles role) {
