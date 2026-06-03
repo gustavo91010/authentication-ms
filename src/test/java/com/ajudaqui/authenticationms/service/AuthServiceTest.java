@@ -45,21 +45,24 @@ public class AuthServiceTest {
     usersRegister.setName("Registro test da silva");
     usersRegister.setEmail("registro_test@email.com");
     usersRegister.setPassword("@Ajudaqui");
-    usersRegister.setAppId("authentication-ms");
+    usersRegister.setAppId("app-id-authentication");
 
-    UsersAppData userApp = new UsersAppData();
+    Applications app = new Applications();
+    app.setName("authentication-ms");
+    app.setId(usersRegister.getAppId());
+
     Users user = new Users();
     user.setId("10L");
     user.setEmail("registro_test@email.com");
 
-    Applications app = new Applications();
-    app.setName("authentication-ms");
+    UsersAppData userApp = new UsersAppData();
     userApp.setAppId(app.getId());
     userApp.setActive(false);
 
+    user.getUsersAppData().add(userApp);
+
     String jwtToken = "jwt-token";
     when(usersService.create(any(UsersRegister.class))).thenReturn(user);
-    when(tokenService.createToken(any())).thenReturn("token-123");
     when(jwtUtils.generatedJwtToken(any(UsersAppData.class))).thenReturn(jwtToken);
 
     // Execução
@@ -69,7 +72,6 @@ public class AuthServiceTest {
     assertNotNull(registered);
     assertEquals(usersRegister.getEmail(), registered.getEmail());
     assertEquals(user.getEmail(), registered.getEmail());
-    // assertEquals(userApp.getId(), registered.getId());
     assertEquals(jwtToken, registered.getJwt());
   }
 

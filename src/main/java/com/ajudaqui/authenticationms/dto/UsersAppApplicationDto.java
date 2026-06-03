@@ -30,6 +30,7 @@ public class UsersAppApplicationDto {
 
   public UsersAppApplicationDto(String appId, Users users) {
     UsersAppData appData = users.selectApp(appId);
+
     this.name = users.getName();
     this.email = users.getEmail();
 

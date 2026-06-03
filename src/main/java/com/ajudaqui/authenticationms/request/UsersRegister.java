@@ -40,7 +40,7 @@ public class UsersRegister {
   }
 
   private String checkStrongPassword(String password) {
-    if (password.length() < 7)
+    if (password.length() < 8)
       throw new MessageException("A senha deve ter pelo menos 8 caracters");
 
     boolean isLowAndUpCase = password.matches("^(?=.*[a-z])(?=.*[A-Z]).+$");

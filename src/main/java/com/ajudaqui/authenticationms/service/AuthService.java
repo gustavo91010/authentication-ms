@@ -138,7 +138,7 @@ public class AuthService implements AuthServiceDoc {
       // }
 
     } catch (Exception e) {
-      logger.error("Erro no envio da mensagem para fila sqs", e);
+      logger.error("Erro no envio da mensagem para fila sqs: ", e.getMessage());
     }
 
     return new LoginResponse(new UsersAppApplicationDto(appId, user), jwtUtils.generatedJwtToken(userApp));
