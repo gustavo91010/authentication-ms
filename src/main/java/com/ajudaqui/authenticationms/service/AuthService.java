@@ -82,7 +82,7 @@ public class AuthService implements AuthServiceDoc {
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
     return new LoginResponse(new UsersAppApplicationDto(loginRequest.getAppId(), users),
-        jwtUtils.generatedJwtToken(usersApp));
+        jwtUtils.generatedJwtToken(usersApp, email));
   }
 
   public LoginResponse authenticateUser(String email, String appId) {
@@ -111,6 +111,7 @@ public class AuthService implements AuthServiceDoc {
     Users user = usersService.create(usersRegister);
     String appId = usersRegister.getAppId().toString();
     UsersAppData userApp = user.selectApp(appId);
+    String email = usersRegister.getEmail();
 
     try {
 
@@ -121,7 +122,7 @@ public class AuthService implements AuthServiceDoc {
         String token = tokenService.createToken(userApp.getAccessToken());
         String text = String.format("%s/%s", urlLoginByToken, token);
 
-        emailService.sendEmail(usersRegister.getEmail(),
+        emailService.sendEmail(email,
             "Confirmação de cadastro na plataforma " + application.getName(),
             text);
       }
@@ -141,7 +142,7 @@ public class AuthService implements AuthServiceDoc {
       logger.error("Erro no envio da mensagem para fila sqs: ", e.getMessage());
     }
 
-    return new LoginResponse(new UsersAppApplicationDto(appId, user), jwtUtils.generatedJwtToken(userApp));
+    return new LoginResponse(new UsersAppApplicationDto(appId, user), jwtUtils.generatedJwtToken(userApp, email));
   }
 
   /**
@@ -212,8 +213,9 @@ public class AuthService implements AuthServiceDoc {
     // Se achou o usuario, deleta o token
     tokenService.delete(token);
 
+    String email = users.getEmail();
     UsernamePasswordAuthenticationToken userAutheticator = new UsernamePasswordAuthenticationToken(
-        users.getEmail() + "|" + usersApp.getAppId(), usersApp.getPassword());
+        email + "|" + usersApp.getAppId(), usersApp.getPassword());
 
     Authentication authentication = authenticationManager.authenticate(userAutheticator);
 
@@ -225,6 +227,6 @@ public class AuthService implements AuthServiceDoc {
     }
 
     return new LoginResponse(new UsersAppApplicationDto(usersApp.getAppId(), users),
-        jwtUtils.generatedJwtToken(usersApp));
+        jwtUtils.generatedJwtToken(usersApp, email));
   }
 }

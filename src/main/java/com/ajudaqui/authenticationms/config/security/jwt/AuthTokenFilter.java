@@ -34,6 +34,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         String app = jwtUtils.getAppIdFromJwtToken(jwt);
         String auth_login=  email+"|"+app;
 
+        System.out.println("doFilterInternal email "+email);
+        System.out.println("app "+app);
+        System.out.println("auth_login "+auth_login);
+        System.out.println("------------------------");
         UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(auth_login);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
             userDetails, null, userDetails.getAuthorities());

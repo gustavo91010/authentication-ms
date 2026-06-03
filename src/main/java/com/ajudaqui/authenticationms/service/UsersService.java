@@ -96,6 +96,8 @@ public class UsersService {
   }
 
   public Users findByEmail(String email) {
+    System.out.println("-------------------------------");
+    System.out.println("email "+email);
     return userRepository.findByEmail(email)
         .orElseThrow(() -> new MessageException(String.format("Email %s não registrado", email)));
   }

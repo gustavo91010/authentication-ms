@@ -40,7 +40,7 @@ public class JwtUtils {
     return Keys.hmacShaKeyFor(keyBytes);
   }
 
-  public String generatedJwtToken(UsersAppData usersApp) {
+  public String generatedJwtToken(UsersAppData usersApp, String email) {
     // UsersAppData usersApp= users
     LocalDateTime issuedAt = LocalDateTime.now(ZoneId.systemDefault());
     Date issuedAtDate = Date.from(issuedAt.atZone(ZoneId.systemDefault()).toInstant());
@@ -60,6 +60,7 @@ public class JwtUtils {
     return Jwts.builder()
         .setIssuedAt(issuedAtDate)
         .setExpiration(expirationDate)
+        .setSubject(email)
         .claim("roles", roles)
         .claim("app_id", usersApp.getAppId())
         .claim("access_token", usersApp.getAccessToken())
