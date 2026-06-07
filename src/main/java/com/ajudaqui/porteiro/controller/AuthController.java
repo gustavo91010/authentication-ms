@@ -29,9 +29,9 @@ public class AuthController implements AuthControllerDoc {
     this.authService = authService;
   }
 
-  @PostMapping("/signup")
+  @Override
   public ResponseEntity<LoginResponse> registerUser(
-      @Valid @RequestBody UsersRegister usersRegister) {
+      UsersRegister usersRegister) {
     logger.info(String.format("[POST] | auth/signup | email: " + usersRegister.getEmail()));
     return ResponseEntity.ok(authService.registerUser(usersRegister));
   }
@@ -43,18 +43,18 @@ public class AuthController implements AuthControllerDoc {
     return ResponseEntity.ok(userAuthenticated);
   }
 
-  @PostMapping("/signin")
-  public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+  @Override
+  public ResponseEntity<LoginResponse> authenticateUser(LoginRequest loginRequest) {
     LoginResponse userAuthenticated = authService.authenticateUser(loginRequest);
     logger.info("[POST] | auth/signin | email: " + loginRequest.getEmail());
     return ResponseEntity.ok(userAuthenticated);
   }
 
-  @PutMapping("/confirm-token")
+  @Override
   @PreAuthorize("hasRole('ROLE_USER')")
   public ResponseEntity<?> confirmToken(
-      @RequestHeader("Authorization") String jwtToken,
-      @RequestParam String token) {
+      String jwtToken,
+      String token) {
     logger.info("[POST] | auth/confirm-token | token: " + token);
     try {
       Boolean response = authService.confirmByToken(jwtToken, token);

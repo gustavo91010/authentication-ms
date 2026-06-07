@@ -10,7 +10,6 @@ import com.ajudaqui.porteiro.service.ApplicationsService;
 
 import com.ajudaqui.porteiro.entity.UsersAppData;
 
-import jakarta.validation.Valid;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,18 +29,19 @@ public class ApplicationController implements ApplicationsControllerDoc {
     this.jwtUtils = jwtUtils;
   }
 
-  @PostMapping("/register")
+  @Override
   public ResponseEntity<HttpAplications> register(
-      @RequestHeader("Authorization") String authorization,
-      @RequestBody @Valid ApplicationDto applicationDto) {
+      String authorization,
+      ApplicationDto applicationDto) {
     Applications register = applicationsService.register(authorization, applicationDto);
     return ResponseEntity.ok(new HttpAplications(register));
   }
 
   @Override
   @PreAuthorize("hasRole('ROLE_MODERATOR')")
-  public ResponseEntity<HttpAplications> getByAppName(@RequestHeader("Authorization") String jwtToken,
-      @PathVariable String appName) {
+  public ResponseEntity<HttpAplications> getByAppName(
+      String jwtToken,
+      String appName) {
     Applications aplicaiton = applicationsService.findByName(appName);
     return ResponseEntity.ok(new HttpAplications(aplicaiton));
   }
@@ -49,15 +49,15 @@ public class ApplicationController implements ApplicationsControllerDoc {
   @Override
   @PreAuthorize("hasRole('ROLE_MODERATOR')")
   public ResponseEntity<List<HttpAplications>> allApplications(
-      @RequestHeader("Authorization") String authorization) {
+      String authorization) {
     return ResponseEntity.ok(applicationsService.findAll(authorization));
   }
 
   @Override
   @PreAuthorize("hasRole('ROLE_MODERATOR')")
-  public ResponseEntity<HttpAplications> getById(@RequestHeader("Authorization") String jwtToken,
-      @PathVariable String applicationId) {
-    String email = jwtUtils.getEmailFromJwtToken(jwtToken);
+  public ResponseEntity<HttpAplications> getById(
+      String jwtToken,
+      String applicationId) {
     Applications aplicaiton = applicationsService.findById(applicationId);
     return ResponseEntity.ok(new HttpAplications(aplicaiton));
   }
@@ -65,12 +65,12 @@ public class ApplicationController implements ApplicationsControllerDoc {
   @Override
   @PreAuthorize("hasRole('ROLE_MODERATOR')")
   public ResponseEntity<HttpAplications> update(
-      @RequestHeader("Authorization") String jwtToken,
-      @PathVariable String appName,
-      @RequestBody ApplicationDto dto) {
+      String jwtToken,
+      String applicationId,
+      ApplicationDto dto) {
 
     String email = jwtUtils.getEmailFromJwtToken(jwtToken);
-    Applications aplicaiton = applicationsService.update(email, appName, dto);
+    Applications aplicaiton = applicationsService.update(email, applicationId, dto);
     return ResponseEntity.ok(new HttpAplications(aplicaiton));
   }
 
