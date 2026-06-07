@@ -31,7 +31,7 @@ A **Porteiro API** é um microsserviço que gerencia autenticação e registro d
 - **OAuth2** (Google, GitHub)  
 
 ## 📦 Estrutura do Projeto  
-src/main/java/com/ajudaqui/authenticationms
+src/main/java/com.ajudaqui.porteiro
 │
 ├── config/ # Configurações de segurança, Swagger, AWS e WebMvc
 
