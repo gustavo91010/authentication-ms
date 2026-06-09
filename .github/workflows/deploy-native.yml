@@ -33,6 +33,24 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Native Image and Push
+        env:
+          PORTS: 8080
+          ENVIROMENT: build
+          MONGO_URI: mongodb://localhost:27017/build
+          AWS_REGION: us-east-1
+          AWS_ID: 123456789
+          APP_URL: localhost
+          APP_NAME: porteiro-api
+          VERSION: ${{ steps.version.outputs.version }}
+          CONTACT: build@example.com
+          GITHUB_REDIRECT_URI: http://localhost
+          GITHUB_CLIENT_ID: fake
+          GITHUB_CLIENT_SECRET: fake
+          GOOGLE_REDIRECT_URI: http://localhost
+          GOOGLE_CLIENT_ID: fake
+          GOOGLE_CLIENT_SECRET: fake
+          EMAIL_USERNAME: fake
+          EMAIL_PASSWORD: fake
         run: |
           ./mvnw -Pnative spring-boot:build-image \
             -Dspring-boot.build-image.imageName=gustavodocker910/porteiro-api:${{ steps.version.outputs.version }} \
