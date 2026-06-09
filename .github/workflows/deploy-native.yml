@@ -34,7 +34,8 @@ jobs:
 
       - name: Build Native Image and Push
         env:
-          PORTS: 8080
+          BP_NATIVE_IMAGE_BUILD_ARGUMENTS: "-H:+UnlockExperimentalVMOptions --initialize-at-run-time=sun.security.util.Password$ConsoleHolder,jdk.internal.io.JdkConsoleImpl$1ConsoleHolder,sun.security.util.Password"
+          PORTS: 8082
           ENVIROMENT: build
           MONGO_URI: mongodb://localhost:27017/build
           AWS_REGION: us-east-1
