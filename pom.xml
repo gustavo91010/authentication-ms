@@ -157,7 +157,7 @@
         <configuration>
           <buildArgs>
             <arg>
-              --initialize-at-run-time=sun.security.util.Password$ConsoleHolder,jdk.internal.io.JdkConsoleImpl$1ConsoleHolder</arg>
+              --initialize-at-run-time=sun.security.util.Password$ConsoleHolder,jdk.internal.io.JdkConsoleImpl$1ConsoleHolder,sun.security.util.Password</arg>
           </buildArgs>
         </configuration>
       </plugin>
