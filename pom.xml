@@ -154,16 +154,17 @@
       <plugin>
         <groupId>org.graalvm.buildtools</groupId>
         <artifactId>native-maven-plugin</artifactId>
-        <configuration>
-          <buildArgs>
-            <arg>
-              --initialize-at-run-time=sun.security.util.Password$ConsoleHolder,jdk.internal.io.JdkConsoleImpl$1ConsoleHolder,sun.security.util.Password</arg>
-          </buildArgs>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <image>
+            <env>
+              <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-H:+UnlockExperimentalVMOptions --initialize-at-run-time=sun.security.util.Password$ConsoleHolder,jdk.internal.io.JdkConsoleImpl$1ConsoleHolder,sun.security.util.Password</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
+            </env>
+          </image>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
