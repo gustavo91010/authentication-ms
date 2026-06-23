@@ -12,7 +12,7 @@ services:
     command: >
       sh -c "docker-entrypoint.sh postgres &
       sleep 10;
-      psql -U postgres -c 'CREATE DATABASE vpc_db;' || true;
+      psql -U postgres -c 'CREATE DATABASE porteiro_db;' || true;
       wait"
     ports:
       - '5432:5432'
