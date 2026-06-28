@@ -1,38 +1,13 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:15
-    container_name: database
-    mem_limit: 256m
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: auth
-    command: >
-      sh -c "docker-entrypoint.sh postgres &
-      sleep 10;
-      psql -U postgres -c 'CREATE DATABASE porteiro_db;' || true;
-      wait"
-    ports:
-      - '5432:5432'
-    restart: always
-
-  authentication-api:
+  porteiro-api:
     build: .
-    container_name: auth-api
+    container_name: porteiro-api
     mem_limit: 512m
     env_file:
       - .env
     ports:
       - '8082:8082'
-    environment:
-      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx384m -XX:+UseSerialGC -XX:+ShrinkHeapInSteps
-    depends_on:
-      - postgres
-    volumes:
-      - volume_authentication:/data
+    depends_on: []
     restart: always
-
-volumes:
-  volume_authentication:
